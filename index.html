@@ -244,6 +244,13 @@
 .pn-pol h2{font-size:15px;margin:18px 0 6px}
 .pn-pol p,.pn-pol li{font-size:14.5px;color:var(--ink-2)}
 .pn-pol ul{padding-left:18px}
+/* feedback de toque: todo botão muda ao ser apertado */
+.pn button,.pn .pn-chip,.pn .pn-tag,.pn a.pn-btn{-webkit-tap-highlight-color:transparent;transition:transform .08s ease,filter .12s ease,background-color .15s ease,box-shadow .15s ease}
+.pn button:active,.pn .pn-chip:active,.pn a.pn-btn:active,.pn .pn-press{transform:scale(.96);filter:brightness(.92)}
+.pn .pn-btn:not(.pri):active,.pn .pn-btn:not(.pri).pn-press,.pn .pn-chip.pn-press{background:var(--accent-soft)}
+.pn .pn-btn.pri.pn-press{box-shadow:0 0 0 4px var(--accent-soft)}
+.pn .pn-ok{background:#2fb36b!important;border-color:#2fb36b!important;color:#fff!important}
+.pn .pn-nav-btn.pn-press{background:var(--accent-soft)}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -386,7 +393,7 @@
 
     <div class="pn-h2">Compartilhar o Peneira</div>
     <div class="pn-card">
-      <p class="pn-meta" style="margin:0 0 10px">Manda o link do app para alguém testar. Quem recebe vê a versão de demonstração, sem nenhum dado seu.</p>
+      <p class="pn-meta" style="margin:0 0 10px">Manda o link do app para alguém instalar. Cada pessoa faz o próprio cadastro e vê só os próprios dados.</p>
       <a class="pn-btn pri" id="btn-share-wa" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;background:#25a35a;border-color:#25a35a;color:#fff;font-weight:600">Compartilhar por WhatsApp</a>
       <button class="pn-btn" type="button" id="btn-share-copiar" style="width:100%;margin-top:8px">Copiar link</button>
     </div>
@@ -394,13 +401,15 @@
     <div class="pn-h2" id="vip-h">Contatos VIP · alerta sonoro</div>
     <div class="pn-card" id="vip-card">
       <p class="pn-meta" style="margin:0 0 10px">Mensagem dessas pessoas ou grupos vira prioridade alta, fica no topo e toca um alerta.</p>
+      <button class="pn-btn pri" type="button" id="vip-agenda" style="width:100%;padding:11px;margin-bottom:10px">Escolher na agenda do celular</button>
+      <p class="pn-meta" id="vip-agenda-aviso" style="display:none;margin:-4px 0 10px"></p>
       <div id="vip-lista"></div>
       <form class="pn-form" id="vip-form" style="margin-top:12px">
         <div style="display:flex;gap:6px">
           <input id="vip-nome" placeholder="Nome como aparece no WhatsApp" maxlength="60" required style="flex:1">
           <select id="vip-tipo" style="font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)"><option value="pessoa">Pessoa</option><option value="grupo">Grupo</option></select>
         </div>
-        <button class="pn-btn pri" type="submit">+ Adicionar VIP</button>
+        <button class="pn-btn" type="submit">+ Adicionar pelo nome</button>
       </form>
       <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">Testar o som</button>
     </div>
@@ -474,7 +483,7 @@
 
 <h2>6. Onde os dados ficam</h2>
 <ul>
-  <li><b>Versão de demonstração (site público):</b> tudo fica só no seu aparelho. Nada vai para servidor.</li>
+  <li><b>App instalado pelo site:</b> cadastro, preferências e agenda ficam só no seu aparelho. Nada vai para servidor.</li>
   <li><b>Versão pessoal:</b> os dados ficam na conta Claude do titular, com acesso restrito a ele.</li>
   <li><b>Futuro (WhatsApp Business / API):</b> as mensagens passam pela plataforma oficial da Meta e por um provedor autorizado. Antes disso, esta política será atualizada e você será avisado no app.</li>
 </ul>
@@ -534,7 +543,9 @@
     <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
     <div class="pn-h2">Silenciar grupos</div>
     <div class="pn-card">
-      <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. Você continua no grupo e eu continuo lendo e trazendo o que for importante.</p>
+      <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. <b>Grupos VIP nunca são silenciados</b>, a não ser que você desligue o som deles na lista VIP. Grupos silenciados continuam sendo lidos e marcados como lidos; se tiver algo importante ou uma menção a você (@), eu deixo marcado em Importantes com o nome do grupo.</p>
+      <button class="pn-btn pri" type="button" id="btn-grupos" style="width:100%;padding:11px;margin-top:10px">Escolher quais grupos silenciar</button>
+      <div class="pn-meta" style="margin-top:12px">Ou todos de uma vez (menos os VIP):</div>
       <div class="pn-grid2">
         <button class="pn-btn pri" type="button" data-mute="8h">Por 8 horas</button>
         <button class="pn-btn pri" type="button" data-mute="1sem">Por 1 semana</button>
@@ -636,6 +647,19 @@
   </div>
 </div>
 
+<div class="pn-sheet" id="grupos-sheet" hidden role="dialog" aria-labelledby="gr-t">
+  <div class="pn-sheet-card" style="max-height:85vh;overflow:auto">
+    <div class="pn-row" style="align-items:center"><b id="gr-t" style="font-size:17px">Silenciar grupos</b><button class="pn-x" type="button" id="gr-x" aria-label="Fechar">×</button></div>
+    <p class="pn-meta" style="margin:6px 0 10px">Ligue os grupos que quer silenciar. Eles continuam sendo lidos: menções a você (@) e assuntos importantes aparecem em Importantes.</p>
+    <div id="gr-lista"></div>
+    <form class="pn-form" id="gr-form" style="margin-top:10px;display:flex;gap:6px;flex-direction:row">
+      <input id="gr-nome" placeholder="Nome do grupo como aparece no WhatsApp" maxlength="60" required style="flex:1">
+      <button class="pn-btn" type="submit">+ Grupo</button>
+    </form>
+    <button class="pn-btn pri" type="button" id="gr-aplicar" style="width:100%;padding:12px;margin-top:12px">Aplicar no WhatsApp</button>
+  </div>
+</div>
+
 <div class="pn-sheet" id="hub" hidden role="dialog" aria-label="Central">
   <div class="pn-sheet-card">
     <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
@@ -665,7 +689,7 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -711,17 +735,10 @@
   $("cta-crit").addEventListener("click",()=>go("criterios"));
   $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
 
-  /* ---------- modo demonstração (fora do Claude: GitHub Pages) ---------- */
-  const DEMO_KEY="peneira-demo-v1";
+  /* ---------- modo local (app instalado pelo site): dados só neste aparelho ---------- */
+  const DEMO_KEY="peneira-local-v1";
+  try{ localStorage.removeItem("peneira-demo-v1"); }catch(e){}
   const hoje=new Date(), em=d=>{const x=new Date(hoje);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
-  const DEMO_ITENS=[
-    {id:"d1",categoria:"Bancos e cartões",prioridade:"alta",contato:"Banco Exemplo",resumo:"Fatura do cartão fechou. Vencimento em 3 dias.",acao:"Conferir lançamentos e pagar pelo app do banco",prazo:em(3),favoritado:true,status:"pendente"},
-    {id:"d2",categoria:"Órgãos oficiais",prioridade:"alta",contato:"Detran (exemplo)",resumo:"Licenciamento do veículo disponível para pagamento.",acao:"Emitir guia no site oficial",prazo:em(12),favoritado:true,status:"pendente"},
-    {id:"d3",categoria:"Alerta de golpe",prioridade:"alta",contato:"Número desconhecido",resumo:"\"Oi, troquei de número, me faz um Pix?\" — possível golpe. Não cliquei em nada.",acao:"Confirmar por ligação no número antigo",favoritado:true,status:"pendente"},
-    {id:"d4",categoria:"Família",prioridade:"media",contato:"Família (exemplo)",resumo:"Pediu confirmação do horário do almoço de domingo.",acao:"Responder confirmando",prazo:em(2),favoritado:true,status:"pendente"},
-    {id:"d5",categoria:"Contas e boletos",prioridade:"media",contato:"Condomínio (exemplo)",resumo:"Boleto do condomínio deste mês disponível.",prazo:em(6),favoritado:true,status:"pendente"},
-    {id:"d6",categoria:"Compras e entregas",prioridade:"baixa",contato:"Loja (exemplo)",resumo:"Entrega reagendada para amanhã à tarde.",favoritado:false,status:"pendente"}
-  ];
   const DEMO_CRIT=[
     ["bancos","Bancos e cartões","Fatura, débito, limite, Pix fora do comum, alerta de transação."],
     ["oficial","Órgãos oficiais e governo","Receita, gov.br, Detran, INSS, prefeitura, cartório."],
@@ -732,15 +749,8 @@
     ["mencoes","Menções a você em grupos","Quando te marcam ou citam sua mensagem."],
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
-  const DEMO_AG=()=>{ const h=new Date(); const f=(d,hh)=>{ const x=new Date(h); x.setDate(x.getDate()+d); x.setHours(hh,0,0,0); return x.toISOString().slice(0,16); };
-    return [{id:"g1",titulo:"Responder a família sobre o almoço de domingo",tipo:"responder",quando:f(0,18),contato:"Família (exemplo)",feito:false},
-            {id:"g2",titulo:"Pagar fatura do cartão",tipo:"prazo",quando:f(3,9),contato:"Banco Exemplo",feito:false},
-            {id:"g3",titulo:"Emitir guia do licenciamento",tipo:"processo",quando:f(10,10),contato:"Detran (exemplo)",feito:false}]; };
-  function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:DEMO_ITENS,criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[
-    {id:"r1",geradoEm:new Date(new Date().setHours(7,30,0,0)).toISOString(),periodo:"manha",titulo:"Relatório da manhã",resumo:"Noite tranquila. 3 coisas pedem sua atenção hoje.",
-     destaques:["Fatura do cartão vence em 3 dias.","Possível golpe: número desconhecido pedindo Pix (não cliquei).","Família pediu confirmação do almoço de domingo."],
-     numeros:{lidas:42,importantes:6,favoritadas:5,ausencias:0}}]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:[],criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[],agenda:[],vips:[]}; }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -761,6 +771,8 @@
     const top = el("div","pn-row"), tags = el("div");
     if(vp){ const t=rotulo("bell","VIP","pn-tag t-vip"); t.dataset.tip="vip"; t.dataset.nome=vp.nome; tags.appendChild(t); }
     if(i.prioridade){ const t=el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade); t.dataset.tip="pri"; tags.appendChild(t); }
+    if(i.mencao){ const t=el("span","pn-tag t-alta","@ você"); t.dataset.tip="mencao"; t.dataset.nome=i.grupo||""; tags.appendChild(t); }
+    if(i.grupo){ const t=rotulo("meeting","Grupo · "+i.grupo,"pn-tag t-baixa"); t.dataset.tip="grupo"; t.dataset.nome=i.grupo; tags.appendChild(t); }
     if(i.categoria){ const t=el("span","pn-tag t-cat", i.categoria); t.dataset.tip="cat"; t.dataset.nome=i.categoria; tags.appendChild(t); }
     if(i.favoritado){ const t=rotulo("star","Favoritado","pn-tag t-fav"); t.dataset.tip="fav"; tags.appendChild(t); }
     top.appendChild(tags);
@@ -851,15 +863,16 @@
   });
 
   /* ---------- ações ---------- */
-  const MUTE_TXT={ "8h":"Silenciar todos os grupos por 8 horas", "1sem":"Silenciar todos os grupos por 1 semana", "sempre":"Silenciar todos os grupos (sempre)", "reativar":"Reativar notificações de todos os grupos" };
+  const MUTE_TXT={ "8h":"Silenciar todos os grupos por 8 horas (menos VIP)", "1sem":"Silenciar todos os grupos por 1 semana (menos VIP)", "sempre":"Silenciar todos os grupos para sempre (menos VIP)", "reativar":"Reativar notificações de todos os grupos" };
   const MODELOS=[
     {k:"reuniao", nome:"Em reunião", txt:"Olá! Estou em reunião agora e não consigo responder. Retorno assim que possível. Se for urgente, me ligue."},
     {k:"visita", nome:"Visita às regionais", txt:"Olá! Estou em visita às operações, com acesso limitado ao WhatsApp. Respondo assim que possível."},
     {k:"descanso", nome:"Fora do horário", txt:"Olá! Estou fora do horário agora. Respondo no próximo dia útil."},
     {k:"ferias", nome:"Férias", txt:"Olá! Estou de férias e com acesso limitado ao WhatsApp. Respondo quando voltar."}
   ];
-  async function novaAcao(tipo,desc){
-    const a={tipo,descricao:desc,status:"pendente",pedidoEm:new Date().toISOString()};
+  async function novaAcao(tipo,desc,extra){
+    const vipsSom=S.vips.filter(v=>v.som!==false).map(v=>v.nome);
+    const a={tipo,descricao:desc,status:"pendente",pedidoEm:new Date().toISOString(),nuncaSilenciar:vipsSom,lerEMarcarLido:true,alertarMencoes:true,...(extra||{})};
     if(S.demo){ S.acoes.unshift({id:"a"+Date.now(),...a}); demoSave(); render(); return; }
     if(!S.db) return;
     try{ await S.db.collection("acoes").add(a); }catch(e){ aviso("Não consegui registrar a ação agora."); }
@@ -1067,8 +1080,9 @@
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="1.6";
+  const VERSAO="1.7";
   const VERSOES=[
+    {v:"1.7",data:"13/11/2026",itens:["Escolher quais grupos silenciar; VIP nunca é silenciado","Grupos silenciados continuam lidos: menções (@) e importantes ficam marcados com o nome do grupo","Modo produção: sem dados de exemplo; cada pessoa começa do zero com o próprio cadastro","VIP direto da agenda do celular","Todo botão muda de cor ao ser tocado e mostra “Salvo ✓”"]},
     {v:"1.6",data:"13/11/2026",itens:["Farol do dia (vermelho, amarelo, verde)","Toque em qualquer número ou etiqueta para ver o detalhe","Ícones profissionais no lugar dos emojis"]},
     {v:"1.5",data:"13/11/2026",itens:["Meu status com um toque: ocupado, em reunião, em trânsito, viajando, férias","Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
     {v:"1.4",data:"13/11/2026",itens:["Contatos VIP com alerta sonoro","Compartilhar por WhatsApp","Instalação guiada no iPhone e Android"]},
@@ -1188,6 +1202,9 @@
       const a=c.pend.filter(i=>i.categoria===dado); num(a.length,"pendentes nesta categoria");
       txt(k?(k.descricao||"")+(k.status==="aprovado"?" (critério aprovado por você)":" (critério ainda não aprovado)"):"Categoria definida pela leitura."); lista(a.sort(ordena),"importantes"); }
     if(tipo==="vip"){ tit="Contato VIP"; txt((dado||"Este contato")+" está na sua lista VIP: toda mensagem vira prioridade alta, fica no topo e toca o alerta sonoro. Para mudar, vá em Ajustes → Contatos VIP."); }
+    if(tipo==="mencao"){ tit="Menção a você"; txt("Alguém te marcou (@) no grupo "+(dado||"")+". Li e deixei a conversa como lida; a mensagem ficou aqui para você não perder. Abra o grupo no WhatsApp para responder."); }
+    if(tipo==="grupo"){ tit="Grupo · "+(dado||""); const g=S.grupos.find(x=>norm(x.nome)===norm(dado)); const a=c.pend.filter(i=>norm(i.grupo)===norm(dado));
+      num(a.length,"pendentes deste grupo"); txt(g&&g.silenciar?"Grupo silenciado: eu leio, marco como lido e só trago menções a você e assuntos importantes.":"Grupo com notificações normais."); lista(a,"importantes"); }
     if(tipo==="fav"){ tit="Favoritado no WhatsApp"; txt("Marquei esta mensagem com estrela no WhatsApp. Para ver lá: WhatsApp → Configurações → Mensagens favoritas."); }
     if(tipo==="hero"){ tit="Atualizações"; return hubDetDrill(); }
     $("drill-t").textContent=tit; $("drill").hidden=false;
@@ -1213,6 +1230,70 @@
     H.appendChild(el("span",null,st?("Status: "+st.nome):"Disponível"));
     H.appendChild(el("span",null,"v"+VERSAO));
   }
+
+
+  /* ---------- VIP direto da agenda do celular (Contact Picker) ---------- */
+  const temAgenda = ("contacts" in navigator) && ("select" in navigator.contacts);
+  $("vip-agenda").addEventListener("click",async()=>{
+    const A=$("vip-agenda-aviso");
+    if(!temAgenda){
+      A.style.display="block";
+      A.textContent = /iphone|ipad|ipod/i.test(navigator.userAgent)
+        ? "No iPhone, o Safari ainda não deixa apps da web abrirem a agenda. Digite o nome exatamente como aparece no seu WhatsApp, no campo abaixo."
+        : "Este navegador não abre a agenda. Abra o Peneira instalado no Chrome do Android, ou digite o nome abaixo.";
+      $("vip-nome").focus(); return;
+    }
+    try{
+      const sel=await navigator.contacts.select(["name","tel"],{multiple:true});
+      let n=0;
+      for(const c of sel){ const nome=(c.name&&c.name[0]||"").trim(); if(!nome) continue;
+        if(S.vips.some(v=>norm(v.nome)===norm(nome))) continue;
+        await salvaVip("add",{nome,tel:(c.tel&&c.tel[0])||"",tipo:"pessoa",som:true,ordem:S.vips.length+1+n}); n++; }
+      salvoOk($("vip-agenda"), n? "✓ "+n+" adicionado(s)" : "Nenhum novo");
+    }catch(e){}
+  });
+
+  /* ---------- escolher grupos para silenciar ---------- */
+  const vipGrupo = nome => S.vips.find(v=>norm(v.nome)===norm(nome));
+  async function salvaGrupo(op,v){
+    if(S.demo){ if(op==="add") S.grupos.push({id:"gr"+Date.now(),...v}); else { const i=S.grupos.findIndex(x=>x.id===v.id); if(i>=0) S.grupos[i]={...S.grupos[i],...v.patch}; } demoSave(); render(); renderGrupos(); return; }
+    if(!S.db) return;
+    try{ if(op==="add") await S.db.collection("grupos").add(v); else await S.db.doc("grupos/"+v.id).update(v.patch); }catch(e){ aviso("Não consegui salvar o grupo agora."); }
+  }
+  function renderGrupos(){
+    const L=$("gr-lista"); if(!L) return; L.textContent="";
+    const vipsG=S.vips.filter(v=>v.tipo==="grupo" && !S.grupos.some(g=>norm(g.nome)===norm(v.nome))).map(v=>({id:"vip-"+v.id,nome:v.nome,_soVip:true}));
+    const todos=S.grupos.concat(vipsG).sort((a,b)=>String(a.nome).localeCompare(String(b.nome)));
+    if(!todos.length){ L.appendChild(el("div","pn-empty","Ainda não li seus grupos. Depois da primeira leitura eles aparecem aqui. Você também pode adicionar pelo nome.")); return; }
+    todos.forEach(g=>{
+      const vip=vipGrupo(g.nome), travado=vip && vip.som!==false;
+      const r=el("div","pn-vip"); const t=el("div"); t.style.flex="1"; t.appendChild(el("b",null,g.nome));
+      t.appendChild(el("div","pn-meta", travado ? "VIP · nunca silenciado (desligue o som na lista VIP para permitir)" : (g.silenciar ? "Silenciado · lido e marcado como lido · @ e importantes vão para Importantes" : "Notificações normais")));
+      const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label","Silenciar "+g.nome);
+      tg.setAttribute("aria-checked", (!travado && g.silenciar) ? "true":"false"); if(travado){ tg.disabled=true; tg.style.opacity=".4"; }
+      tg.onclick=()=>{ if(!S.canWrite||travado) return; if(g._soVip) salvaGrupo("add",{nome:g.nome,silenciar:true,origem:"manual"}); else salvaGrupo("upd",{id:g.id,patch:{silenciar:!g.silenciar}}); };
+      r.append(t,tg); L.appendChild(r);
+    });
+  }
+  $("btn-grupos").addEventListener("click",()=>{ renderGrupos(); $("grupos-sheet").hidden=false; });
+  $("gr-x").addEventListener("click",()=>{ $("grupos-sheet").hidden=true; });
+  $("grupos-sheet").addEventListener("click",e=>{ if(e.target.id==="grupos-sheet") $("grupos-sheet").hidden=true; });
+  $("gr-form").addEventListener("submit",e=>{ e.preventDefault(); const n=$("gr-nome").value.trim(); if(!n||!S.canWrite) return;
+    if(S.grupos.some(g=>norm(g.nome)===norm(n))) return; salvaGrupo("add",{nome:n,silenciar:true,origem:"manual"}); $("gr-nome").value=""; });
+  $("gr-aplicar").addEventListener("click",()=>{
+    if(!S.canWrite) return;
+    const sil=S.grupos.filter(g=>g.silenciar && !(vipGrupo(g.nome)&&vipGrupo(g.nome).som!==false)).map(g=>g.nome);
+    const nao=S.grupos.filter(g=>!g.silenciar).map(g=>g.nome);
+    novaAcao("grupos:escolhidos", sil.length?("Silenciar "+sil.length+" grupo(s): "+sil.slice(0,4).join(", ")+(sil.length>4?"…":"")):"Reativar grupos escolhidos",{silenciar:sil,reativar:nao});
+    salvoOk($("gr-aplicar"),"✓ Na fila para a próxima leitura");
+  });
+  /* ---------- feedback de toque e "Salvo ✓" ---------- */
+  document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
+    b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
+  function salvoOk(b,txt){ if(!b) return; const old=b.dataset.txt||b.textContent; b.dataset.txt=old; b.classList.add("pn-ok"); b.textContent=txt||"✓ Salvo";
+    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove("pn-ok"); b.textContent=b.dataset.txt; },1600); }
+  document.addEventListener("submit",e=>{ const b=e.target.querySelector('button[type=submit]'); if(b && e.target.checkValidity()) setTimeout(()=>salvoOk(b, e.target.id==="onb-form"?"✓ Pronto":"✓ Salvo"),50); },true);
+  ["ra-salvar","h-salvar"].forEach(id=>{ const b=$(id); if(b) b.addEventListener("click",()=>setTimeout(()=>salvoOk(b),50)); });
   /* ---------- tema (preferência deste aparelho) ---------- */
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
   let tema="auto"; try{ tema=localStorage.getItem("peneira-tema")||"auto"; }catch(e){}
@@ -1430,16 +1511,17 @@
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.agenda=d.agenda||DEMO_AG(); S.vips=d.vips||[];
+      const d=demoLoad(); S.demo=true; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
       try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
-      S.meta={ultimaVarredura:new Date().toISOString(),conversasLidas:42,favoritadas:d.itens.filter(i=>i.favoritado).length};
-      aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); fluxo(); return;
+      S.meta=d.meta||null;
+      render(); fluxo(); return;
     }
     S.db=db;
     try{ const u=await window.claude.use("user"); const w=u&&u.can?await u.can("data.write"):null; if(w===false) S.canWrite=false; }catch(e){}
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.collection("grupos").onSnapshot(s=>{ S.grupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.collection("agenda").onSnapshot(s=>{ S.agenda=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/perfil").onSnapshot(s=>{ S.perfil=s.exists?s.data():null; S.perfilPronto=true; render(); fluxo(); }, ()=>{ S.perfilPronto=true; fluxo(); });
     db.collection("vips").onSnapshot(s=>{ S.vips=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);

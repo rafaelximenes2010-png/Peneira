@@ -26,7 +26,7 @@ Você aprova a lista de critérios no próprio app. Sugestões iniciais:
 - Guardar número de cartão, conta ou senha
 
 ## Versões
-- **Esta página (GitHub Pages):** modo demonstração, com exemplos fictícios. As aprovações ficam só no seu aparelho.
+- **App pelo site (GitHub Pages):** modo produção, cada pessoa faz o próprio cadastro; os dados ficam só no aparelho dela.
 - **Versão privada (Claude):** onde ficam os dados reais, visível só para o dono.
 
 ## Estrutura
