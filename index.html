@@ -266,7 +266,7 @@
 .pn-conn::before{content:"";width:8px;height:8px;border-radius:50%;background:#2fb36b;box-shadow:0 0 0 3px rgba(47,179,107,.25)}
 .pn-cal{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:10px 10px 12px}
 .pn-cal-top{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.pn-cal-top b{flex:1;font-size:16px;text-transform:capitalize}
+.pn-cal-top b{flex:1;font-size:16px}
 .pn-cal-top .pn-btn{padding:6px 11px}
 .pn-cal-sem,.pn-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
 .pn-cal-sem span{font-size:11px;font-weight:700;color:var(--ink-3);padding:4px 0}
@@ -284,6 +284,71 @@
 .pn-ev .h{font-size:12px;color:var(--ink-3);min-width:42px;font-variant-numeric:tabular-nums}
 .pn-ev.feito{opacity:.55} .pn-ev.feito b{text-decoration:line-through}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
+
+/* =========================================================
+   6. CAMADA PROFISSIONAL (estilo iOS / apps de mercado)
+   ========================================================= */
+html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
+.pn [hidden]{display:none!important}
+.pn{--font-text:var(--font-ui);overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
+  padding-top:0;padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
+.pn *{min-width:0}
+.pn[data-modo="dia"]{--bg:#f2f4f3;--surface:#ffffff;--surface-2:#eef2f0;--border:#e3e8e6;--shadow:0 1px 2px rgba(16,24,20,.05),0 4px 14px rgba(16,24,20,.05)}
+.pn[data-modo="noite"]{--bg:#000000;--surface:#1c1c1e;--surface-2:#2c2c2e;--border:#2f2f33;--ink:#f5f5f7;--ink-2:#d1d1d6;--ink-3:#8e8e93;
+  --accent:#34c38f;--accent-ink:#04140d;--accent-soft:rgba(52,195,143,.16);--hero-a:#0d3b31;--hero-b:#14614f;--shadow:none}
+/* barra superior translúcida */
+.pn-top{position:sticky;top:0;z-index:40;margin:0 calc(-16px - env(safe-area-inset-right)) 0 calc(-16px - env(safe-area-inset-left));
+  padding:calc(8px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 8px calc(16px + env(safe-area-inset-left));
+  background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:.5px solid color-mix(in srgb,var(--border) 70%,transparent);min-height:44px}
+.pn-brand svg{width:30px;height:30px;border-radius:8px}
+.pn-brand b{font-size:16px} .pn-brand small{font-size:11.5px}
+.pn-dn{box-shadow:none;border:0;background:var(--surface-2);width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
+#btn-hub{padding:0;font-size:16px}
+#dn-txt{display:none}
+.pn-voltar{border:0;background:none;box-shadow:none;color:var(--accent);font:500 17px var(--font-ui);padding:6px 0;margin:0}
+.pn-large{font:700 30px/1.15 var(--font-ui);letter-spacing:-.02em;margin:14px 2px 12px;color:var(--ink)}
+/* cartões e títulos */
+.pn-card,.pn-kpi,.pn-farol,.pn-cal{border:0;border-radius:14px;box-shadow:var(--shadow)}
+.pn[data-modo="noite"] .pn-card,.pn[data-modo="noite"] .pn-kpi,.pn[data-modo="noite"] .pn-farol,.pn[data-modo="noite"] .pn-cal{border:0}
+.pn-h2{font-size:12.5px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-3);margin:22px 4px 8px}
+.pn-h2::before{display:none}
+.pn-meta{color:var(--ink-3)}
+.pn-sum{font-family:var(--font-ui);font-size:15px;line-height:1.4}
+/* hero estilo saudação */
+.pn-hero{border-radius:18px;padding:18px;box-shadow:none;background:linear-gradient(135deg,var(--hero-a),var(--hero-b))}
+.pn-hero h1{font:700 24px/1.2 var(--font-ui);letter-spacing:-.02em}
+.pn-hero p{font-size:13.5px;opacity:.8}
+.pn-hero-mark{width:56px;height:56px}
+.pn-hero .pn-hero-l span{background:rgba(255,255,255,.16);border:0;font-weight:500}
+/* botões e campos: alvo de toque de 44px e sem zoom no iPhone */
+.pn-btn{min-height:44px;border-radius:12px;font-weight:600;font-size:15px;padding:10px 16px}
+.pn-btn.pri{box-shadow:none}
+.pn-chip{min-height:36px;border-radius:18px;font-weight:500;padding:7px 14px;border:0;background:var(--surface-2)}
+.pn-chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.pn input,.pn textarea,.pn select{font-size:16px!important;min-height:44px;border-radius:12px!important;border:1px solid var(--border)!important;background:var(--surface-2)!important;color:var(--ink)}
+.pn input:focus,.pn textarea:focus,.pn select:focus{outline:2px solid var(--accent);outline-offset:0}
+.pn input[type=checkbox]{min-height:auto}
+.pn-tg{width:51px;height:31px;border-radius:16px} .pn-tg::after{width:27px;height:27px;top:2px;left:2px} .pn-tg[aria-checked="true"]::after{left:22px}
+.pn-tg[aria-checked="true"]{background:#34c759}
+/* barra de abas iOS */
+.pn-bottom{background:color-mix(in srgb,var(--surface) 80%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--border)}
+.pn-bottom .pn-nav-btn{background:none!important;font-size:10.5px;font-weight:500;color:var(--ink-3)}
+.pn-bottom .pn-nav-btn[aria-current="page"]{color:var(--accent);font-weight:600}
+.pn-bottom .pn-nav-btn svg{width:25px;height:25px}
+/* folhas (sheets) */
+.pn-sheet{-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.pn-sheet-card{border-radius:14px 14px 0 0}
+.pn-sheet-card::before{content:"";display:block;width:36px;height:5px;border-radius:3px;background:var(--border);margin:-8px auto 10px}
+/* KPIs e Farol mais limpos */
+.pn-kpi::before{width:3px}
+.pn-kpi b{font-weight:700;letter-spacing:-.02em}
+.pn-farol-t b{font-size:12px;font-weight:600;letter-spacing:.02em}
+.pn-luz span{letter-spacing:.02em}
+.pn-cal-d.sel{border-radius:50%;width:38px;height:38px;margin:auto}
+.pn-cal-d.hoje:not(.sel){box-shadow:none;color:var(--accent)}
+.pn-cal-top .pn-btn{min-height:34px;padding:4px 12px;border-radius:17px;background:var(--surface-2);border:0}
+.pn-foot{opacity:.7}
 </style>
 </head>
 <body>
@@ -327,7 +392,8 @@
   </svg>
 
   <header class="pn-top" id="topo">
-    <div class="pn-brand">
+    <button class="pn-voltar" type="button" id="btn-voltar" hidden>‹ Voltar</button>
+    <div class="pn-brand" id="pn-brand">
       <svg aria-hidden="true"><use href="#pnMark"/></svg>
       <div><b>Peneira</b><small>Central do WhatsApp</small></div>
     </div>
@@ -338,7 +404,7 @@
     </div>
   </header>
 
-  <button class="pn-voltar" type="button" id="btn-voltar" hidden>← Voltar</button>
+  <h1 class="pn-large" id="pn-titulo">Início</h1>
   <div class="pn-banner" id="aviso"></div>
 
   <!-- ========== INÍCIO ========== -->
@@ -346,9 +412,8 @@
   <section class="pn-view" id="inicio">
     <div class="pn-hero" id="hero">
       <div>
-        <h1>Peneira</h1>
+        <h1 id="hero-tit">Olá</h1>
         <p id="ultima">Aguardando a primeira varredura do seu WhatsApp.</p>
-        <div class="pn-quote">Passa tudo pela peneira. Fica só o que importa.</div>
         <div class="pn-hero-l" id="hero-l"></div>
       </div>
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
@@ -407,7 +472,7 @@
 
   <!-- ========== AGENDA ========== -->
   <section class="pn-view" id="agenda">
-    <div class="pn-h2" style="margin-top:4px">Agenda · para não esquecer</div>
+    <div class="pn-h2" style="margin-top:4px">Para não esquecer</div>
     <div class="pn-cal" id="cal">
       <div class="pn-cal-top">
         <button class="pn-btn" type="button" id="cal-prev" aria-label="Mês anterior">‹</button>
@@ -810,6 +875,9 @@
     if(push!==false){ try{ if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); }catch(e){} }
     window.scrollTo(0,0);
     const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
+    const br=$("pn-brand"); if(br) br.style.display = (id==="inicio") ? "" : "none";
+    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
+    const tt=$("pn-titulo"); if(tt) tt.textContent=TIT[id]||"Peneira";
   }
   $("btn-voltar").addEventListener("click",()=>{ let prev=pilha.pop(); while(prev && prev===((document.querySelector(".pn-view.on")||{}).id)) prev=pilha.pop(); go(prev||"inicio",true,true); });
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
@@ -1165,8 +1233,9 @@
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.1";
+  const VERSAO="2.2";
   const VERSOES=[
+    {v:"2.2",data:"13/11/2026",itens:["Visual profissional no padrão dos apps da Apple: barra superior translúcida, títulos grandes, abas e cartões limpos","Saudação no topo (Bom dia/Boa tarde)","Correção: tela não corta mais nas laterais e o fundo acompanha o tema"]},
     {v:"2.1",data:"13/11/2026",itens:["Instalar no notebook (Chrome, Edge e Safari do Mac) com passo a passo","QR code para instalar no celular a partir do notebook"]},
     {v:"2.0",data:"13/11/2026",itens:["Agenda no modelo Outlook: calendário do mês, dia selecionado, notas e resposta pronta para mandar pelo WhatsApp","Lembrete de bom dia a partir das 5h nos grupos que você escolher"]},
     {v:"1.9",data:"13/11/2026",itens:["Botão Varrer meu WhatsApp (ativar/desativar) com o passo a passo da conexão com o WhatsApp Business","Regra: marca como lido tudo, menos VIP, critérios aprovados e menções (@)","Lista VIP ampliada: equipe, chefia e família"]},
@@ -1317,7 +1386,7 @@
     $("farol-data").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"short"});
     const H=$("hero-l"); H.textContent="";
     const nome=S.perfil&&(S.perfil.apelido||S.perfil.nome);
-    if(nome) H.appendChild(el("span",null,"Olá, "+nome.split(" ")[0]));
+    const hh=new Date().getHours(); $("hero-tit").textContent=(hh<12?"Bom dia":hh<18?"Boa tarde":"Boa noite")+(nome?", "+nome.split(" ")[0]:"");
     const st=S.ausencia&&S.ausencia.statusAtivo&&STATUS.find(x=>x.k===S.ausencia.statusAtivo);
     H.appendChild(el("span",null,st?("Status: "+st.nome):"Disponível"));
     H.appendChild(el("span",null,"v"+VERSAO));
@@ -1460,7 +1529,7 @@
   function evDoDia(d){ return S.agenda.filter(a=>{ const q=new Date(a.quando); return !isNaN(q)&&mesmoDia(q,d); }).sort((a,b)=>String(a.quando).localeCompare(String(b.quando))); }
   function renderCal(){
     const G=$("cal-grid"); if(!G) return; G.textContent="";
-    $("cal-mes").textContent=calRef.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+    { const t=calRef.toLocaleDateString("pt-BR",{month:"long",year:"numeric"}); $("cal-mes").textContent=t.charAt(0).toUpperCase()+t.slice(1); }
     const ini=new Date(calRef); ini.setDate(1-ini.getDay()); const hoje=new Date();
     for(let k=0;k<42;k++){ const d=new Date(ini); d.setDate(ini.getDate()+k);
       const b=el("button","pn-cal-d"+(d.getMonth()!==calRef.getMonth()?" fora":"")+(mesmoDia(d,hoje)?" hoje":"")+(mesmoDia(d,calSel)?" sel":"")); b.type="button";
@@ -1551,6 +1620,8 @@
   if(window.matchMedia){ try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>aplicaTema()); }catch(e){} }
   function aplicaTema(){ const r=$("app"); if(tema==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",tema);
     r.setAttribute("data-modo", escuroAgora()?"noite":"dia"); r.setAttribute("data-paleta",paleta);
+    requestAnimationFrame(()=>{ const bg=getComputedStyle(r).getPropertyValue("--bg").trim(); document.documentElement.style.background=bg; document.body.style.background=bg;
+      const m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content",bg); });
     document.querySelectorAll("#paletas button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===paleta?"true":"false"));
     const esc=escuroAgora(); $("dn-ico").textContent=""; $("dn-ico").appendChild(ico(esc?"sun":"moon")); $("dn-txt").textContent = esc ? "Dia" : "Noite";
     document.querySelectorAll("#temas .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===tema?"true":"false")); }
