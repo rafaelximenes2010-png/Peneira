@@ -148,6 +148,16 @@
 .pn-nums span{background:var(--surface-2);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--ink-2)}
 .pn-dn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
 .pn-dn span:first-child{font-size:16px;line-height:1}
+/* Paletas do modo dia */
+.pn[data-modo="dia"][data-paleta="areia"]{--bg:#fbf7f0;--surface:#ffffff;--surface-2:#f4eee3;--border:#e6dccb;--ink:#1f2336;--ink-2:#434960;--ink-3:#5f6479;--accent:#2b3a67;--accent-soft:#e3e8f6;--gold:#d9a23a;--gold-soft:#fbefd2;--gold-text:#7a560f;--hero-a:#2b3a67;--hero-b:#4a5f9e}
+.pn[data-modo="dia"][data-paleta="branco"]{--bg:#ffffff;--surface:#ffffff;--surface-2:#f3f4f6;--border:#e5e7eb;--ink:#111827;--ink-2:#374151;--ink-3:#6b7280;--accent:#1e3a8a;--accent-soft:#e0e7ff;--gold:#f59e0b;--gold-soft:#fef3c7;--gold-text:#92400e;--hero-a:#1e3a8a;--hero-b:#3b5bdb}
+.pn[data-modo="dia"][data-paleta="ceu"]{--bg:#eef5ff;--surface:#ffffff;--surface-2:#e3eefc;--border:#cfe0f7;--ink:#10223f;--ink-2:#34496b;--ink-3:#5b6f8f;--accent:#1d63d8;--accent-soft:#dbe8fd;--gold:#f2a93b;--gold-soft:#fdf0d9;--gold-text:#8a5a0a;--hero-a:#1d63d8;--hero-b:#4f9cf9}
+.pn[data-modo="dia"][data-paleta="menta"]{--bg:#f0f8f5;--surface:#ffffff;--surface-2:#e2f1eb;--border:#cfe5dc;--ink:#12302a;--ink-2:#355249;--ink-3:#5b766d;--accent:#0f766e;--accent-soft:#d5efe9;--gold:#e0a93b;--gold-soft:#fbefd2;--gold-text:#7a560f;--hero-a:#0f5f58;--hero-b:#16958a}
+.pn[data-modo="dia"][data-paleta="sol"]{--bg:#fff6ef;--surface:#ffffff;--surface-2:#fdebdc;--border:#f4d9c4;--ink:#2a1a14;--ink-2:#5a3d31;--ink-3:#87695c;--accent:#c2410c;--accent-soft:#fde4d4;--gold:#e0a93b;--gold-soft:#fbefd2;--gold-text:#7a4a0f;--hero-a:#1f2a4d;--hero-b:#c2410c}
+.pn-pal{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.pn-pal button{border:2px solid var(--border);border-radius:14px;padding:6px 4px 8px;background:var(--surface);cursor:pointer;color:var(--ink);font-size:11px;font-weight:600}
+.pn-pal button[aria-pressed="true"]{border-color:var(--accent)}
+.pn-pal i{display:block;height:34px;border-radius:9px;margin-bottom:5px}
 /* =========================================================
    5. TELA DE ENTRADA (peneira com letras caindo)
    ========================================================= */
@@ -155,7 +165,7 @@
   background:radial-gradient(120% 90% at 50% 25%,#2a3b6e 0%,#16213f 55%,#0b1226 100%);color:#fff;transition:opacity .5s ease}
 .pn-splash.sai{opacity:0;pointer-events:none}
 .pn-sp-stage{position:relative;width:min(92vw,420px);height:min(86vh,560px)}
-.pn-sp-sieve{position:absolute;left:50%;top:6%;width:62%;transform:translateX(-50%);animation:pnShake .28s ease-in-out 6 alternate}
+.pn-sp-sieve{position:absolute;left:50%;top:6%;width:62%;transform:translateX(-50%)}
 .pn-sp-sieve svg{width:100%;height:auto;display:block;overflow:visible}
 @keyframes pnShake{from{transform:translateX(-50%) rotate(-4deg)}to{transform:translateX(-50%) rotate(4deg)}}
 .pn-sp-l{position:absolute;left:0;top:0;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:700;color:#f8de8f;
@@ -166,6 +176,14 @@
 .pn-sp-tag.on{opacity:.9}
 .pn-sp-pular{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(255,255,255,.1);
   border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:7px 16px;font:500 13px var(--font-ui);cursor:pointer}
+.pn-sheet{position:fixed;inset:0;z-index:60;background:rgba(10,15,30,.45);display:flex;align-items:flex-end;justify-content:center}
+.pn-sheet[hidden]{display:none}
+.pn-sheet-card{background:var(--surface);color:var(--ink);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.25);animation:pnUp .3s ease-out}
+@keyframes pnUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.pn-steps b.k{display:inline-block;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:0 6px}
+.pn-seta{position:fixed;font-size:34px;color:var(--gold);bottom:calc(6px + env(safe-area-inset-bottom));right:22px;animation:pnBob 1s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+.pn-seta.centro{right:auto;left:50%;transform:translateX(-50%)}
+@keyframes pnBob{0%,100%{translate:0 0}50%{translate:0 8px}}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -268,19 +286,15 @@
   <section class="pn-view" id="ajustes">
     <div id="instalar-box" hidden>
       <div class="pn-h2" style="margin-top:4px">Instalar no celular</div>
-      <div class="pn-card">
-        <button class="pn-btn pri" type="button" id="btn-instalar" hidden style="width:100%;margin-bottom:10px">📲 Instalar o Peneira</button>
-        <div id="inst-ios"><b>iPhone (Safari)</b>
-          <ol class="pn-list" style="margin-top:6px"><li>Toque em <b>Compartilhar</b> (quadrado com seta para cima).</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li><li>Toque em <b>Adicionar</b>. O ícone do Peneira aparece na tela.</li></ol></div>
-        <div id="inst-android" style="margin-top:10px"><b>Android (Chrome)</b>
-          <ol class="pn-list" style="margin-top:6px"><li>Toque no menu <b>⋮</b> no canto superior.</li><li>Escolha <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</li><li>Confirme em <b>Instalar</b>.</li></ol></div>
-      </div>
+      <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">📲 Ver como instalar</button></div>
     </div>
 
     <div class="pn-h2">Aparência</div>
     <div class="pn-card">
       <div class="pn-meta" style="margin-bottom:8px">Tema</div>
       <div class="pn-chips" id="temas" style="margin:0"></div>
+      <div class="pn-meta" style="margin:14px 0 8px">Cores do modo dia</div>
+      <div class="pn-pal" id="paletas"></div>
     </div>
 
     <div class="pn-h2">Notificações no celular</div>
@@ -381,6 +395,20 @@
   </main>
 
   <p class="pn-foot">Peneira · projeto pessoal de Rafael Ximenes</p>
+</div>
+
+<div class="pn-sheet" id="inst-sheet" hidden role="dialog" aria-labelledby="inst-tit">
+  <div class="pn-sheet-card">
+    <div class="pn-row" style="align-items:center;gap:12px">
+      <svg style="width:52px;height:52px;border-radius:13px;flex:none" aria-hidden="true"><use href="#pnMark"/></svg>
+      <div style="flex:1"><b id="inst-tit" style="font-size:17px">Instale o Peneira</b><div class="pn-meta">Abre em tela cheia, como um app, direto da tela de início.</div></div>
+    </div>
+    <div id="inst-aviso" class="pn-banner" style="display:none;margin:12px 0 0"></div>
+    <ol class="pn-steps" id="inst-passos" style="margin-top:14px"></ol>
+    <button class="pn-btn pri" type="button" id="inst-nativo" hidden style="width:100%;padding:11px;font-size:15px;margin-top:4px">📲 Instalar agora</button>
+    <button class="pn-btn" type="button" id="inst-fechar" style="width:100%;margin-top:8px">Agora não</button>
+  </div>
+  <div class="pn-seta" id="inst-seta" hidden>⬇︎</div>
 </div>
 
 <nav class="pn-bottom" id="nav-baixo" aria-label="Seções"></nav>
@@ -611,7 +639,17 @@
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
   let tema="auto"; try{ tema=localStorage.getItem("peneira-tema")||"auto"; }catch(e){}
   const escuroAgora = () => tema==="noite" || (tema==="auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+  const PALETAS={"areia": ["Areia", "#2b3a67", "#4a5f9e", "#fbf7f0"], "branco": ["Branco", "#1e3a8a", "#3b5bdb", "#ffffff"], "ceu": ["Céu", "#1d63d8", "#4f9cf9", "#eef5ff"], "menta": ["Menta", "#0f5f58", "#16958a", "#f0f8f5"], "sol": ["Pôr do sol", "#1f2a4d", "#c2410c", "#fff6ef"]};
+  let paleta="areia"; try{ paleta=localStorage.getItem("peneira-paleta")||"areia"; }catch(e){}
+  if(!PALETAS[paleta]) paleta="areia";
+  Object.entries(PALETAS).forEach(([k,[nome,a,b,bg]])=>{ const bt=el("button"); bt.type="button"; bt.dataset.p=k;
+    const sw=el("i"); sw.style.background=`linear-gradient(135deg,${a} 0 55%,${b} 55% 80%,${bg} 80%)`; bt.appendChild(sw); bt.appendChild(document.createTextNode(nome));
+    bt.onclick=()=>{ paleta=k; try{localStorage.setItem("peneira-paleta",k);}catch(e){} if(escuroAgora()){ tema="dia"; try{localStorage.setItem("peneira-tema","dia");}catch(e){} } aplicaTema(); };
+    $("paletas").appendChild(bt); });
+  if(window.matchMedia){ try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>aplicaTema()); }catch(e){} }
   function aplicaTema(){ const r=$("app"); if(tema==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",tema);
+    r.setAttribute("data-modo", escuroAgora()?"noite":"dia"); r.setAttribute("data-paleta",paleta);
+    document.querySelectorAll("#paletas button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===paleta?"true":"false"));
     const esc=escuroAgora(); $("dn-ico").textContent = esc ? "☀️" : "🌙"; $("dn-txt").textContent = esc ? "Dia" : "Noite";
     document.querySelectorAll("#temas .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===tema?"true":"false")); }
   TEMAS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.t=k; b.onclick=()=>{ tema=k; try{localStorage.setItem("peneira-tema",k);}catch(e){} aplicaTema(); }; $("temas").appendChild(b); });
@@ -677,15 +715,54 @@
     const instalado = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
     if(!fora || instalado) return;
     $("instalar-box").hidden=false;
-    const ua=navigator.userAgent||"", ios=/iphone|ipad|ipod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1), and=/android/i.test(ua);
-    if(ios) $("inst-android").hidden=true; if(and) $("inst-ios").hidden=true;
+    const ua=navigator.userAgent||"";
+    const ios=/iphone|ipad|ipod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+    const and=/android/i.test(ua);
+    const embutido=/FBAN|FBAV|Instagram|WhatsApp|Line\/|; wv\)|GSA\//i.test(ua);
+    const chromeIOS=/CriOS/i.test(ua), firefoxIOS=/FxiOS/i.test(ua);
     let evt=null;
-    window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); evt=e; $("btn-instalar").hidden=false; });
-    $("btn-instalar").addEventListener("click",async()=>{ if(!evt) return; evt.prompt(); try{ await evt.userChoice; }catch(e){} evt=null; $("btn-instalar").hidden=true; });
-    window.addEventListener("appinstalled",()=>{ $("instalar-box").hidden=true; });
+    const P=$("inst-passos"), AV=$("inst-aviso"), SETA=$("inst-seta");
+    function passo(html){ const li=document.createElement("li"); const sp=document.createElement("span"); sp.innerHTML=html; li.appendChild(sp); P.appendChild(li); }
+    function monta(){
+      P.textContent=""; AV.style.display="none"; SETA.hidden=true; SETA.classList.remove("centro");
+      if(embutido){
+        AV.textContent="Você abriu o link dentro de outro app (WhatsApp, Instagram…). Para instalar, abra no navegador.";
+        AV.style.display="block";
+        passo(ios?'Toque em <b class="k">•••</b> ou no ícone de compartilhar e escolha <b>Abrir no Safari</b>.':'Toque em <b class="k">⋮</b> e escolha <b>Abrir no Chrome</b>.');
+        passo('Lá, abra estas instruções de novo em <b>Ajustes → Instalar</b>.');
+        return;
+      }
+      if(ios){
+        if(chromeIOS||firefoxIOS){
+          passo('Toque no ícone de <b>compartilhar</b> <b class="k">⬆︎</b> na barra de endereço.');
+        } else {
+          passo('Toque em <b class="k">•••</b> no canto de baixo e depois em <b>Compartilhar</b> <b class="k">⬆︎</b>.<br><span class="pn-meta">Em iPhones mais antigos, o botão ⬆︎ fica no meio da barra de baixo.</span>');
+          SETA.hidden=false;
+        }
+        passo('Role a lista e toque em <b>Adicionar à Tela de Início</b>.');
+        passo('Deixe <b>Abrir como App Web</b> ligado e toque em <b>Adicionar</b>.');
+        passo('Pronto: abra o Peneira pelo ícone na tela de início.');
+        return;
+      }
+      if(evt){ $("inst-nativo").hidden=false; passo('Toque em <b>Instalar agora</b> e confirme.'); passo('O ícone do Peneira aparece na tela inicial.'); return; }
+      if(and){ passo('Toque em <b class="k">⋮</b> no canto de cima do Chrome.'); passo('Escolha <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).'); passo('Confirme em <b>Instalar</b>.'); return; }
+      passo('No computador, use o ícone de instalar <b class="k">⊕</b> na barra de endereço do Chrome ou Edge.');
+      passo('Ou abra este link no celular e siga as instruções que aparecerem.');
+    }
+    function abre(){ monta(); $("inst-sheet").hidden=false; }
+    function fecha(lembrar){ $("inst-sheet").hidden=true; SETA.hidden=true; if(lembrar){ try{ localStorage.setItem("peneira-inst-adiado", String(Date.now())); }catch(e){} } }
+    $("btn-ver-inst").addEventListener("click",abre);
+    $("inst-fechar").addEventListener("click",()=>fecha(true));
+    $("inst-sheet").addEventListener("click",e=>{ if(e.target.id==="inst-sheet") fecha(true); });
+    window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); evt=e; if(!$("inst-sheet").hidden) monta(); });
+    $("inst-nativo").addEventListener("click",async()=>{ if(!evt) return; evt.prompt(); try{ await evt.userChoice; }catch(e){} evt=null; fecha(false); });
+    window.addEventListener("appinstalled",()=>{ fecha(false); $("instalar-box").hidden=true; });
+    // mostra sozinho depois da entrada, se não foi adiado nos últimos 3 dias e é celular
+    let adiado=0; try{ adiado=+localStorage.getItem("peneira-inst-adiado")||0; }catch(e){}
+    if((ios||and) && Date.now()-adiado > 3*86400000) setTimeout(abre, 4800);
   })();
 
-  /* ---------- tela de entrada ---------- */
+  /* ---------- tela de entrada: letras caem na peneira, ela sacode e o nome passa ---------- */
   (function(){
     const sp=$("splash"), st=$("sp-stage");
     let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
@@ -693,34 +770,44 @@
     function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>sp.remove(),600); }
     $("sp-pular").addEventListener("click",fecha); sp.addEventListener("click",fecha);
     if(visto || !st.animate){ sp.remove(); return; }
-    const W=st.clientWidth, H=st.clientHeight;
-    const sx=W*.5, sy=H*.06 + W*.62*0.5;            // centro da peneira
-    const nome="PENEIRA", fs=Math.min(W/6.2,64), gap=fs*.78, y0=H*.6;
-    const x0=W/2 - gap*(nome.length-1)/2;
-    const LIX="ABCDEFGHJKLMOQSTUVWXZ@#?!";
-    // letras que ficam "sacudindo" dentro da peneira e somem (o que não importa)
-    for(let i=0;i<36;i++){
+    const W=st.clientWidth, H=st.clientHeight, k=calmo?.35:1;
+    const sx=W*.5, sy=H*.06 + W*.62*0.55;
+    const nome="PENEIRA", fs=Math.min(W/6.2,64), gap=fs*.78, y0=H*.6, x0=W/2 - gap*(nome.length-1)/2;
+    const LIX="ABCDEFGHJKLMOQSTUVWXZ";
+    const T_SACODE=1150*k, T_PASSA=2050*k;
+    const peneira=st.querySelector(".pn-sp-sieve");
+    setTimeout(()=>peneira.animate([{transform:"translateX(-50%) rotate(0)"},{transform:"translateX(-52%) rotate(-5deg)"},{transform:"translateX(-48%) rotate(5deg)"},{transform:"translateX(-52%) rotate(-4deg)"},{transform:"translateX(-48%) rotate(4deg)"},{transform:"translateX(-50%) rotate(0)"}],{duration:900*k,iterations:1,easing:"ease-in-out"}), T_SACODE);
+    function cai(l,x,y,atraso,rot){ // cai de cima para dentro da peneira
+      return l.animate([{transform:`translate(${x}px,${-fs*1.5}px) rotate(${rot}deg)`,opacity:0},{transform:`translate(${x}px,${y-fs*.15}px) rotate(${rot/2}deg)`,opacity:1,offset:.8},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`,opacity:1}],
+        {duration:750*k,delay:atraso*k,fill:"forwards",easing:"cubic-bezier(.5,0,.8,.6)"});
+    }
+    function chacoalha(l,x,y,rot){ // treme junto com a peneira
+      setTimeout(()=>l.animate([{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`},{transform:`translate(${x-6}px,${y-5}px) rotate(${rot/3-15}deg)`},{transform:`translate(${x+6}px,${y-3}px) rotate(${rot/3+15}deg)`},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
+    }
+    // o que não importa: cai na peneira, sacode e fica (some)
+    for(let i=0;i<34;i++){
       const l=el("span","pn-sp-l junk",LIX[Math.floor(Math.random()*LIX.length)]);
       l.style.fontSize=(fs*.42)+"px"; st.appendChild(l);
-      const x=sx+(Math.random()-.5)*W*.5, y=sy-fs*.5+(Math.random()-.5)*fs*.45;
-      l.animate([{transform:`translate(${x}px,${y-60}px)`,opacity:0},{transform:`translate(${x}px,${y}px)`,opacity:.9,offset:.25},
-        {transform:`translate(${x+(Math.random()-.5)*14}px,${y-6}px) rotate(${(Math.random()-.5)*50}deg)`,opacity:.8,offset:.7},
-        {transform:`translate(${x}px,${y-30}px)`,opacity:0}],{duration:calmo?600:2800,delay:Math.random()*300,fill:"forwards",easing:"ease-out"});
+      const x=sx+(Math.random()-.5)*W*.48 - fs*.15, y=sy-fs*.55+(Math.random()-.5)*fs*.4, rot=(Math.random()-.5)*80;
+      cai(l,x,y,Math.random()*700,rot); chacoalha(l,x,y,rot);
+      setTimeout(()=>l.animate([{opacity:1},{opacity:0,transform:`translate(${x}px,${y-fs*.2}px) scale(.6)`}],{duration:700*k,fill:"forwards"}), T_PASSA+300*k);
     }
-    // as letras do nome passam pela peneira e se encaixam
+    // o que importa: cai na peneira, sacode e passa pela malha formando o nome
     nome.split("").forEach((c,i)=>{
-      const l=el("span","pn-sp-l",c); l.style.fontSize=fs+"px"; l.style.width=gap+"px"; l.style.textAlign="center"; st.appendChild(l);
-      const ix=sx+(Math.random()-.5)*W*.3 - gap/2, iy=sy-fs*.6, tx=x0+i*gap - gap/2, ty=y0;
-      l.style.opacity="0";
-      l.animate([{transform:`translate(${ix}px,${iy}px) scale(.45) rotate(${(Math.random()-.5)*60}deg)`,opacity:0},
-        {transform:`translate(${ix}px,${iy+fs*.5}px) scale(.55)`,opacity:1,offset:.18},
-        {transform:`translate(${tx}px,${ty+fs*.12}px) scale(1.04)`,opacity:1,offset:.78},
-        {transform:`translate(${tx}px,${ty-fs*.08}px) scale(.98)`,opacity:1,offset:.9},
-        {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],
-        {duration:calmo?400:1150,delay:calmo?0:900+i*170,fill:"forwards",easing:"cubic-bezier(.3,.1,.4,1)"});
+      const l=el("span","pn-sp-l",c); l.style.fontSize=(fs)+"px"; l.style.width=gap+"px"; l.style.textAlign="center"; l.style.opacity="0"; st.appendChild(l);
+      const ix=sx+(Math.random()-.5)*W*.32 - gap/2, iy=sy-fs*.75, rot=(Math.random()-.5)*70, tx=x0+i*gap-gap/2, ty=y0;
+      const a=l.animate([{transform:`translate(${ix}px,${-fs*1.5}px) rotate(${rot}deg) scale(.55)`,opacity:0},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1}],
+        {duration:750*k,delay:(150+Math.random()*550)*k,fill:"forwards",easing:"cubic-bezier(.5,0,.8,.6)"});
+      setTimeout(()=>l.animate([{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`},{transform:`translate(${ix-5}px,${iy-6}px) rotate(${rot/3-12}deg) scale(.55)`},{transform:`translate(${ix+5}px,${iy-3}px) rotate(${rot/3+12}deg) scale(.55)`},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
+      setTimeout(()=>l.animate([
+        {transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1},
+        {transform:`translate(${ix}px,${sy+fs*.1}px) rotate(${rot/4}deg) scale(.5)`,opacity:1,offset:.25},
+        {transform:`translate(${tx}px,${ty+fs*.12}px) rotate(0deg) scale(1.05)`,opacity:1,offset:.8},
+        {transform:`translate(${tx}px,${ty-fs*.06}px) scale(.98)`,opacity:1,offset:.9},
+        {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],{duration:1050*k,fill:"forwards",easing:"cubic-bezier(.35,.05,.4,1)"}), T_PASSA+i*150*k);
     });
-    setTimeout(()=>$("sp-tag").classList.add("on"), calmo?400:2400);
-    setTimeout(fecha, calmo?1400:3900);
+    setTimeout(()=>$("sp-tag").classList.add("on"), T_PASSA+1900*k);
+    setTimeout(fecha, T_PASSA+3200*k);
   })();
 
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
