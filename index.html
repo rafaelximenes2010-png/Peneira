@@ -102,7 +102,7 @@
 .pn-kpi .k-s{font-size:11.5px;color:var(--ink-3)}
 .pn-kpi.alta b{color:var(--coral)} .pn-kpi.prazo b{color:var(--gold-text)} .pn-kpi.ag b{color:var(--sky)}
 .pn-farol{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
-.pn-farol-t{flex-basis:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border)}
+.pn-farol-t{cursor:pointer;flex-basis:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border)}
 .pn-farol-t b{font-size:12px;letter-spacing:.07em;text-transform:uppercase}
 .pn-farol-t span{font-size:11px;color:var(--ink-3)}
 .pn-luz{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 8px;border:0;background:none;font:inherit;color:var(--ink);cursor:pointer;border-right:1px solid var(--border)}
@@ -119,6 +119,8 @@
 .pn-tag{cursor:pointer;display:inline-flex;align-items:center;gap:4px}
 .pn-chip{display:inline-flex;align-items:center;gap:6px}
 .pn-h2{display:flex;align-items:center;gap:8px}
+.pn-h2{cursor:pointer}
+.pn-h2 .pn-i{margin-left:auto;opacity:.55;font-size:13px}
 .pn-h2::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--accent)}
 .pn-hero{cursor:pointer}
 .pn-hero .pn-hero-l{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
@@ -212,9 +214,9 @@
 .pn-sp-tag.on{opacity:.9}
 .pn-sp-pular{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(255,255,255,.1);
   border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:7px 16px;font:500 13px var(--font-ui);cursor:pointer}
-.pn-sheet{position:fixed;inset:0;z-index:60;background:rgba(10,15,30,.45);display:flex;align-items:flex-end;justify-content:center}
+.pn-sheet{overscroll-behavior:contain;touch-action:pan-y;position:fixed;inset:0;z-index:60;background:rgba(10,15,30,.45);display:flex;align-items:flex-end;justify-content:center}
 .pn-sheet[hidden]{display:none}
-.pn-sheet-card{background:var(--surface);color:var(--ink);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.25);animation:pnUp .3s ease-out}
+.pn-sheet-card{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--surface);color:var(--ink);width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.25);animation:pnUp .3s ease-out}
 @keyframes pnUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 .pn-steps b.k{display:inline-block;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:0 6px}
 .pn-seta{position:fixed;font-size:34px;color:var(--gold);bottom:calc(6px + env(safe-area-inset-bottom));right:22px;animation:pnBob 1s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,.4)}
@@ -251,6 +253,8 @@
 .pn .pn-btn.pri.pn-press{box-shadow:0 0 0 4px var(--accent-soft)}
 .pn .pn-ok{background:#2fb36b!important;border-color:#2fb36b!important;color:#fff!important}
 .pn .pn-nav-btn.pn-press{background:var(--accent-soft)}
+.pn-voltar{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--accent);border-radius:999px;padding:8px 14px;font:600 14px var(--font-ui);cursor:pointer;margin:0 0 12px;box-shadow:var(--shadow)}
+.pn-voltar[hidden]{display:none}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -287,10 +291,10 @@
   <!-- Marca (peneira) reutilizada no topo e no hero -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="pnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33487f"/><stop offset="1" stop-color="#16213f"/></linearGradient>
+      <linearGradient id="pnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9be7c6"/><stop offset="1" stop-color="#4cc398"/></linearGradient>
       <clipPath id="pnClip"><circle cx="32" cy="34" r="17"/></clipPath>
-      <linearGradient id="pn7n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33487f"/><stop offset="1" stop-color="#16213f"/></linearGradient><linearGradient id="pn7g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c8922f"/><stop offset=".5" stop-color="#f3c75c"/><stop offset="1" stop-color="#c8922f"/></linearGradient>
-      <symbol id="pnMark" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="url(#pn7n)"/><path d="M86 170 Q256 110 426 170 L410 240 Q256 300 102 240Z" fill="#1d2a52"/><clipPath id="pn7c"><circle cx="256" cy="205" r="150"/></clipPath><g transform="scale(1 .3) translate(0 478)" clip-path="url(#pn7c)" stroke="#fff" stroke-opacity="0.55" stroke-width="8"><path d="M106 -55h300M-4 55v300M106 -29h300M22 55v300M106 -3h300M48 55v300M106 23h300M74 55v300M106 49h300M100 55v300M106 75h300M126 55v300M106 101h300M152 55v300M106 127h300M178 55v300M106 153h300M204 55v300M106 179h300M230 55v300M106 205h300M256 55v300M106 231h300M282 55v300M106 257h300M308 55v300M106 283h300M334 55v300M106 309h300M360 55v300M106 335h300M386 55v300M106 361h300M412 55v300M106 387h300M438 55v300M106 413h300M464 55v300M106 439h300M490 55v300M106 465h300M516 55v300"/></g><path d="M86 170 Q256 110 426 170" fill="none" stroke="url(#pn7g)" stroke-width="22" stroke-linecap="round"/><ellipse cx="256" cy="215" rx="165" ry="52" fill="none" stroke="url(#pn7g)" stroke-width="20"/><text x="256" y="420" text-anchor="middle" font-family="Georgia,serif" font-size="120" font-weight="700" fill="#f8de8f">P</text><circle cx="190" cy="320" r="10" fill="#f8de8f"/><circle cx="322" cy="330" r="8" fill="#f8de8f"/></symbol>
+      <linearGradient id="pn7n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9be7c6"/><stop offset="1" stop-color="#4cc398"/></linearGradient><linearGradient id="pn7g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c8922f"/><stop offset=".5" stop-color="#f3c75c"/><stop offset="1" stop-color="#c8922f"/></linearGradient>
+      <symbol id="pnMark" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="url(#pn7n)"/><path d="M86 170 Q256 110 426 170 L410 240 Q256 300 102 240Z" fill="#0f5f58" fill-opacity=".35"/><clipPath id="pn7c"><circle cx="256" cy="205" r="150"/></clipPath><g transform="scale(1 .3) translate(0 478)" clip-path="url(#pn7c)" stroke="#fff" stroke-opacity="0.55" stroke-width="8"><path d="M106 -55h300M-4 55v300M106 -29h300M22 55v300M106 -3h300M48 55v300M106 23h300M74 55v300M106 49h300M100 55v300M106 75h300M126 55v300M106 101h300M152 55v300M106 127h300M178 55v300M106 153h300M204 55v300M106 179h300M230 55v300M106 205h300M256 55v300M106 231h300M282 55v300M106 257h300M308 55v300M106 283h300M334 55v300M106 309h300M360 55v300M106 335h300M386 55v300M106 361h300M412 55v300M106 387h300M438 55v300M106 413h300M464 55v300M106 439h300M490 55v300M106 465h300M516 55v300"/></g><path d="M86 170 Q256 110 426 170" fill="none" stroke="url(#pn7g)" stroke-width="22" stroke-linecap="round"/><ellipse cx="256" cy="215" rx="165" ry="52" fill="none" stroke="url(#pn7g)" stroke-width="20"/><text x="256" y="420" text-anchor="middle" font-family="Georgia,serif" font-size="120" font-weight="700" fill="#0f3b33">P</text><circle cx="190" cy="320" r="10" fill="#0f3b33"/><circle cx="322" cy="330" r="8" fill="#0f3b33"/></symbol>
     </defs>
   </svg>
 
@@ -301,11 +305,12 @@
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
-      <button class="pn-dn" type="button" id="btn-hub" aria-label="Central: novidades, atualizações e mais"><span data-ico="grid"></span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
+      <button class="pn-dn" type="button" id="btn-hub" aria-label="Alertas e central: novidades, atualizações e mais"><span data-ico="bell"></span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
       <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico"></span><span id="dn-txt">Noite</span></button>
     </div>
   </header>
 
+  <button class="pn-voltar" type="button" id="btn-voltar" hidden>← Voltar</button>
   <div class="pn-banner" id="aviso"></div>
 
   <!-- ========== INÍCIO ========== -->
@@ -449,7 +454,6 @@
 
   <!-- ========== POLÍTICA ========== -->
   <section class="pn-view" id="politica">
-    <button class="pn-btn" type="button" data-go="ajustes">← Voltar</button>
     <div class="pn-card pn-pol" style="margin-top:12px"><h1>Política de Privacidade do Peneira</h1>
 <p class="pn-meta">Versão 1.0 · vigente desde 13 de novembro de 2026</p>
 
@@ -509,7 +513,6 @@
 
   <!-- ========== MEU CADASTRO ========== -->
   <section class="pn-view" id="perfil">
-    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
     <div class="pn-h2">Meu cadastro</div>
     <div class="pn-card" id="perfil-box"></div>
     <div class="pn-h2">Segurança do app</div>
@@ -522,7 +525,6 @@
 
   <!-- ========== CRITÉRIOS ========== -->
   <section class="pn-view" id="criterios">
-    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
     <div class="pn-h2">Lista principal (aprovados)</div>
     <p class="pn-meta" style="margin:-4px 0 10px">É a lista que eu sigo ao ler suas conversas.</p>
     <div id="crit-aprovados"></div>
@@ -540,7 +542,6 @@
 
   <!-- ========== AÇÕES ========== -->
   <section class="pn-view" id="acoes">
-    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
     <div class="pn-h2">Silenciar grupos</div>
     <div class="pn-card">
       <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. <b>Grupos VIP nunca são silenciados</b>, a não ser que você desligue o som deles na lista VIP. Grupos silenciados continuam sendo lidos e marcados como lidos; se tiver algo importante ou uma menção a você (@), eu deixo marcado em Importantes com o nome do grupo.</p>
@@ -574,7 +575,6 @@
 
   <!-- ========== COMO FUNCIONA ========== -->
   <section class="pn-view" id="sobre">
-    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
     <div class="pn-h2">Como funciona</div>
     <div class="pn-card">
       <ol class="pn-steps">
@@ -642,14 +642,14 @@
 
 <div class="pn-sheet" id="drill" hidden role="dialog" aria-labelledby="drill-t">
   <div class="pn-sheet-card" style="max-height:82vh;overflow:auto">
-    <div class="pn-row" style="align-items:center"><b id="drill-t" style="font-size:17px"></b><button class="pn-x" type="button" id="drill-x" aria-label="Fechar">×</button></div>
+    <div class="pn-row" style="align-items:center"><b id="drill-t" style="font-size:17px"></b><button class="pn-btn" type="button" id="drill-x" aria-label="Voltar">← Voltar</button></div>
     <div id="drill-b"></div>
   </div>
 </div>
 
 <div class="pn-sheet" id="grupos-sheet" hidden role="dialog" aria-labelledby="gr-t">
   <div class="pn-sheet-card" style="max-height:85vh;overflow:auto">
-    <div class="pn-row" style="align-items:center"><b id="gr-t" style="font-size:17px">Silenciar grupos</b><button class="pn-x" type="button" id="gr-x" aria-label="Fechar">×</button></div>
+    <div class="pn-row" style="align-items:center"><b id="gr-t" style="font-size:17px">Silenciar grupos</b><button class="pn-btn" type="button" id="gr-x" aria-label="Voltar">← Voltar</button></div>
     <p class="pn-meta" style="margin:6px 0 10px">Ligue os grupos que quer silenciar. Eles continuam sendo lidos: menções a você (@) e assuntos importantes aparecem em Importantes.</p>
     <div id="gr-lista"></div>
     <form class="pn-form" id="gr-form" style="margin-top:10px;display:flex;gap:6px;flex-direction:row">
@@ -665,7 +665,7 @@
     <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
     <div class="pn-hub" id="hub-grid"></div>
     <div id="hub-det"></div>
-    <button class="pn-btn" type="button" id="hub-fechar" style="width:100%;margin-top:10px;position:sticky;bottom:0;background:var(--surface)">Fechar</button>
+    <button class="pn-btn" type="button" id="hub-fechar" style="width:100%;margin-top:10px;position:sticky;bottom:0;background:var(--surface)">← Voltar</button>
   </div>
 </div>
 
@@ -678,7 +678,7 @@
     <div id="inst-aviso" class="pn-banner" style="display:none;margin:12px 0 0"></div>
     <ol class="pn-steps" id="inst-passos" style="margin-top:14px"></ol>
     <button class="pn-btn pri" type="button" id="inst-nativo" hidden style="width:100%;padding:11px;font-size:15px;margin-top:4px">Instalar agora</button>
-    <button class="pn-btn" type="button" id="inst-fechar" style="width:100%;margin-top:8px">Agora não</button>
+    <button class="pn-btn" type="button" id="inst-fechar" style="width:100%;margin-top:8px">← Voltar</button>
   </div>
   <div class="pn-seta" id="inst-seta" hidden>⬇︎</div>
 </div>
@@ -722,15 +722,21 @@
     });
   }
   buildNav($("nav-topo")); buildNav($("nav-baixo"));
-  function go(id, push){
+  const pilha=[];
+  function go(id, push, voltando){
     const OCULTAS=["criterios","sobre","acoes","politica","perfil"];
+    const atual=(document.querySelector(".pn-view.on")||{}).id;
+    if(!voltando && atual && atual!==id) pilha.push(atual);
+    if(pilha.length>30) pilha.shift();
     if(!VIEWS.some(v=>v.id===id) && !OCULTAS.includes(id)) id="inicio";
     const navId = OCULTAS.includes(id) ? "ajustes" : id;
     document.querySelectorAll(".pn-view").forEach(s=>s.classList.toggle("on", s.id===id));
     document.querySelectorAll(".pn-nav-btn").forEach(b=>{ if(b.dataset.view===navId) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
     if(push!==false){ try{ if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); }catch(e){} }
     window.scrollTo(0,0);
+    const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
   }
+  $("btn-voltar").addEventListener("click",()=>{ let prev=pilha.pop(); while(prev && prev===((document.querySelector(".pn-view.on")||{}).id)) prev=pilha.pop(); go(prev||"inicio",true,true); });
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
   $("cta-crit").addEventListener("click",()=>go("criterios"));
   $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
@@ -830,7 +836,7 @@
     Object.values(G).forEach(g=>g.textContent="");
     S.criterios.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(k=>{
       const st=G[k.status]?k.status:"sugerido";
-      const c=el("div","pn-card"), r=el("div","pn-row");
+      const c=el("div","pn-card pn-crit-card"), r=el("div","pn-row"); c.dataset.id=k.id; c.style.cursor="pointer";
       r.appendChild(el("b",null,k.nome||k.id));
       r.appendChild(el("span","pn-st st-"+st, st==="aprovado"?"Aprovado":st==="recusado"?"Recusado":"Sugerido"));
       c.appendChild(r);
@@ -846,6 +852,7 @@
     if(typeof renderAgenda==="function") renderAgenda();
     if(typeof renderStatus==="function") renderStatus();
     if(typeof renderFarol==="function") renderFarol();
+    if(typeof marcaTitulos==="function") marcaTitulos();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
     if(typeof renderAcoes==="function") renderAcoes();
@@ -946,7 +953,7 @@
     const L=$("vip-lista"); L.textContent="";
     if(!S.vips.length){ L.appendChild(el("div","pn-meta","Nenhum VIP ainda.")); return; }
     S.vips.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(v=>{
-      const r=el("div","pn-vip"); const n=el("b",null,v.nome); r.appendChild(n);
+      const r=el("div","pn-vip"); r.dataset.id=v.id; r.dataset.nome=v.nome; r.style.cursor="pointer"; const n=el("b",null,v.nome); r.appendChild(n);
       r.appendChild(el("span","pn-tag "+(v.tipo==="grupo"?"t-cat":"t-baixa"), v.tipo==="grupo"?"Grupo":"Pessoa"));
       const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label","Som para "+v.nome); tg.setAttribute("aria-checked",v.som!==false?"true":"false"); tg.style.transform="scale(.8)";
       tg.onclick=()=>{ if(S.canWrite) salvaVip("upd",{id:v.id,patch:{som:v.som===false}}); };
@@ -994,7 +1001,7 @@
     if(!algum && !feitos.length) L.appendChild(el("div","pn-empty","Nada agendado. Use o formulário acima para não esquecer respostas e prazos."));
   }
   function cardAg(a){
-    const c=el("div","pn-card pn-ag"+(a.feito?" feito":"")); const ck=document.createElement("input"); ck.type="checkbox"; ck.checked=!!a.feito; ck.setAttribute("aria-label","Marcar como feito");
+    const c=el("div","pn-card pn-ag"+(a.feito?" feito":"")); c.dataset.id=a.id; c.style.cursor="pointer"; const ck=document.createElement("input"); ck.type="checkbox"; ck.checked=!!a.feito; ck.setAttribute("aria-label","Marcar como feito");
     ck.onchange=()=>{ if(S.canWrite) salvaAg("upd",{id:a.id,patch:{feito:ck.checked,feitoEm:ck.checked?new Date().toISOString():null}}); };
     const t=el("div"); t.style.flex="1"; const tt=el("div","pn-ag-t"); tt.appendChild(ico(AG_ICO[a.tipo]||"pin")); tt.appendChild(document.createTextNode(" "+(a.titulo||""))); t.appendChild(tt);
     t.appendChild(el("div","pn-meta",fmt(a.quando)+(a.contato?" · "+a.contato:"")+(a.origem==="leitura"?" · da leitura":"")));
@@ -1042,7 +1049,7 @@
     try{ localStorage.removeItem("peneira-fid"); if(S.demo) localStorage.removeItem("peneira-perfil"); }catch(e){}
     if(S.demo) S.perfil=null; desbloqueado=true; fluxo();
   });
-  $("onb-pol").addEventListener("click",e=>{ e.preventDefault(); $("onb").hidden=true; go("politica"); const volta=()=>{ window.removeEventListener("hashchange",volta); }; setTimeout(()=>{ const b=document.querySelector('#politica [data-go]'); if(b) b.addEventListener("click",()=>{ if(!S.perfil) $("onb").hidden=false; },{once:true}); },0); });
+  $("onb-pol").addEventListener("click",e=>{ e.preventDefault(); $("onb").hidden=true; go("politica"); $("btn-voltar").addEventListener("click",()=>{ if(!S.perfil) $("onb").hidden=false; },{once:true}); });
   (async()=>{ if(!(await fidDisponivel())){ $("onb-fid").closest("label").style.display="none"; } })();
   $("onb-form").addEventListener("submit",async e=>{
     e.preventDefault(); $("onb-erro").textContent="";
@@ -1080,8 +1087,9 @@
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="1.7";
+  const VERSAO="1.8";
   const VERSOES=[
+    {v:"1.8",data:"13/11/2026",itens:["Sininho de alertas com rolagem","Detalhe ao tocar em todas as partes: títulos, agenda, VIPs, critérios, números dos relatórios e o Farol"]},
     {v:"1.7",data:"13/11/2026",itens:["Escolher quais grupos silenciar; VIP nunca é silenciado","Grupos silenciados continuam lidos: menções (@) e importantes ficam marcados com o nome do grupo","Modo produção: sem dados de exemplo; cada pessoa começa do zero com o próprio cadastro","VIP direto da agenda do celular","Todo botão muda de cor ao ser tocado e mostra “Salvo ✓”"]},
     {v:"1.6",data:"13/11/2026",itens:["Farol do dia (vermelho, amarelo, verde)","Toque em qualquer número ou etiqueta para ver o detalhe","Ícones profissionais no lugar dos emojis"]},
     {v:"1.5",data:"13/11/2026",itens:["Meu status com um toque: ocupado, em reunião, em trânsito, viajando, férias","Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
@@ -1289,6 +1297,48 @@
     const nao=S.grupos.filter(g=>!g.silenciar).map(g=>g.nome);
     novaAcao("grupos:escolhidos", sil.length?("Silenciar "+sil.length+" grupo(s): "+sil.slice(0,4).join(", ")+(sil.length>4?"…":"")):"Reativar grupos escolhidos",{silenciar:sil,reativar:nao});
     salvoOk($("gr-aplicar"),"✓ Na fila para a próxima leitura");
+  });
+
+  /* ---------- drill-down em todas as partes ---------- */
+  const HELP=[
+    ["agora","Os 3 itens mais urgentes agora: VIP primeiro, depois prioridade alta e prazo mais perto. Toque num cartão para ver o detalhe das etiquetas."],
+    ["ultimo relatorio","O relatório mais recente. Saem dois por dia, nos horários de Ajustes → Horário dos relatórios."],
+    ["importantes","Tudo o que passou pela peneira. Filtre pelas categorias no topo; Concluídos mostra o que você já resolveu."],
+    ["agenda","Respostas que você precisa dar, processos e prazos. Atrasados ficam em vermelho até você marcar como feito. As leituras também criam lembretes aqui."],
+    ["relatorios","Resumo do que importa, duas vezes por dia, com números da leitura: conversas lidas, importantes, favoritadas."],
+    ["compartilhar","Manda o link de instalação. Quem recebe faz o próprio cadastro e não vê nada seu."],
+    ["contatos vip","Pessoas e grupos que sempre viram prioridade alta, ficam no topo e tocam alerta. Grupo VIP nunca é silenciado, a não ser que você desligue o som dele aqui."],
+    ["aparencia","Tema dia/noite e as cores do modo dia. Vale só para este aparelho."],
+    ["notificacoes","O que deve chegar como aviso no celular. Os avisos chegam pelo app do Claude."],
+    ["horario","Quando saem os relatórios da manhã e da noite."],
+    ["mais","Ações, cadastro, política e ajuda."],
+    ["silenciar","Silencia notificações de grupos no WhatsApp. Grupos silenciados continuam lidos; @ e importantes vêm para cá. VIP nunca é silenciado."],
+    ["status","Seu status com um toque. O texto é copiado para você colar na Mensagem de ausência do WhatsApp Business."],
+    ["respostas automaticas","Ausência, saudação e respostas rápidas ficam no próprio WhatsApp Business. O Peneira nunca responde por você."],
+    ["fila","Pedidos que eu executo na próxima leitura do WhatsApp, como silenciar grupos."],
+    ["lista principal","Critérios aprovados: é exatamente o que eu sigo para decidir o que é importante."],
+    ["sugestoes","Critérios que eu sugeri e esperam sua decisão."],
+    ["recusados","Critérios que você recusou. Eu não uso estes."],
+    ["adicionar criterio","Crie um critério seu, com suas palavras. Ele já entra aprovado."],
+    ["como funciona","Passo a passo de como leio, separo e trago para cá."],
+    ["regras de seguranca","Regras fixas: nunca responder, nunca abrir links ou anexos, nunca usar códigos, nunca pagar, e rigor com o que estiver errado."],
+    ["o que eu nunca faco","Limites que valem sempre, mesmo se uma mensagem pedir o contrário."],
+    ["para funcionar","O que precisa estar ligado para a leitura acontecer."],
+    ["meu cadastro","Seus dados de cadastro. Você pode apagar a qualquer momento."],
+    ["seguranca do app","Bloqueio com Face ID (ou digital). A biometria nunca sai do seu celular."],
+    ["instalar","Como colocar o Peneira na tela de início do celular."]
+  ];
+  function ajuda(t){ const n=norm(t); const h=HELP.find(([k])=>n.startsWith(k)||n.includes(k)); return h?h[1]:null; }
+  function abreInfo(tit,texto,extra){ const B=$("drill-b"); B.textContent=""; B.appendChild(el("p","pn-drill-box",texto)); if(extra) extra(B); $("drill-t").textContent=tit; $("drill").hidden=false; }
+  function marcaTitulos(){ document.querySelectorAll(".pn-h2").forEach(h=>{ if(h.dataset.inf) return; const t=h.textContent.trim(); if(!ajuda(t)) return; h.dataset.inf="1"; h.appendChild(rotulo("help","","pn-i")); }); }
+  document.addEventListener("click",e=>{
+    const h=e.target.closest(".pn-h2[data-inf]"); if(h){ const t=h.textContent.trim(); abreInfo(t.split("·")[0].trim(), ajuda(t)); return; }
+    const ag=e.target.closest(".pn-ag"); if(ag && !e.target.closest("input,button")){ const a=S.agenda.find(x=>x.id===ag.dataset.id); if(a) abreInfo(a.titulo,"Tipo: "+({responder:"responder alguém",processo:"processo",prazo:"prazo / pagamento",lembrete:"lembrete"}[a.tipo]||"lembrete")+". Quando: "+fmt(a.quando)+(a.contato?". Com: "+a.contato:"")+(a.origem==="leitura"?". Criado pela leitura do WhatsApp.":". Criado por você."),B=>{ const b=el("button","pn-btn pri",a.feito?"Reabrir":"Marcar como feito"); b.style.width="100%"; b.style.marginTop="10px"; b.onclick=()=>{ salvaAg("upd",{id:a.id,patch:{feito:!a.feito,feitoEm:a.feito?null:new Date().toISOString()}}); fechaDrill(); }; B.appendChild(b); }); return; }
+    const vp=e.target.closest(".pn-vip[data-nome]"); if(vp && !e.target.closest("button")){ const v=S.vips.find(x=>x.id===vp.dataset.id); if(v){ const n=S.itens.filter(i=>vipDe(i)===v).length; abreInfo(v.nome,(v.tipo==="grupo"?"Grupo":"Pessoa")+" VIP. Som "+(v.som!==false?"ligado":"desligado")+". "+n+" mensagem(ns) já separada(s)."+(v.tel?" Telefone: "+v.tel+".":"")+(v.tipo==="grupo"?" Grupo VIP nunca é silenciado enquanto o som estiver ligado.":"")); } return; }
+    const ck=e.target.closest(".pn-crit-card"); if(ck && !e.target.closest("button")){ const k=S.criterios.find(x=>x.id===ck.dataset.id); if(k){ const n=S.itens.filter(i=>i.categoria&&norm(i.categoria).includes(norm(k.nome).split(" ")[0])).length; abreInfo(k.nome,(k.descricao||"")+(k.exemplos?" Exemplos: "+k.exemplos+".":"")+" Situação: "+(k.status||"sugerido")+". "+n+" item(ns) nesta categoria."); } return; }
+    const nr=e.target.closest(".pn-nums span"); if(nr){ abreInfo("Números do relatório","Conversas lidas = quantas conversas eu abri na leitura. Importantes = quantas passaram pela peneira. Favoritadas = marcadas com estrela no WhatsApp. Respostas de ausência = enviadas pelo WhatsApp Business."); return; }
+    const st=e.target.closest("#status-card .pn-row b"); if(st){ abreInfo("Meu status",ajuda("status")); return; }
+    const ft=e.target.closest(".pn-farol-t"); if(ft){ abreInfo("Farol do dia","Vermelho: agir já (alta, VIP e atrasados). Amarelo: atenção (média/baixa e agenda de hoje). Verde: o que você já resolveu. Toque em cada luz para ver a lista."); return; }
   });
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
