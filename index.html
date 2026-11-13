@@ -90,11 +90,45 @@
 .pn-hero p{margin:0;opacity:.85;font-size:13px}
 .pn-hero .pn-quote{font-family:var(--font-text);font-style:italic;opacity:.92;margin-top:10px;font-size:14px}
 .pn-hero-mark{width:84px;height:84px;flex:none;opacity:.95}
-.pn-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.pn-kpi{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:var(--shadow)}
-.pn-kpi b{display:block;font-size:26px;line-height:1.1}
-.pn-kpi span{font-size:12px;color:var(--ink-3)}
-.pn-kpi.alta b{color:var(--coral)} .pn-kpi.prazo b{color:var(--gold-text)}
+.pn-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media (max-width:520px){.pn-kpis{grid-template-columns:repeat(2,1fr)}}
+.pn-kpi{position:relative;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 12px 10px 15px;box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .12s ease,border-color .12s}
+.pn-kpi:active{transform:scale(.98)}
+.pn-kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.pn-kpi.alta::before{background:var(--coral)} .pn-kpi.prazo::before{background:var(--gold)} .pn-kpi.ag::before{background:var(--sky)}
+.pn-kpi .k-l{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.pn-kpi .k-l svg{width:16px;height:16px;opacity:.7}
+.pn-kpi b{display:block;font-size:30px;line-height:1.05;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.pn-kpi .k-s{font-size:11.5px;color:var(--ink-3)}
+.pn-kpi.alta b{color:var(--coral)} .pn-kpi.prazo b{color:var(--gold-text)} .pn-kpi.ag b{color:var(--sky)}
+.pn-farol{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+.pn-farol-t{flex-basis:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border)}
+.pn-farol-t b{font-size:12px;letter-spacing:.07em;text-transform:uppercase}
+.pn-farol-t span{font-size:11px;color:var(--ink-3)}
+.pn-luz{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 8px;border:0;background:none;font:inherit;color:var(--ink);cursor:pointer;border-right:1px solid var(--border)}
+.pn-luz:last-child{border-right:0}
+.pn-luz i{width:14px;height:14px;border-radius:50%;flex:none}
+.pn-luz.r i{background:#e5484d;box-shadow:0 0 0 4px rgba(229,72,77,.15),0 0 10px rgba(229,72,77,.6)}
+.pn-luz.a i{background:#f5b42a;box-shadow:0 0 0 4px rgba(245,180,42,.18),0 0 10px rgba(245,180,42,.55)}
+.pn-luz.v i{background:#2fb36b;box-shadow:0 0 0 4px rgba(47,179,107,.15),0 0 10px rgba(47,179,107,.5)}
+.pn-luz.off i{filter:grayscale(1) opacity(.35);box-shadow:none}
+.pn-luz b{font-size:20px;font-variant-numeric:tabular-nums;line-height:1}
+.pn-luz span{display:block;font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+.pn-ico{display:inline-flex;vertical-align:-3px}
+.pn-ico svg{width:1.05em;height:1.05em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pn-tag{cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.pn-chip{display:inline-flex;align-items:center;gap:6px}
+.pn-h2{display:flex;align-items:center;gap:8px}
+.pn-h2::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--accent)}
+.pn-hero{cursor:pointer}
+.pn-hero .pn-hero-l{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pn-hero .pn-hero-l span{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:3px 10px;font-size:11.5px}
+.pn-drill-n{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:6px 0 2px}
+.pn-drill-n b{font-size:34px;font-variant-numeric:tabular-nums}
+.pn-drill-it{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border);cursor:pointer}
+.pn-drill-box{background:var(--surface-2);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--ink-2)}
+#hub-grid button .pn-ico svg{width:24px;height:24px}
+
 .pn-h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:18px 0 8px;font-weight:700}
 .pn-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px}
 .pn-card.done{opacity:.55}
@@ -199,7 +233,7 @@
 .pn-full-in{width:100%;max-width:420px}
 .pn-hub{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
 .pn-hub button{position:relative;border:1px solid var(--border);background:var(--surface-2);border-radius:16px;padding:12px 4px 10px;cursor:pointer;color:var(--ink);font-size:11.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:6px}
-.pn-hub button span:first-child{font-size:22px;line-height:1}
+.pn-hub button span:first-child{line-height:1}
 .pn-hub .pn-badge{position:absolute;top:6px;right:8px;min-width:9px;height:9px;padding:0}
 .pn-ag-g{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:16px 0 6px}
 .pn-ag-g.atr{color:var(--coral)}
@@ -260,8 +294,8 @@
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
-      <button class="pn-dn" type="button" id="btn-hub" aria-label="Central: novidades, atualizações e mais"><span>⋯</span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
-      <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico">🌙</span><span id="dn-txt">Noite</span></button>
+      <button class="pn-dn" type="button" id="btn-hub" aria-label="Central: novidades, atualizações e mais"><span data-ico="grid"></span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
+      <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico"></span><span id="dn-txt">Noite</span></button>
     </div>
   </header>
 
@@ -275,14 +309,22 @@
         <h1>Peneira</h1>
         <p id="ultima">Aguardando a primeira varredura do seu WhatsApp.</p>
         <div class="pn-quote">Passa tudo pela peneira. Fica só o que importa.</div>
+        <div class="pn-hero-l" id="hero-l"></div>
       </div>
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
     </div>
 
+    <div class="pn-farol" id="farol">
+      <div class="pn-farol-t"><b>Farol do dia</b><span id="farol-data"></span></div>
+      <button class="pn-luz r" type="button" data-drill="vermelho"><i></i><div><b id="fl-r">0</b><span>Agir já</span></div></button>
+      <button class="pn-luz a" type="button" data-drill="amarelo"><i></i><div><b id="fl-a">0</b><span>Atenção</span></div></button>
+      <button class="pn-luz v" type="button" data-drill="verde"><i></i><div><b id="fl-v">0</b><span>Resolvido</span></div></button>
+    </div>
     <div class="pn-kpis" id="resumo">
-      <div class="pn-kpi"><b id="k-pend">–</b><span>Pendentes</span></div>
-      <div class="pn-kpi alta"><b id="k-alta">–</b><span>Prioridade alta</span></div>
-      <div class="pn-kpi prazo"><b id="k-prazo">–</b><span>Vencem em 7 dias</span></div>
+      <button class="pn-kpi" type="button" data-drill="pend"><div class="k-l">Pendentes<span data-ico="inbox"></span></div><b id="k-pend">–</b><div class="k-s">para tratar</div></button>
+      <button class="pn-kpi alta" type="button" data-drill="alta"><div class="k-l">Prioridade alta<span data-ico="alert"></span></div><b id="k-alta">–</b><div class="k-s">agir primeiro</div></button>
+      <button class="pn-kpi prazo" type="button" data-drill="prazo"><div class="k-l">Vencem em 7 dias<span data-ico="clock"></span></div><b id="k-prazo">–</b><div class="k-s">com prazo</div></button>
+      <button class="pn-kpi ag" type="button" data-drill="agenda"><div class="k-l">Agenda hoje<span data-ico="calendar"></span></div><b id="k-ag">–</b><div class="k-s">inclui atrasados</div></button>
     </div>
 
     <div class="pn-card" id="status-card" style="margin-bottom:10px">
@@ -291,7 +333,7 @@
       <div id="st-ajuda" class="pn-meta" style="margin-top:8px;display:none"></div>
     </div>
     <button class="pn-cta" id="cta-inst" type="button" hidden style="margin-bottom:10px;background:var(--accent-soft);border-color:var(--accent);color:var(--accent)">
-      <span><b>📲 Instalar o Peneira no celular</b></span><span>Ver como →</span>
+      <span><b>Instalar o Peneira no celular</b></span><span>Ver como →</span>
     </button>
     <button class="pn-cta" id="cta-crit" type="button" hidden>
       <span><b id="cta-n">0</b> critérios esperando sua aprovação</span><span>Revisar →</span>
@@ -319,7 +361,7 @@
       <input id="ag-tit" placeholder="O que fazer (ex.: responder Wellington sobre orçamento)" maxlength="140" required>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <select id="ag-tipo" style="flex:1;min-width:130px;font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)">
-          <option value="responder">💬 Responder</option><option value="processo">📋 Processo</option><option value="prazo">⏰ Prazo / pagamento</option><option value="lembrete">📌 Lembrete</option></select>
+          <option value="responder">Responder alguém</option><option value="processo">Processo</option><option value="prazo">Prazo / pagamento</option><option value="lembrete">Lembrete</option></select>
         <input id="ag-quando" type="datetime-local" style="flex:1;min-width:170px" required>
       </div>
       <input id="ag-contato" placeholder="Pessoa ou grupo (opcional)" maxlength="60">
@@ -339,7 +381,7 @@
   <section class="pn-view" id="ajustes">
     <div id="instalar-box" hidden>
       <div class="pn-h2" style="margin-top:4px">Instalar no celular</div>
-      <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">📲 Ver como instalar</button></div>
+      <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">Ver como instalar</button></div>
     </div>
 
     <div class="pn-h2">Compartilhar o Peneira</div>
@@ -360,7 +402,7 @@
         </div>
         <button class="pn-btn pri" type="submit">+ Adicionar VIP</button>
       </form>
-      <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">🔔 Testar o som</button>
+      <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">Testar o som</button>
     </div>
 
     <div class="pn-h2">Aparência</div>
@@ -532,7 +574,7 @@
         <li><span>Na aba Ações você pede para silenciar grupos ou liga a resposta de ausência; eu executo na próxima leitura.</span></li>
       </ol>
     </div>
-    <div class="pn-h2" id="seguranca">🔒 Regras de segurança · sempre ativas</div>
+    <div class="pn-h2" id="seguranca">Regras de segurança · sempre ativas</div>
     <div class="pn-card" style="border-color:var(--coral)">
       <ul class="pn-list">
         <li><b>Nunca respondo</b> nenhuma mensagem do WhatsApp. Respostas automáticas só existem no próprio WhatsApp Business, configuradas por você.</li>
@@ -565,7 +607,7 @@
     <svg style="width:84px;height:84px;border-radius:20px" aria-hidden="true"><use href="#pnMark"/></svg>
     <h2 style="font-family:var(--font-text);margin:14px 0 4px">Peneira</h2>
     <p class="pn-meta" id="lock-ola">Desbloqueie para continuar.</p>
-    <button class="pn-btn pri" type="button" id="lock-btn" style="width:100%;padding:13px;font-size:16px;margin-top:18px">🔐 Entrar com Face ID</button>
+    <button class="pn-btn pri" type="button" id="lock-btn" style="width:100%;padding:13px;font-size:16px;margin-top:18px">Entrar com Face ID</button>
     <p class="pn-meta" id="lock-erro" style="color:var(--coral);min-height:18px;margin-top:10px"></p>
     <button class="pn-btn" type="button" id="lock-reset" hidden style="margin-top:6px">Não consigo entrar</button>
   </div>
@@ -587,6 +629,13 @@
   </form>
 </div>
 
+<div class="pn-sheet" id="drill" hidden role="dialog" aria-labelledby="drill-t">
+  <div class="pn-sheet-card" style="max-height:82vh;overflow:auto">
+    <div class="pn-row" style="align-items:center"><b id="drill-t" style="font-size:17px"></b><button class="pn-x" type="button" id="drill-x" aria-label="Fechar">×</button></div>
+    <div id="drill-b"></div>
+  </div>
+</div>
+
 <div class="pn-sheet" id="hub" hidden role="dialog" aria-label="Central">
   <div class="pn-sheet-card">
     <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
@@ -604,7 +653,7 @@
     </div>
     <div id="inst-aviso" class="pn-banner" style="display:none;margin:12px 0 0"></div>
     <ol class="pn-steps" id="inst-passos" style="margin-top:14px"></ol>
-    <button class="pn-btn pri" type="button" id="inst-nativo" hidden style="width:100%;padding:11px;font-size:15px;margin-top:4px">📲 Instalar agora</button>
+    <button class="pn-btn pri" type="button" id="inst-nativo" hidden style="width:100%;padding:11px;font-size:15px;margin-top:4px">Instalar agora</button>
     <button class="pn-btn" type="button" id="inst-fechar" style="width:100%;margin-top:8px">Agora não</button>
   </div>
   <div class="pn-seta" id="inst-seta" hidden>⬇︎</div>
@@ -626,6 +675,10 @@
     { id:"ajustes", nome:"Ajustes", ico:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', badge:"b-crit" }
   ];
 
+  const ICONS={"inbox": "<path d=\"M3 13h5l2 3h4l2-3h5\"/><path d=\"M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z\"/>", "alert": "<path d=\"M12 3l9.5 17h-19z\"/><path d=\"M12 10v4M12 17.5v.01\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>", "calendar": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>", "busy": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 12h8\"/>", "meeting": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><circle cx=\"17\" cy=\"9\" r=\"2.5\"/><path d=\"M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 14.5c3 .2 6.5 1.8 6.5 5.5\"/>", "car": "<path d=\"M5 16l1.5-5a2 2 0 0 1 1.9-1.4h7.2a2 2 0 0 1 1.9 1.4L19 16\"/><rect x=\"3\" y=\"16\" width=\"18\" height=\"4\" rx=\"1.5\"/><circle cx=\"7\" cy=\"20\" r=\"1.5\"/><circle cx=\"17\" cy=\"20\" r=\"1.5\"/>", "plane": "<path d=\"M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6a2 2 0 0 1 3 3L15 13.5l1 7.5-1.5 1.5-2.5-7.5L9 18v3l-1.5 1L6 18l-4-1.5L3 15h3z\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z\"/>", "check": "<path d=\"M5 12.5l4.5 4.5L19 7.5\"/>", "chat": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z\"/>", "clipboard": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9 12h6M9 16h4\"/>", "pin": "<path d=\"M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/>", "bell": "<path d=\"M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "star": "<path d=\"M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z\"/>", "shield": "<path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/><path d=\"M9 12l2 2 4-4\"/>", "refresh": "<path d=\"M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4\"/>", "megaphone": "<path d=\"M3 10v4h3l7 4V6L6 10z\"/><path d=\"M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11\"/>", "bolt": "<path d=\"M13 3L5 14h6l-1 7 8-11h-6z\"/>", "phone": "<rect x=\"7\" y=\"2.5\" width=\"10\" height=\"19\" rx=\"2.5\"/><path d=\"M12 8v6M9.5 11.5L12 14l2.5-2.5M11 18.5h2\"/>", "share": "<circle cx=\"18\" cy=\"5.5\" r=\"2.5\"/><circle cx=\"6\" cy=\"12\" r=\"2.5\"/><circle cx=\"18\" cy=\"18.5\" r=\"2.5\"/><path d=\"M8.2 10.8l7.6-4M8.2 13.2l7.6 4\"/>", "doc": "<path d=\"M6 3h8l4 4v14H6z\"/><path d=\"M14 3v4h4M9 12h6M9 16h6\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1\"/>", "help": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01\"/>", "sparkle": "<path d=\"M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z\"/><path d=\"M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z\"/>", "arrow": "<path d=\"M5 12h14M13 6l6 6-6 6\"/>", "grid": "<circle cx=\"5\" cy=\"5\" r=\"1.6\"/><circle cx=\"12\" cy=\"5\" r=\"1.6\"/><circle cx=\"19\" cy=\"5\" r=\"1.6\"/><circle cx=\"5\" cy=\"12\" r=\"1.6\"/><circle cx=\"12\" cy=\"12\" r=\"1.6\"/><circle cx=\"19\" cy=\"12\" r=\"1.6\"/><circle cx=\"5\" cy=\"19\" r=\"1.6\"/><circle cx=\"12\" cy=\"19\" r=\"1.6\"/><circle cx=\"19\" cy=\"19\" r=\"1.6\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"5\" fill=\"currentColor\" stroke=\"none\"/>"};
+  function ico(n){ const sp=document.createElement("span"); sp.className="pn-ico"; sp.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[n]||"")+'</svg>'; return sp; }
+  function rotulo(n,t,cls){ const sp=el("span",cls); sp.appendChild(ico(n)); sp.appendChild(document.createTextNode(" "+t)); return sp; }
+  document.querySelectorAll("[data-ico]").forEach(x=>x.replaceWith(ico(x.dataset.ico)));
   function el(t,c,x){ const e=document.createElement(t); if(c) e.className=c; if(x!=null) e.textContent=x; return e; }
   const toD = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s)) ? new Date(s+"T12:00:00") : new Date(s);
   function fmt(s){ if(!s) return ""; const d=toD(s); if(isNaN(d)) return String(s);
@@ -706,16 +759,16 @@
     const vp = vipDe(i);
     const c = el("article","pn-card"+(pend?"":" done")+(vp?" vip":""));
     const top = el("div","pn-row"), tags = el("div");
-    if(vp) tags.appendChild(el("span","pn-tag t-vip","🔔 VIP"));
-    if(i.prioridade) tags.appendChild(el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade));
-    if(i.categoria) tags.appendChild(el("span","pn-tag t-cat", i.categoria));
-    if(i.favoritado) tags.appendChild(el("span","pn-tag t-fav","⭐ favoritado"));
+    if(vp){ const t=rotulo("bell","VIP","pn-tag t-vip"); t.dataset.tip="vip"; t.dataset.nome=vp.nome; tags.appendChild(t); }
+    if(i.prioridade){ const t=el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade); t.dataset.tip="pri"; tags.appendChild(t); }
+    if(i.categoria){ const t=el("span","pn-tag t-cat", i.categoria); t.dataset.tip="cat"; t.dataset.nome=i.categoria; tags.appendChild(t); }
+    if(i.favoritado){ const t=rotulo("star","Favoritado","pn-tag t-fav"); t.dataset.tip="fav"; tags.appendChild(t); }
     top.appendChild(tags);
     if(i.prazo){ const d=dias(i.prazo); top.appendChild(el("span","pn-meta","Prazo "+fmt(i.prazo)+(d!=null?(d<0?" (vencido)":d===0?" (hoje)":" ("+d+"d)"):""))); }
     c.appendChild(top);
     c.appendChild(el("div","pn-who", i.contato||"Contato"));
     c.appendChild(el("p","pn-sum", i.resumo||""));
-    if(i.acao) c.appendChild(el("div","pn-meta","➡️ "+i.acao));
+    if(i.acao) c.appendChild(rotulo("arrow",i.acao,"pn-meta"));
     if(i.recebidoEm) c.appendChild(el("div","pn-meta","Recebida "+fmt(i.recebidoEm)));
     const a = el("div","pn-acts");
     if(pend){
@@ -731,7 +784,7 @@
   function render(){
     const m=S.meta;
     if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
-      (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" ⭐":"");
+      (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" favoritadas":"");
     const pend = S.itens.filter(i=>(i.status||"pendente")==="pendente");
     const alta = pend.filter(i=>i.prioridade==="alta");
     $("k-pend").textContent=pend.length; $("k-alta").textContent=alta.length;
@@ -780,6 +833,7 @@
     if(typeof renderVips==="function") renderVips();
     if(typeof renderAgenda==="function") renderAgenda();
     if(typeof renderStatus==="function") renderStatus();
+    if(typeof renderFarol==="function") renderFarol();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
     if(typeof renderAcoes==="function") renderAcoes();
@@ -895,12 +949,12 @@
     novos.forEach(i=>jaVistos.add(i.id));
     if(primeiraCarga){ primeiraCarga=false; return; }
     const v=novos.map(i=>[i,vipDe(i)]).find(([i,v])=>v && v.som!==false);
-    if(v){ toca(); aviso("🔔 Mensagem de "+v[1].nome+": "+(v[0].resumo||"")); }
+    if(v){ toca(); aviso("Mensagem VIP de "+v[1].nome+": "+(v[0].resumo||"")); }
   }
 
 
   /* ---------- agenda ---------- */
-  const AG_ICO={responder:"💬",processo:"📋",prazo:"⏰",lembrete:"📌"};
+  const AG_ICO={responder:"chat",processo:"clipboard",prazo:"clock",lembrete:"pin"};
   async function salvaAg(op,v){
     if(S.demo){ if(op==="add") S.agenda.push({id:"g"+Date.now(),...v}); else if(op==="del") S.agenda=S.agenda.filter(x=>x.id!==v.id); else { const i=S.agenda.findIndex(x=>x.id===v.id); if(i>=0) S.agenda[i]={...S.agenda[i],...v.patch}; } demoSave(); render(); return; }
     if(!S.db) return;
@@ -929,7 +983,7 @@
   function cardAg(a){
     const c=el("div","pn-card pn-ag"+(a.feito?" feito":"")); const ck=document.createElement("input"); ck.type="checkbox"; ck.checked=!!a.feito; ck.setAttribute("aria-label","Marcar como feito");
     ck.onchange=()=>{ if(S.canWrite) salvaAg("upd",{id:a.id,patch:{feito:ck.checked,feitoEm:ck.checked?new Date().toISOString():null}}); };
-    const t=el("div"); t.style.flex="1"; t.appendChild(el("div","pn-ag-t",(AG_ICO[a.tipo]||"📌")+" "+(a.titulo||"")));
+    const t=el("div"); t.style.flex="1"; const tt=el("div","pn-ag-t"); tt.appendChild(ico(AG_ICO[a.tipo]||"pin")); tt.appendChild(document.createTextNode(" "+(a.titulo||""))); t.appendChild(tt);
     t.appendChild(el("div","pn-meta",fmt(a.quando)+(a.contato?" · "+a.contato:"")+(a.origem==="leitura"?" · da leitura":"")));
     const x=el("button","pn-x","×"); x.type="button"; x.setAttribute("aria-label","Remover"); let conf=false;
     x.onclick=()=>{ if(!S.canWrite) return; if(!conf){ conf=true; x.textContent="remover?"; x.style.fontSize="12px"; setTimeout(()=>{conf=false;x.textContent="×";x.style.fontSize="";},3000); return; } salvaAg("del",{id:a.id}); };
@@ -1013,8 +1067,9 @@
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="1.5";
+  const VERSAO="1.6";
   const VERSOES=[
+    {v:"1.6",data:"13/11/2026",itens:["Farol do dia (vermelho, amarelo, verde)","Toque em qualquer número ou etiqueta para ver o detalhe","Ícones profissionais no lugar dos emojis"]},
     {v:"1.5",data:"13/11/2026",itens:["Meu status com um toque: ocupado, em reunião, em trânsito, viajando, férias","Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
     {v:"1.4",data:"13/11/2026",itens:["Contatos VIP com alerta sonoro","Compartilhar por WhatsApp","Instalação guiada no iPhone e Android"]},
     {v:"1.3",data:"13/11/2026",itens:["Paleta Menta e novo ícone","5 opções de cores no modo dia","Botão Dia/Noite"]},
@@ -1022,9 +1077,9 @@
   ];
   const visto=()=>{ try{ return localStorage.getItem("peneira-versao-vista"); }catch(e){ return null; } };
   const HUB=[
-    ["novidades","🆕","Novidades"],["atualizacoes","🔄","Atualizações"],["avisos","📣","Avisos"],["agenda","📅","Agenda"],
-    ["acoes","⚡","Ações"],["seguranca","🔒","Segurança"],["instalar","📲","Instalar"],["compartilhar","💬","Compartilhar"],
-    ["politica","📄","Política"],["perfil","👤","Cadastro"],["ajustes","⚙️","Ajustes"],["sobre","❓","Ajuda"]];
+    ["novidades","sparkle","Novidades"],["atualizacoes","refresh","Atualizações"],["avisos","megaphone","Avisos"],["agenda","calendar","Agenda"],
+    ["acoes","bolt","Ações"],["seguranca","shield","Segurança"],["instalar","phone","Instalar"],["compartilhar","share","Compartilhar"],
+    ["politica","doc","Política"],["perfil","user","Cadastro"],["ajustes","gear","Ajustes"],["sobre","help","Ajuda"]];
   function hubDet(k){
     const D=$("hub-det"); D.textContent="";
     const box=el("div","pn-card"); box.style.marginTop="12px"; box.style.background="var(--surface-2)";
@@ -1042,7 +1097,7 @@
     const G=$("hub-grid"); if(!G) return; G.textContent=""; $("hub-ver").textContent="v"+VERSAO;
     const novo = visto()!==VERSAO;
     $("hub-dot").classList.toggle("on",novo);
-    HUB.forEach(([k,ico,nome])=>{ const b=el("button"); b.type="button"; b.appendChild(el("span",null,ico)); b.appendChild(el("span",null,nome));
+    HUB.forEach(([k,ic,nome])=>{ const b=el("button"); b.type="button"; const ii=ico(ic); ii.style.color="var(--accent)"; b.appendChild(ii); b.appendChild(el("span",null,nome));
       if(k==="novidades"&&novo){ const d=el("span","pn-badge on"); b.appendChild(d); }
       if(k==="agenda"){ const n=S.agenda.filter(a=>!a.feito&&["hoje","atr"].includes(grupoAg(a.quando))).length; if(n){ const d=el("span","pn-badge on"); b.appendChild(d); } }
       b.onclick=()=>{
@@ -1062,12 +1117,12 @@
 
   /* ---------- status com um toque (resposta automática) ---------- */
   const STATUS=[
-    {k:"ocupado",ico:"🔴",nome:"Ocupado",txt:"Olá! Estou ocupado agora e não consigo responder. Retorno assim que possível."},
-    {k:"reuniao",ico:"🤝",nome:"Em reunião",txt:"Olá! Estou em reunião. Respondo assim que sair. Se for urgente, me ligue."},
-    {k:"transito",ico:"🚗",nome:"Em trânsito",txt:"Olá! Estou dirigindo/em trânsito e não posso responder agora. Falo com você assim que chegar."},
-    {k:"viajando",ico:"✈️",nome:"Viajando",txt:"Olá! Estou viajando, com acesso limitado ao WhatsApp. Respondo assim que possível."},
-    {k:"ferias",ico:"🏖️",nome:"Férias",txt:"Olá! Estou de férias e com acesso limitado ao WhatsApp. Respondo quando voltar."},
-    {k:"fora",ico:"🌙",nome:"Fora do horário",txt:"Olá! Estou fora do horário agora. Respondo no próximo dia útil."}
+    {k:"ocupado",ico:"busy",nome:"Ocupado",txt:"Olá! Estou ocupado agora e não consigo responder. Retorno assim que possível."},
+    {k:"reuniao",ico:"meeting",nome:"Em reunião",txt:"Olá! Estou em reunião. Respondo assim que sair. Se for urgente, me ligue."},
+    {k:"transito",ico:"car",nome:"Em trânsito",txt:"Olá! Estou dirigindo/em trânsito e não posso responder agora. Falo com você assim que chegar."},
+    {k:"viajando",ico:"plane",nome:"Viajando",txt:"Olá! Estou viajando, com acesso limitado ao WhatsApp. Respondo assim que possível."},
+    {k:"ferias",ico:"sun",nome:"Férias",txt:"Olá! Estou de férias e com acesso limitado ao WhatsApp. Respondo quando voltar."},
+    {k:"fora",ico:"moon",nome:"Fora do horário",txt:"Olá! Estou fora do horário agora. Respondo no próximo dia útil."}
   ];
   async function setStatus(k){
     const st=STATUS.find(x=>x.k===k);
@@ -1082,15 +1137,81 @@
   function renderStatus(){
     const a=S.ausencia||{}, at=a.statusAtivo, st=STATUS.find(x=>x.k===at);
     const C=$("st-chips"); C.textContent="";
-    STATUS.forEach(x=>{ const b=el("button","pn-chip",x.ico+" "+x.nome); b.type="button"; b.setAttribute("aria-pressed",x.k===at?"true":"false");
+    STATUS.forEach(x=>{ const b=rotulo(x.ico,x.nome,"pn-chip"); b.setAttribute("role","button"); b.tabIndex=0; b.type="button"; b.setAttribute("aria-pressed",x.k===at?"true":"false");
       b.onclick=()=>{ if(S.canWrite) setStatus(x.k===at?null:x.k); }; C.appendChild(b); });
-    if(at){ const d=el("button","pn-chip","✓ Voltei, estou disponível"); d.type="button"; d.onclick=()=>{ if(S.canWrite) setStatus(null); }; C.appendChild(d); }
-    $("st-atual").textContent = st ? (st.ico+" "+st.nome+(a.statusDesde?" desde "+fmt(a.statusDesde):"")) : "🟢 Disponível";
+    if(at){ const d=rotulo("check","Voltei, estou disponível","pn-chip"); d.type="button"; d.onclick=()=>{ if(S.canWrite) setStatus(null); }; C.appendChild(d); }
+    $("st-atual").textContent=""; $("st-atual").appendChild(st ? rotulo(st.ico, st.nome+(a.statusDesde?" desde "+fmt(a.statusDesde):"")) : (()=>{ const r=rotulo("dot","Disponível"); r.style.color="#2fb36b"; return r; })());
     const H=$("st-ajuda");
     if(st){ H.style.display="block"; H.textContent="";
       H.appendChild(el("div",null,"Mensagem: “"+(a.statusTexto||st.txt)+"”"));
-      H.appendChild(el("div",null,"✓ Texto copiado. Para valer no WhatsApp: WhatsApp Business → Ferramentas → Mensagem de ausência → cole → ative “Sempre enviar”. Quando o número estiver ligado à API, este toque passa a ativar sozinho."));
+      H.appendChild(el("div",null,"Texto copiado. Para valer no WhatsApp: WhatsApp Business → Ferramentas → Mensagem de ausência → cole → ative “Sempre enviar”. Quando o número estiver ligado à API, este toque passa a ativar sozinho."));
     } else H.style.display="none";
+  }
+
+  /* ---------- drill-down: cada número e cada etiqueta explicam o que são ---------- */
+  const hojeISO=()=>{ const d=new Date(); return d.toDateString(); };
+  function contas(){
+    const pend=S.itens.filter(i=>(i.status||"pendente")==="pendente");
+    const ag=S.agenda.filter(a=>!a.feito);
+    const agAtr=ag.filter(a=>grupoAg(a.quando)==="atr"), agHoje=ag.filter(a=>grupoAg(a.quando)==="hoje");
+    const golpe=pend.filter(i=>/golpe|suspeit/i.test((i.categoria||"")+" "+(i.resumo||"")));
+    const verm=pend.filter(i=>i.prioridade==="alta"||vipDe(i));
+    const amar=pend.filter(i=>!(i.prioridade==="alta"||vipDe(i)));
+    const verd=S.itens.filter(i=>i.status==="feito");
+    return {pend,ag,agAtr,agHoje,golpe,verm,amar,verd};
+  }
+  function itemLinha(i,dest){
+    const r=el("div","pn-drill-it"); const t=el("div"); t.style.flex="1";
+    t.appendChild(el("b",null,i.contato||i.titulo||"")); t.appendChild(el("div","pn-meta",i.resumo||((i.quando?fmt(i.quando):"")+(i.contato?" · "+i.contato:""))));
+    if(i.prazo) t.appendChild(el("div","pn-meta","Prazo "+fmt(i.prazo)));
+    r.appendChild(t); r.appendChild(ico("arrow")); r.onclick=()=>{ fechaDrill(); go(dest); }; return r;
+  }
+  function fechaDrill(){ $("drill").hidden=true; }
+  $("drill-x").addEventListener("click",fechaDrill);
+  $("drill").addEventListener("click",e=>{ if(e.target.id==="drill") fechaDrill(); });
+  function abreDrill(tipo,dado){
+    const c=contas(), B=$("drill-b"); B.textContent="";
+    const num=(n,leg)=>{ const d=el("div","pn-drill-n"); d.appendChild(el("b",null,String(n))); d.appendChild(el("span","pn-meta",leg)); B.appendChild(d); };
+    const txt=t=>B.appendChild(el("p","pn-drill-box",t));
+    const fonte=()=>B.appendChild(el("div","pn-meta",(S.meta&&S.meta.ultimaVarredura)?"Fonte: leitura do WhatsApp de "+fmt(S.meta.ultimaVarredura)+".":"Fonte: leitura do WhatsApp (ainda não houve leitura)."));
+    const lista=(arr,dest,vazio)=>{ if(!arr.length){ B.appendChild(el("div","pn-meta",vazio||"Nada aqui agora.")); return; } arr.slice(0,12).forEach(i=>B.appendChild(itemLinha(i,dest))); };
+    let tit="";
+    if(tipo==="pend"){ tit="Pendentes"; num(c.pend.length,"mensagens para tratar"); txt("Mensagens que passaram pela peneira e ainda não foram resolvidas. Ficam aqui até você tocar em Resolvido ou Não é importante."); fonte(); lista(c.pend.sort(ordena),"importantes"); }
+    if(tipo==="alta"){ tit="Prioridade alta"; const a=c.pend.filter(i=>i.prioridade==="alta"); num(a.length,"agir primeiro"); txt("Entra como alta: contatos VIP, bancos e cartões com vencimento, órgãos oficiais com prazo, possível golpe e qualquer coisa que não bate (valor, data, remetente)."); fonte(); lista(a.sort(ordena),"importantes"); }
+    if(tipo==="prazo"){ tit="Vencem em 7 dias"; const a=c.pend.filter(i=>{const d=dias(i.prazo);return d!=null&&d<=7;}).sort((x,y)=>String(x.prazo).localeCompare(String(y.prazo))); num(a.length,"com prazo até "+fmt(new Date(Date.now()+7*86400000).toISOString().slice(0,10))); txt("Pagamentos, documentos e respostas com data. Os vencidos aparecem primeiro."); fonte(); lista(a,"importantes"); }
+    if(tipo==="agenda"){ tit="Agenda de hoje"; const a=c.agAtr.concat(c.agHoje); num(a.length,c.agAtr.length?c.agAtr.length+" atrasado(s)":"no prazo"); txt("Respostas que você precisa dar, processos e prazos. Atrasados contam até você marcar como feito."); lista(a,"agenda","Nada para hoje."); }
+    if(tipo==="vermelho"){ tit="Farol vermelho · agir já"; num(c.verm.length+c.agAtr.length,"itens"); txt("Prioridade alta, mensagens de VIP e compromissos atrasados. É o que deve ser tratado antes de tudo."); lista(c.verm.sort(ordena),"importantes"); if(c.agAtr.length){ B.appendChild(el("div","pn-ag-g atr","Agenda atrasada")); lista(c.agAtr,"agenda"); } }
+    if(tipo==="amarelo"){ tit="Farol amarelo · atenção"; num(c.amar.length+c.agHoje.length,"itens"); txt("Importante, mas sem urgência imediata: prioridade média e baixa e a agenda de hoje."); lista(c.amar.sort(ordena),"importantes"); if(c.agHoje.length){ B.appendChild(el("div","pn-ag-g","Agenda de hoje")); lista(c.agHoje,"agenda"); } }
+    if(tipo==="verde"){ tit="Farol verde · resolvido"; num(c.verd.length,"resolvidos"); txt("O que você já tratou. Toque em Concluídos, na aba Importantes, para reabrir algum."); lista(c.verd,"importantes","Nada resolvido ainda."); }
+    if(tipo==="pri"){ tit="Níveis de prioridade"; [["Alta","Agir hoje: VIP, banco com vencimento, órgão oficial com prazo, golpe, algo que não bate."],["Média","Tratar em até 2 dias: família, pedidos com prazo, contas de rotina."],["Baixa","Só acompanhar: entregas, avisos sem ação."]].forEach(([a,b])=>{ const r=el("div","pn-drill-it"); r.style.cursor="default"; const t=el("div"); t.appendChild(el("b",null,a)); t.appendChild(el("div","pn-meta",b)); r.appendChild(t); B.appendChild(r); }); }
+    if(tipo==="cat"){ tit=dado; const n=norm(dado); const k=S.criterios.find(x=>norm(x.nome).includes(n.split(" ")[0])||n.includes(norm(x.nome).split(" ")[0]));
+      const a=c.pend.filter(i=>i.categoria===dado); num(a.length,"pendentes nesta categoria");
+      txt(k?(k.descricao||"")+(k.status==="aprovado"?" (critério aprovado por você)":" (critério ainda não aprovado)"):"Categoria definida pela leitura."); lista(a.sort(ordena),"importantes"); }
+    if(tipo==="vip"){ tit="Contato VIP"; txt((dado||"Este contato")+" está na sua lista VIP: toda mensagem vira prioridade alta, fica no topo e toca o alerta sonoro. Para mudar, vá em Ajustes → Contatos VIP."); }
+    if(tipo==="fav"){ tit="Favoritado no WhatsApp"; txt("Marquei esta mensagem com estrela no WhatsApp. Para ver lá: WhatsApp → Configurações → Mensagens favoritas."); }
+    if(tipo==="hero"){ tit="Atualizações"; return hubDetDrill(); }
+    $("drill-t").textContent=tit; $("drill").hidden=false;
+  }
+  function hubDetDrill(){ $("hub-det").textContent=""; renderHub(); $("hub").hidden=false; hubDet("atualizacoes"); }
+  document.addEventListener("click",e=>{
+    const d=e.target.closest("[data-drill]"); if(d){ abreDrill(d.dataset.drill); return; }
+    const t=e.target.closest(".pn-tag[data-tip]"); if(t){ e.stopPropagation(); abreDrill(t.dataset.tip,t.dataset.nome); }
+  });
+  $("hero").addEventListener("click",()=>abreDrill("hero"));
+  function renderFarol(){
+    const c=contas();
+    $("fl-r").textContent=c.verm.length+c.agAtr.length; $("fl-a").textContent=c.amar.length+c.agHoje.length; $("fl-v").textContent=c.verd.length;
+    document.querySelector(".pn-luz.r").classList.toggle("off",!(c.verm.length+c.agAtr.length));
+    document.querySelector(".pn-luz.a").classList.toggle("off",!(c.amar.length+c.agHoje.length));
+    document.querySelector(".pn-luz.v").classList.toggle("off",!c.verd.length);
+    $("k-ag").textContent=c.agAtr.length+c.agHoje.length;
+    $("farol-data").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"short"});
+    const H=$("hero-l"); H.textContent="";
+    const nome=S.perfil&&(S.perfil.apelido||S.perfil.nome);
+    if(nome) H.appendChild(el("span",null,"Olá, "+nome.split(" ")[0]));
+    const st=S.ausencia&&S.ausencia.statusAtivo&&STATUS.find(x=>x.k===S.ausencia.statusAtivo);
+    H.appendChild(el("span",null,st?("Status: "+st.nome):"Disponível"));
+    H.appendChild(el("span",null,"v"+VERSAO));
   }
   /* ---------- tema (preferência deste aparelho) ---------- */
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
@@ -1107,7 +1228,7 @@
   function aplicaTema(){ const r=$("app"); if(tema==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",tema);
     r.setAttribute("data-modo", escuroAgora()?"noite":"dia"); r.setAttribute("data-paleta",paleta);
     document.querySelectorAll("#paletas button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===paleta?"true":"false"));
-    const esc=escuroAgora(); $("dn-ico").textContent = esc ? "☀️" : "🌙"; $("dn-txt").textContent = esc ? "Dia" : "Noite";
+    const esc=escuroAgora(); $("dn-ico").textContent=""; $("dn-ico").appendChild(ico(esc?"sun":"moon")); $("dn-txt").textContent = esc ? "Dia" : "Noite";
     document.querySelectorAll("#temas .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===tema?"true":"false")); }
   TEMAS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.t=k; b.onclick=()=>{ tema=k; try{localStorage.setItem("peneira-tema",k);}catch(e){} aplicaTema(); }; $("temas").appendChild(b); });
   $("btn-dn").addEventListener("click",()=>{ tema = escuroAgora() ? "dia" : "noite"; try{localStorage.setItem("peneira-tema",tema);}catch(e){} aplicaTema(); });
@@ -1153,7 +1274,7 @@
     if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
     if(Array.isArray(r.destaques)&&r.destaques.length){ const u=el("ul"); r.destaques.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); }
     const n=r.numeros||{}, nm=el("div","pn-nums");
-    [["lidas","conversas lidas"],["importantes","importantes"],["favoritadas","⭐ favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
+    [["lidas","conversas lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
     if(nm.childNodes.length) c.appendChild(nm);
     return c;
   }
