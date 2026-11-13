@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#6d4ad6">
+<meta name="theme-color" content="#16213f">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -21,28 +21,28 @@
    1. TOKENS DE TEMA (mesmo esquema do SOLA)
    ========================================================= */
 .pn{
-  --bg:#f8f5ff; --surface:#ffffff; --surface-2:#f1ebff; --border:#e4dbf7;
-  --ink:#221a33; --ink-2:#463c5c; --ink-3:#6b6180;
-  --accent:#6d4ad6; --accent-ink:#ffffff; --accent-soft:#ece5ff;
-  --gold:#ff8a3d; --gold-soft:#fff0e3; --gold-text:#b5520f;
+  --bg:#f5f7fb; --surface:#ffffff; --surface-2:#edf1f8; --border:#dde3ee;
+  --ink:#1b2236; --ink-2:#3d4660; --ink-3:#5f6779;
+  --accent:#24345f; --accent-ink:#ffffff; --accent-soft:#e2e8f5;
+  --gold:#d9a23a; --gold-soft:#fbf1dc; --gold-text:#7a560f;
   --coral:#e8452f; --coral-soft:#fde5e1; --sky:#3f78b8; --sky-soft:#e3eefa;
-  --hero-a:#5b3cc4; --hero-b:#ff8a3d;
-  --shadow:0 6px 22px rgba(91,60,196,.12);
+  --hero-a:#16213f; --hero-b:#33487f;
+  --shadow:0 6px 22px rgba(22,33,63,.10);
   --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --font-text:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
 }
 @media (prefers-color-scheme: dark){
-  .pn:not([data-theme="dia"]){--bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
-    --ink:#efeaf8; --ink-2:#cbc1e0; --ink-3:#9a8fb2;
-    --accent:#b69cff; --accent-ink:#1d1236; --accent-soft:#2e2350;
-    --gold-soft:#3a2416; --gold-text:#ffab6e; --coral-soft:#3d1f18; --sky-soft:#17283b;
-    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35);}
+  .pn:not([data-theme="dia"]){--bg:#0f1424; --surface:#171e33; --surface-2:#1e2740; --border:#2a3452;
+    --ink:#e9edf6; --ink-2:#c3cbdd; --ink-3:#8e98ae;
+    --accent:#e5b85a; --accent-ink:#141a2e; --accent-soft:#2c2a24;
+    --gold-soft:#332a17; --gold-text:#f0c46a; --coral-soft:#3d1f18; --sky-soft:#17283b;
+    --hero-a:#0c1328; --hero-b:#24345f; --shadow:0 6px 22px rgba(0,0,0,.35);}
 }
-.pn[data-theme="noite"]{--bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
-    --ink:#efeaf8; --ink-2:#cbc1e0; --ink-3:#9a8fb2;
-    --accent:#b69cff; --accent-ink:#1d1236; --accent-soft:#2e2350;
-    --gold-soft:#3a2416; --gold-text:#ffab6e; --coral-soft:#3d1f18; --sky-soft:#17283b;
-    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35);}
+.pn[data-theme="noite"]{--bg:#0f1424; --surface:#171e33; --surface-2:#1e2740; --border:#2a3452;
+    --ink:#e9edf6; --ink-2:#c3cbdd; --ink-3:#8e98ae;
+    --accent:#e5b85a; --accent-ink:#141a2e; --accent-soft:#2c2a24;
+    --gold-soft:#332a17; --gold-text:#f0c46a; --coral-soft:#3d1f18; --sky-soft:#17283b;
+    --hero-a:#0c1328; --hero-b:#24345f; --shadow:0 6px 22px rgba(0,0,0,.35);}
 
 
 /* =========================================================
@@ -84,7 +84,7 @@
 /* =========================================================
    4. HERO + CARTÕES
    ========================================================= */
-.pn-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,var(--hero-a) 0%,#9b6cf0 55%,var(--hero-b) 100%);
+.pn-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,var(--hero-a),var(--hero-b));
   color:#fff;border-radius:22px;padding:20px 22px;box-shadow:var(--shadow);overflow:hidden;position:relative;margin-bottom:14px}
 .pn-hero h1{font-family:var(--font-text);font-size:26px;margin:0 0 2px;font-weight:600}
 .pn-hero p{margin:0;opacity:.85;font-size:13px}
@@ -158,16 +158,16 @@
   <!-- Marca (peneira) reutilizada no topo e no hero -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
     <defs>
-      <linearGradient id="pnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9b6cf0"/><stop offset="1" stop-color="#5b3cc4"/></linearGradient>
+      <linearGradient id="pnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33487f"/><stop offset="1" stop-color="#16213f"/></linearGradient>
       <clipPath id="pnClip"><circle cx="32" cy="34" r="17"/></clipPath>
       <symbol id="pnMark" viewBox="0 0 64 64">
         <rect width="64" height="64" rx="16" fill="url(#pnG)"/>
-        <circle cx="32" cy="34" r="20" fill="none" stroke="#ff8a3d" stroke-width="4"/>
+        <circle cx="32" cy="34" r="20" fill="none" stroke="#e0a93b" stroke-width="4"/>
         <g clip-path="url(#pnClip)" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.6">
           <path d="M14 22h36M14 28h36M14 34h36M14 40h36M14 46h36M20 14v40M26 14v40M32 14v40M38 14v40M44 14v40"/>
         </g>
-        <circle cx="32" cy="34" r="4.2" fill="#ffb27a"/>
-        <circle cx="32" cy="9" r="3" fill="#ffb27a"/>
+        <circle cx="32" cy="34" r="4.2" fill="#f8de8f"/>
+        <circle cx="32" cy="9" r="3" fill="#f8de8f"/>
       </symbol>
     </defs>
   </svg>
