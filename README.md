@@ -28,6 +28,7 @@ Você aprova a lista de critérios no próprio app. Sugestões iniciais:
 - **Versão privada (Claude):** onde ficam os dados reais, visível só para o dono.
 
 ## Estrutura
+Veja `docs/ARQUITETURA.md` (contas individuais, lojas, proteção da marca).
 Mesmo formato do SOLA: HTML único (`index.html`) + PWA (`manifest.webmanifest`, `sw.js`, `icons/`).
 Instale pelo navegador do celular: *Adicionar à tela de início*.
 

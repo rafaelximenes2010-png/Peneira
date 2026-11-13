@@ -1,0 +1,19 @@
+{
+  "name": "peneira",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Peneira · Central do WhatsApp",
+  "scripts": {
+    "build": "rm -rf www && mkdir -p www && cp -r index.html manifest.webmanifest sw.js icons www/",
+    "android": "npm run build && npx cap sync android && npx cap open android",
+    "ios": "npm run build && npx cap sync ios && npx cap open ios"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  }
+}

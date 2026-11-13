@@ -1,0 +1,6 @@
+{
+  "appId": "br.app.peneira",
+  "appName": "Peneira",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
