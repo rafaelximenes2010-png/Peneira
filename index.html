@@ -623,7 +623,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
         <button class="pn-btn" type="button" id="rg-pdf">PDF</button>
         <button class="pn-btn pri" type="button" id="rg-xlsx">Excel</button>
       </div>
-      <div class="pn-meta" style="margin:8px 4px 0" id="rg-auto">Varredura automática a cada 4 horas.</div>
+      <div class="pn-meta" style="margin:8px 4px 0" id="rg-auto">Varredura automática de hora em hora, 24h por dia.</div>
       <div id="rg-lista"></div>
     </div>
   </section>
@@ -1366,8 +1366,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.7";
+  const VERSAO="2.8";
   const VERSOES=[
+    {v:"2.8",data:"13/11/2026",itens:["Varredura automática de hora em hora, 24 horas por dia","De madrugada (23h–5h) só avisa VIP urgente ou golpe"]},
     {v:"2.7",data:"13/11/2026",itens:["Adicionar VIP buscando nos contatos e grupos do WhatsApp"]},
     {v:"2.6",data:"13/11/2026",itens:["Prevenção: problemas que se repetem com ação preventiva (e botão para levar à Agenda)","Ranking de clientes que mais geram demandas","Tempo de resposta da equipe para clientes internos e externos, com metas e farol","Exportar prevenção em PDF e Excel"]},
     {v:"2.5",data:"13/11/2026",itens:["Relatórios por grupo: assuntos, preocupações, metas, compromissos, reclamações e protagonistas/líderes","Exportar em PDF e Excel (cadastro dos grupos, participantes e assuntos)","Varredura automática a cada 4 horas"]},
@@ -1796,7 +1797,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const L=$("rg-lista"); if(!L) return; L.textContent="";
     const rs=ultimosPorGrupo();
     $("rg-resumo").textContent = rs.length ? rs.length+" grupos · "+rs.reduce((a,r)=>a+(r.mensagens||0),0)+" mensagens analisadas" : "Nenhum grupo analisado ainda";
-    const prox=S.meta&&S.meta.proximaVarredura; $("rg-auto").textContent="Varredura automática a cada 4 horas"+(prox?" · próxima "+fmt(prox):"")+".";
+    const prox=S.meta&&S.meta.proximaVarredura; $("rg-auto").textContent="Varredura automática de hora em hora, 24h por dia"+(prox?" · próxima "+fmt(prox):"")+".";
     if(!rs.length){ L.appendChild(el("div","pn-empty","Os relatórios por grupo aparecem aqui depois da primeira varredura: assuntos, preocupações, metas, compromissos, reclamações e quem lidera cada conversa.")); return; }
     rs.forEach(r=>{
       const c=el("article","pn-card pn-rg"); c.style.marginTop="12px";
