@@ -128,7 +128,7 @@
 .pn-drill-n{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:6px 0 2px}
 .pn-drill-n b{font-size:34px;font-variant-numeric:tabular-nums}
 .pn-drill-it{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border);cursor:pointer}
-.pn-drill-box{background:var(--surface-2);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--ink-2)}
+.pn-drill-box{white-space:pre-line;background:var(--surface-2);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--ink-2)}
 #hub-grid button .pn-ico svg{width:24px;height:24px}
 
 .pn-h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:18px 0 8px;font-weight:700}
@@ -255,6 +255,34 @@
 .pn .pn-nav-btn.pn-press{background:var(--accent-soft)}
 .pn-voltar{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--accent);border-radius:999px;padding:8px 14px;font:600 14px var(--font-ui);cursor:pointer;margin:0 0 12px;box-shadow:var(--shadow)}
 .pn-voltar[hidden]{display:none}
+.pn-proc{display:flex;gap:10px;align-items:flex-start;padding:7px 0}
+.pn-proc i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--border)}
+.pn-proc.ok i{background:#2fb36b}
+.pn-proc.wait i{background:var(--gold);animation:pnPulse 1.4s ease-in-out infinite}
+@keyframes pnPulse{50%{box-shadow:0 0 0 6px var(--gold-soft)}}
+.pn-proc b{display:block;font-size:14px}
+.pn-proc span{font-size:12.5px;color:var(--ink-3)}
+.pn-conn{display:inline-flex;align-items:center;gap:6px;background:#e3f7ec;color:#1b7f4a;border:1px solid #bfe9d1;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.pn-conn::before{content:"";width:8px;height:8px;border-radius:50%;background:#2fb36b;box-shadow:0 0 0 3px rgba(47,179,107,.25)}
+.pn-cal{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:10px 10px 12px}
+.pn-cal-top{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.pn-cal-top b{flex:1;font-size:16px;text-transform:capitalize}
+.pn-cal-top .pn-btn{padding:6px 11px}
+.pn-cal-sem,.pn-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
+.pn-cal-sem span{font-size:11px;font-weight:700;color:var(--ink-3);padding:4px 0}
+.pn-cal-d{border:0;background:none;font:inherit;color:var(--ink);height:42px;border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-variant-numeric:tabular-nums}
+.pn-cal-d.fora{color:var(--ink-3);opacity:.45}
+.pn-cal-d.hoje{color:var(--accent);font-weight:800;box-shadow:inset 0 0 0 1.5px var(--accent)}
+.pn-cal-d.sel{background:var(--accent);color:var(--accent-ink);font-weight:800}
+.pn-cal-d i{display:flex;gap:2px;height:5px}
+.pn-cal-d i b{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.pn-cal-d.sel i b{background:var(--accent-ink)}
+.pn-cal-d i b.r{background:var(--coral)}
+.pn-ev{display:flex;gap:10px;align-items:stretch;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.pn-ev::before{content:"";width:4px;border-radius:3px;background:var(--accent);flex:none}
+.pn-ev.prazo::before{background:var(--gold)} .pn-ev.responder::before{background:var(--sky)} .pn-ev.atr::before{background:var(--coral)}
+.pn-ev .h{font-size:12px;color:var(--ink-3);min-width:42px;font-variant-numeric:tabular-nums}
+.pn-ev.feito{opacity:.55} .pn-ev.feito b{text-decoration:line-through}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -326,6 +354,18 @@
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
     </div>
 
+    <div class="pn-card" id="varr-card" style="margin-bottom:14px">
+      <div class="pn-switch">
+        <div><b style="font-size:16px">Varrer meu WhatsApp</b><div class="pn-meta" id="varr-sub">Desativado</div></div>
+        <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
+      </div>
+      <div id="varr-proc" style="display:none;margin-top:12px"></div>
+    </div>
+    <div class="pn-card" id="bd-hoje" hidden style="margin-bottom:14px;border-color:var(--gold)">
+      <div class="pn-row" style="align-items:center"><b>Bom dia de hoje</b><span class="pn-meta" id="bd-hoje-st"></span></div>
+      <p class="pn-meta" id="bd-hoje-txt" style="margin:6px 0 8px"></p>
+      <div id="bd-hoje-lista"></div>
+    </div>
     <div class="pn-farol" id="farol">
       <div class="pn-farol-t"><b>Farol do dia</b><span id="farol-data"></span></div>
       <button class="pn-luz r" type="button" data-drill="vermelho"><i></i><div><b id="fl-r">0</b><span>Agir já</span></div></button>
@@ -368,17 +408,33 @@
   <!-- ========== AGENDA ========== -->
   <section class="pn-view" id="agenda">
     <div class="pn-h2" style="margin-top:4px">Agenda · para não esquecer</div>
-    <p class="pn-meta" style="margin:-4px 0 10px">Respostas que você precisa dar, processos e prazos futuros. Eu também coloco aqui o que encontrar nas leituras.</p>
-    <form class="pn-card pn-form" id="ag-form">
-      <input id="ag-tit" placeholder="O que fazer (ex.: responder Wellington sobre orçamento)" maxlength="140" required>
+    <div class="pn-cal" id="cal">
+      <div class="pn-cal-top">
+        <button class="pn-btn" type="button" id="cal-prev" aria-label="Mês anterior">‹</button>
+        <b id="cal-mes"></b>
+        <button class="pn-btn" type="button" id="cal-hoje">Hoje</button>
+        <button class="pn-btn" type="button" id="cal-next" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="pn-cal-sem"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="pn-cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="pn-row" style="align-items:center;margin:14px 0 6px"><b id="cal-dia" style="font-size:15px"></b><button class="pn-btn pri" type="button" id="cal-novo">+ Novo</button></div>
+    <div id="cal-lista"></div>
+
+    <form class="pn-card pn-form" id="ag-form" hidden style="margin-top:10px">
+      <b>Novo compromisso</b>
+      <input id="ag-tit" placeholder="Título (ex.: responder Wellington sobre orçamento)" maxlength="140" required>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <select id="ag-tipo" style="flex:1;min-width:130px;font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)">
-          <option value="responder">Responder alguém</option><option value="processo">Processo</option><option value="prazo">Prazo / pagamento</option><option value="lembrete">Lembrete</option></select>
+          <option value="responder">Responder alguém</option><option value="processo">Processo</option><option value="prazo">Prazo / pagamento</option><option value="lembrete">Lembrete</option><option value="reuniao">Reunião</option></select>
         <input id="ag-quando" type="datetime-local" style="flex:1;min-width:170px" required>
       </div>
       <input id="ag-contato" placeholder="Pessoa ou grupo (opcional)" maxlength="60">
-      <button class="pn-btn pri" type="submit">+ Agendar</button>
+      <textarea id="ag-info" rows="2" maxlength="600" placeholder="Informações importantes (notas, valores, combinados)"></textarea>
+      <textarea id="ag-resp" rows="2" maxlength="600" placeholder="Resposta para mandar por WhatsApp (opcional)"></textarea>
+      <div style="display:flex;gap:6px"><button class="pn-btn pri" type="submit" style="flex:1">Salvar</button><button class="pn-btn" type="button" id="ag-cancelar" style="flex:1">Cancelar</button></div>
     </form>
+    <div class="pn-h2" style="margin-top:18px">Atrasados e próximos</div>
     <div id="ag-lista"></div>
   </section>
 
@@ -544,7 +600,7 @@
   <section class="pn-view" id="acoes">
     <div class="pn-h2">Silenciar grupos</div>
     <div class="pn-card">
-      <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. <b>Grupos VIP nunca são silenciados</b>, a não ser que você desligue o som deles na lista VIP. Grupos silenciados continuam sendo lidos e marcados como lidos; se tiver algo importante ou uma menção a você (@), eu deixo marcado em Importantes com o nome do grupo.</p>
+      <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. <b>Grupos VIP nunca são silenciados</b>, a não ser que você desligue o som deles na lista VIP. Grupos silenciados continuam sendo lidos e marcados como lidos, <b>menos</b> as mensagens com menção a você (@) ou importantes: essas ficam não lidas e vão para Importantes com o nome do grupo.</p>
       <button class="pn-btn pri" type="button" id="btn-grupos" style="width:100%;padding:11px;margin-top:10px">Escolher quais grupos silenciar</button>
       <div class="pn-meta" style="margin-top:12px">Ou todos de uma vez (menos os VIP):</div>
       <div class="pn-grid2">
@@ -553,6 +609,20 @@
         <button class="pn-btn pri" type="button" data-mute="sempre">Sempre</button>
         <button class="pn-btn" type="button" data-mute="reativar">Reativar todos</button>
       </div>
+    </div>
+
+    <div class="pn-h2">Bom dia nos grupos</div>
+    <div class="pn-card pn-form" id="bd-card">
+      <div class="pn-switch"><div><b>Lembrete de bom dia</b><div class="pn-meta">Todo dia, no horário escolhido, aparece no Início com o texto pronto para cada grupo.</div></div>
+        <button class="pn-tg" type="button" role="switch" aria-checked="false" id="bd-tg" aria-label="Lembrete de bom dia"></button></div>
+      <label for="bd-hora">A partir de</label><input id="bd-hora" type="time" value="05:00">
+      <label>Grupos</label><div class="pn-chips" id="bd-grupos" style="margin:0"></div>
+      <div style="display:flex;gap:6px"><input id="bd-novo" placeholder="Adicionar grupo pelo nome" maxlength="60" style="flex:1"><button class="pn-btn" type="button" id="bd-add">+</button></div>
+      <label for="bd-msg">Mensagem</label>
+      <div class="pn-chips" id="bd-modelos" style="margin:0"></div>
+      <textarea id="bd-msg" rows="2" maxlength="400"></textarea>
+      <button class="pn-btn pri" type="button" id="bd-salvar">Salvar</button>
+      <div class="pn-meta">Pela regra de segurança o Peneira não envia sozinho: no horário ele te lembra e abre o WhatsApp com o texto pronto; você escolhe o grupo e toca em enviar.</div>
     </div>
 
     <div class="pn-h2">Status com um toque</div>
@@ -689,7 +759,7 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -756,7 +826,7 @@
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
   function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:[],criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[],agenda:[],vips:[]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -850,8 +920,11 @@
     Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
     if(typeof renderVips==="function") renderVips();
     if(typeof renderAgenda==="function") renderAgenda();
+    if(typeof renderCal==="function") renderCal();
+    if(typeof renderBD==="function") renderBD();
     if(typeof renderStatus==="function") renderStatus();
     if(typeof renderFarol==="function") renderFarol();
+    if(typeof renderVarr==="function") renderVarr();
     if(typeof marcaTitulos==="function") marcaTitulos();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
@@ -954,7 +1027,7 @@
     if(!S.vips.length){ L.appendChild(el("div","pn-meta","Nenhum VIP ainda.")); return; }
     S.vips.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(v=>{
       const r=el("div","pn-vip"); r.dataset.id=v.id; r.dataset.nome=v.nome; r.style.cursor="pointer"; const n=el("b",null,v.nome); r.appendChild(n);
-      r.appendChild(el("span","pn-tag "+(v.tipo==="grupo"?"t-cat":"t-baixa"), v.tipo==="grupo"?"Grupo":"Pessoa"));
+      r.appendChild(el("span","pn-tag "+(v.tipo==="grupo"?"t-cat":"t-baixa"), v.tipo==="grupo"?"Grupo":(v.relacao==="familia"?"Família":v.relacao==="trabalho"?"Trabalho":"Pessoa")));
       const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label","Som para "+v.nome); tg.setAttribute("aria-checked",v.som!==false?"true":"false"); tg.style.transform="scale(.8)";
       tg.onclick=()=>{ if(S.canWrite) salvaVip("upd",{id:v.id,patch:{som:v.som===false}}); };
       const x=el("button","pn-x","×"); x.type="button"; x.setAttribute("aria-label","Remover "+v.nome);
@@ -974,7 +1047,7 @@
 
 
   /* ---------- agenda ---------- */
-  const AG_ICO={responder:"chat",processo:"clipboard",prazo:"clock",lembrete:"pin"};
+  const AG_ICO={responder:"chat",processo:"clipboard",prazo:"clock",lembrete:"pin",reuniao:"meeting"};
   async function salvaAg(op,v){
     if(S.demo){ if(op==="add") S.agenda.push({id:"g"+Date.now(),...v}); else if(op==="del") S.agenda=S.agenda.filter(x=>x.id!==v.id); else { const i=S.agenda.findIndex(x=>x.id===v.id); if(i>=0) S.agenda[i]={...S.agenda[i],...v.patch}; } demoSave(); render(); return; }
     if(!S.db) return;
@@ -983,8 +1056,8 @@
   (function(){ const d=new Date(); d.setHours(d.getHours()+2,0,0,0); const pad=n=>String(n).padStart(2,"0");
     $("ag-quando").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:00`; })();
   $("ag-form").addEventListener("submit",e=>{ e.preventDefault(); if(!S.canWrite) return; const t=$("ag-tit").value.trim(); if(!t) return;
-    salvaAg("add",{titulo:t,tipo:$("ag-tipo").value,quando:$("ag-quando").value,contato:$("ag-contato").value.trim(),feito:false,criadoEm:new Date().toISOString(),origem:"manual"});
-    $("ag-tit").value=""; $("ag-contato").value=""; });
+    salvaAg("add",{titulo:t,tipo:$("ag-tipo").value,quando:$("ag-quando").value,contato:$("ag-contato").value.trim(),info:$("ag-info").value.trim(),resposta:$("ag-resp").value.trim(),feito:false,criadoEm:new Date().toISOString(),origem:"manual"});
+    $("ag-tit").value=""; $("ag-contato").value=""; $("ag-info").value=""; $("ag-resp").value=""; setTimeout(()=>{ $("ag-form").hidden=true; },900); });
   function grupoAg(q){ const d=new Date(q); if(isNaN(d)) return "prox"; const h=new Date(); const ini=new Date(h); ini.setHours(0,0,0,0);
     if(d<h) return "atr"; const dia=Math.floor((d-ini)/86400000); return dia===0?"hoje":dia===1?"amanha":"prox"; }
   function renderAgenda(){
@@ -1087,8 +1160,10 @@
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="1.8";
+  const VERSAO="2.0";
   const VERSOES=[
+    {v:"2.0",data:"13/11/2026",itens:["Agenda no modelo Outlook: calendário do mês, dia selecionado, notas e resposta pronta para mandar pelo WhatsApp","Lembrete de bom dia a partir das 5h nos grupos que você escolher"]},
+    {v:"1.9",data:"13/11/2026",itens:["Botão Varrer meu WhatsApp (ativar/desativar) com o passo a passo da conexão com o WhatsApp Business","Regra: marca como lido tudo, menos VIP, critérios aprovados e menções (@)","Lista VIP ampliada: equipe, chefia e família"]},
     {v:"1.8",data:"13/11/2026",itens:["Sininho de alertas com rolagem","Detalhe ao tocar em todas as partes: títulos, agenda, VIPs, critérios, números dos relatórios e o Farol"]},
     {v:"1.7",data:"13/11/2026",itens:["Escolher quais grupos silenciar; VIP nunca é silenciado","Grupos silenciados continuam lidos: menções (@) e importantes ficam marcados com o nome do grupo","Modo produção: sem dados de exemplo; cada pessoa começa do zero com o próprio cadastro","VIP direto da agenda do celular","Todo botão muda de cor ao ser tocado e mostra “Salvo ✓”"]},
     {v:"1.6",data:"13/11/2026",itens:["Farol do dia (vermelho, amarelo, verde)","Toque em qualquer número ou etiqueta para ver o detalhe","Ícones profissionais no lugar dos emojis"]},
@@ -1213,7 +1288,7 @@
       const a=c.pend.filter(i=>i.categoria===dado); num(a.length,"pendentes nesta categoria");
       txt(k?(k.descricao||"")+(k.status==="aprovado"?" (critério aprovado por você)":" (critério ainda não aprovado)"):"Categoria definida pela leitura."); lista(a.sort(ordena),"importantes"); }
     if(tipo==="vip"){ tit="Contato VIP"; txt((dado||"Este contato")+" está na sua lista VIP: toda mensagem vira prioridade alta, fica no topo e toca o alerta sonoro. Para mudar, vá em Ajustes → Contatos VIP."); }
-    if(tipo==="mencao"){ tit="Menção a você"; txt("Alguém te marcou (@) no grupo "+(dado||"")+". Li e deixei a conversa como lida; a mensagem ficou aqui para você não perder. Abra o grupo no WhatsApp para responder."); }
+    if(tipo==="mencao"){ tit="Menção a você"; txt("Alguém te marcou (@) no grupo "+(dado||"")+". Menção nunca é marcada como lida: a conversa continua não lida no WhatsApp e a mensagem ficou aqui para você não perder. Abra o grupo no WhatsApp para responder."); }
     if(tipo==="grupo"){ tit="Grupo · "+(dado||""); const g=S.grupos.find(x=>norm(x.nome)===norm(dado)); const a=c.pend.filter(i=>norm(i.grupo)===norm(dado));
       num(a.length,"pendentes deste grupo"); txt(g&&g.silenciar?"Grupo silenciado: eu leio, marco como lido e só trago menções a você e assuntos importantes.":"Grupo com notificações normais."); lista(a,"importantes"); }
     if(tipo==="fav"){ tit="Favoritado no WhatsApp"; txt("Marquei esta mensagem com estrela no WhatsApp. Para ver lá: WhatsApp → Configurações → Mensagens favoritas."); }
@@ -1279,7 +1354,7 @@
     todos.forEach(g=>{
       const vip=vipGrupo(g.nome), travado=vip && vip.som!==false;
       const r=el("div","pn-vip"); const t=el("div"); t.style.flex="1"; t.appendChild(el("b",null,g.nome));
-      t.appendChild(el("div","pn-meta", travado ? "VIP · nunca silenciado (desligue o som na lista VIP para permitir)" : (g.silenciar ? "Silenciado · lido e marcado como lido · @ e importantes vão para Importantes" : "Notificações normais")));
+      t.appendChild(el("div","pn-meta", travado ? "VIP · nunca silenciado (desligue o som na lista VIP para permitir)" : (g.silenciar ? "Silenciado · lido e marcado como lido · @ e importantes ficam não lidos e vão para Importantes" : "Notificações normais")));
       const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label","Silenciar "+g.nome);
       tg.setAttribute("aria-checked", (!travado && g.silenciar) ? "true":"false"); if(travado){ tg.disabled=true; tg.style.opacity=".4"; }
       tg.onclick=()=>{ if(!S.canWrite||travado) return; if(g._soVip) salvaGrupo("add",{nome:g.nome,silenciar:true,origem:"manual"}); else salvaGrupo("upd",{id:g.id,patch:{silenciar:!g.silenciar}}); };
@@ -1340,6 +1415,115 @@
     const st=e.target.closest("#status-card .pn-row b"); if(st){ abreInfo("Meu status",ajuda("status")); return; }
     const ft=e.target.closest(".pn-farol-t"); if(ft){ abreInfo("Farol do dia","Vermelho: agir já (alta, VIP e atrasados). Amarelo: atenção (média/baixa e agenda de hoje). Verde: o que você já resolveu. Toque em cada luz para ver a lista."); return; }
   });
+
+  /* ---------- varredura do WhatsApp: ativar / desativar + processo de conexão ---------- */
+  async function salvaVarr(patch){
+    const novo={...(S.varredura||{}),...patch,atualizadoEm:new Date().toISOString(),
+      regras:{marcarComoLido:"tudo, menos VIP, critérios aprovados e menções (@)",naoLidoSe:["vip","criterioAprovado","mencao"],naoLidoVira:["importantes","agenda"]}};
+    if(S.demo){ S.varredura=novo; demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ await S.db.doc("config/varredura").set(novo); }catch(e){ aviso("Não consegui salvar agora."); }
+  }
+  $("varr-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.varredura&&S.varredura.ativa); salvaVarr({ativa:on, [on?"ativadaEm":"desativadaEm"]:new Date().toISOString()}); });
+  function renderVarr(){
+    const v=S.varredura||{}, on=!!v.ativa, m=S.meta||{};
+    $("varr-tg").setAttribute("aria-checked",on?"true":"false");
+    const conectado=!!m.conectado;
+    $("varr-sub").textContent="";
+    if(!on) $("varr-sub").textContent="Desativado · nada é lido";
+    else if(conectado){ const c=el("span","pn-conn","WhatsApp Business conectado"); $("varr-sub").appendChild(c); }
+    else $("varr-sub").textContent="Ativado · aguardando conexão";
+    const P=$("varr-proc"); P.style.display=on?"block":"none"; P.textContent=""; if(!on) return;
+    const passo=(estado,tit,sub)=>{ const r=el("div","pn-proc "+estado); r.appendChild(el("i",null,estado==="ok"?"✓":estado==="wait"?"…":"")); const t=el("div"); t.appendChild(el("b",null,tit)); if(sub) t.appendChild(el("span",null,sub)); r.appendChild(t); P.appendChild(r); };
+    passo("ok","Varredura ativada", v.ativadaEm?"desde "+fmt(v.ativadaEm):"");
+    passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":"Conectando ao WhatsApp Business",
+      conectado?((m.numero?m.numero+" · ":"")+"linkado pelo WhatsApp Web"):"Abra o Chrome no computador com a extensão Claude in Chrome e o WhatsApp Web do Business conectado. Na primeira leitura a conexão aparece aqui.");
+    passo(m.ultimaVarredura?"ok":(conectado?"wait":""), m.ultimaVarredura?"Última varredura "+fmt(m.ultimaVarredura):"Primeira varredura",
+      m.ultimaVarredura?((m.conversasLidas!=null?m.conversasLidas+" conversas · ":"")+(m.mantidasNaoLidas!=null?m.mantidasNaoLidas+" mantidas como não lidas":"")):"Vai começar assim que a conexão estiver ok.");
+    const box=el("div","pn-drill-box");
+    box.appendChild(el("b",null,"Regra da varredura")); 
+    const u=el("ul","pn-list"); u.style.margin="6px 0 0";
+    ["Marco como lido tudo o que não importa.","Ficam NÃO LIDAS: mensagens de VIP, as que batem com critérios aprovados e toda menção a você (@).","Essas vão para Importantes e, se pedirem resposta, para a Agenda.","Nunca respondo, nunca abro links nem anexos."].forEach(t=>u.appendChild(el("li",null,t)));
+    box.appendChild(u); P.appendChild(box);
+  }
+
+  /* ---------- calendário (modelo Outlook) ---------- */
+  let calRef=new Date(); calRef.setDate(1); let calSel=new Date(); calSel.setHours(0,0,0,0);
+  const mesmoDia=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+  const pad2=n=>String(n).padStart(2,"0");
+  function evDoDia(d){ return S.agenda.filter(a=>{ const q=new Date(a.quando); return !isNaN(q)&&mesmoDia(q,d); }).sort((a,b)=>String(a.quando).localeCompare(String(b.quando))); }
+  function renderCal(){
+    const G=$("cal-grid"); if(!G) return; G.textContent="";
+    $("cal-mes").textContent=calRef.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+    const ini=new Date(calRef); ini.setDate(1-ini.getDay()); const hoje=new Date();
+    for(let k=0;k<42;k++){ const d=new Date(ini); d.setDate(ini.getDate()+k);
+      const b=el("button","pn-cal-d"+(d.getMonth()!==calRef.getMonth()?" fora":"")+(mesmoDia(d,hoje)?" hoje":"")+(mesmoDia(d,calSel)?" sel":"")); b.type="button";
+      b.appendChild(el("span",null,String(d.getDate())));
+      const evs=evDoDia(d).filter(a=>!a.feito); const dots=el("i"); evs.slice(0,3).forEach(a=>{ const x=el("b"); if(grupoAg(a.quando)==="atr") x.className="r"; dots.appendChild(x); }); b.appendChild(dots);
+      b.onclick=()=>{ calSel=new Date(d); calSel.setHours(0,0,0,0); if(d.getMonth()!==calRef.getMonth()){ calRef=new Date(d); calRef.setDate(1); } renderCal(); };
+      G.appendChild(b); }
+    $("cal-dia").textContent=calSel.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"long"});
+    const L=$("cal-lista"); L.textContent=""; const evs=evDoDia(calSel);
+    if(!evs.length) L.appendChild(el("div","pn-empty","Nada neste dia. Toque em + Novo."));
+    evs.forEach(a=>{ const c=el("div","pn-ev "+(a.tipo||"")+(a.feito?" feito":"")+(!a.feito&&grupoAg(a.quando)==="atr"?" atr":"")); c.dataset.ev=a.id;
+      const q=new Date(a.quando); c.appendChild(el("div","h",pad2(q.getHours())+":"+pad2(q.getMinutes())));
+      const t=el("div"); t.style.flex="1"; const tt=el("b",null,""); tt.appendChild(ico(AG_ICO[a.tipo]||"pin")); tt.appendChild(document.createTextNode(" "+a.titulo)); t.appendChild(tt);
+      if(a.contato) t.appendChild(el("div","pn-meta",a.contato)); if(a.info) t.appendChild(el("div","pn-meta",a.info.length>90?a.info.slice(0,90)+"…":a.info));
+      c.appendChild(t); L.appendChild(c); });
+  }
+  $("cal-prev").addEventListener("click",()=>{ calRef.setMonth(calRef.getMonth()-1); renderCal(); });
+  $("cal-next").addEventListener("click",()=>{ calRef.setMonth(calRef.getMonth()+1); renderCal(); });
+  $("cal-hoje").addEventListener("click",()=>{ calRef=new Date(); calRef.setDate(1); calSel=new Date(); calSel.setHours(0,0,0,0); renderCal(); });
+  $("cal-novo").addEventListener("click",()=>{ const d=new Date(calSel); const n=new Date(); d.setHours(mesmoDia(d,n)?Math.min(n.getHours()+1,23):9,0,0,0);
+    $("ag-quando").value=`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:00`; $("ag-form").hidden=false; $("ag-tit").focus(); });
+  $("ag-cancelar").addEventListener("click",()=>{ $("ag-form").hidden=true; });
+  function waLink(txt){ return "https://wa.me/?text="+encodeURIComponent(txt||""); }
+  document.addEventListener("click",e=>{ const c=e.target.closest(".pn-ev[data-ev]"); if(!c) return; const a=S.agenda.find(x=>x.id===c.dataset.ev); if(!a) return;
+    abreInfo(a.titulo, fmt(a.quando)+(a.contato?" · "+a.contato:"")+(a.info?"\n\n"+a.info:""), B=>{
+      if(a.resposta){ B.appendChild(el("div","pn-meta","Resposta pronta:")); B.appendChild(el("p","pn-drill-box",a.resposta));
+        const w=el("a","pn-btn pri","Enviar resposta pelo WhatsApp"); w.href=waLink(a.resposta); w.target="_blank"; w.rel="noopener"; w.style.cssText="display:block;text-align:center;text-decoration:none;padding:10px;margin-top:8px;background:#25a35a;border-color:#25a35a"; B.appendChild(w);
+        B.appendChild(el("div","pn-meta","Abre o WhatsApp com o texto pronto; você escolhe a conversa e toca em enviar.")); }
+      const f=el("button","pn-btn",a.feito?"Reabrir":"Marcar como feito"); f.style.cssText="width:100%;margin-top:10px"; f.onclick=()=>{ salvaAg("upd",{id:a.id,patch:{feito:!a.feito,feitoEm:a.feito?null:new Date().toISOString()}}); fechaDrill(); }; B.appendChild(f);
+    }); });
+
+  /* ---------- bom dia nos grupos (lembrete, nunca envio automático) ---------- */
+  const BD_MODELOS=["Bom dia, equipe! Bom trabalho e segurança em primeiro lugar. 🙏","Bom dia a todos! Que hoje seja produtivo e seguro na estrada.","Bom dia, pessoal! Contem comigo no que precisarem hoje.","Bom dia, família! Deus abençoe o dia de todos. 🙏"];
+  let bdSel=null, bdPre=false;
+  const hojeKey=()=>{ const d=new Date(); return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); };
+  async function salvaBD(patch){
+    const novo={...(S.bomdia||{ativo:false,hora:"05:00",grupos:[],mensagem:BD_MODELOS[0],enviados:{}}),...patch,atualizadoEm:new Date().toISOString()};
+    if(S.demo){ S.bomdia=novo; demoSave(); render(); return; }
+    if(!S.db) return; try{ await S.db.doc("config/bomdia").set(novo); }catch(e){ aviso("Não consegui salvar agora."); }
+  }
+  function renderBD(){
+    const b=S.bomdia||{ativo:false,hora:"05:00",grupos:[],mensagem:BD_MODELOS[0],enviados:{}};
+    if(!bdPre){ $("bd-hora").value=b.hora||"05:00"; $("bd-msg").value=b.mensagem||BD_MODELOS[0]; bdSel=(b.grupos||[]).slice(); bdPre=true; }
+    $("bd-tg").setAttribute("aria-checked",b.ativo?"true":"false");
+    const nomes=Array.from(new Set(S.grupos.map(g=>g.nome).concat(S.vips.filter(v=>v.tipo==="grupo").map(v=>v.nome)).concat(bdSel))).sort();
+    const G=$("bd-grupos"); G.textContent="";
+    if(!nomes.length) G.appendChild(el("span","pn-meta","Nenhum grupo ainda: adicione pelo nome ou espere a primeira varredura."));
+    nomes.forEach(n=>{ const c=el("button","pn-chip",n); c.type="button"; c.setAttribute("aria-pressed",bdSel.includes(n)?"true":"false"); c.onclick=()=>{ bdSel=bdSel.includes(n)?bdSel.filter(x=>x!==n):bdSel.concat([n]); renderBD(); }; G.appendChild(c); });
+    const M=$("bd-modelos"); M.textContent=""; BD_MODELOS.forEach((t,ix)=>{ const c=el("button","pn-chip","Modelo "+(ix+1)); c.type="button"; c.onclick=()=>{ $("bd-msg").value=t; }; M.appendChild(c); });
+    // cartão do Início
+    const H=$("bd-hoje"); const agora=new Date(); const [hh,mm]=(b.hora||"05:00").split(":").map(Number);
+    const passou= agora.getHours()>hh || (agora.getHours()===hh && agora.getMinutes()>=mm);
+    const env=(b.enviados&&b.enviados[hojeKey()])||[];
+    const falta=(b.grupos||[]).filter(g=>!env.includes(g));
+    H.hidden = !(b.ativo && passou && (b.grupos||[]).length && falta.length);
+    if(H.hidden) return;
+    $("bd-hoje-st").textContent=env.length+" de "+b.grupos.length+" enviados";
+    $("bd-hoje-txt").textContent="“"+(b.mensagem||"")+"”";
+    const L=$("bd-hoje-lista"); L.textContent="";
+    b.grupos.forEach(g=>{ const r=el("div","pn-q"); r.appendChild(el("span",null,g));
+      if(env.includes(g)){ r.appendChild(el("b",null,"✓ enviado")); }
+      else { const a=el("a","pn-btn pri","Enviar"); a.href=waLink(b.mensagem); a.target="_blank"; a.rel="noopener"; a.style.cssText="text-decoration:none;padding:6px 14px;background:#25a35a;border-color:#25a35a";
+        a.addEventListener("click",()=>{ const e2={...(b.enviados||{})}; e2[hojeKey()]=env.concat([g]); salvaBD({enviados:e2}); }); r.appendChild(a); }
+      L.appendChild(r); });
+  }
+  $("bd-tg").addEventListener("click",()=>{ if(!S.canWrite) return; salvaBD({ativo:!(S.bomdia&&S.bomdia.ativo),hora:$("bd-hora").value||"05:00",grupos:bdSel||[],mensagem:$("bd-msg").value.trim()}); });
+  $("bd-add").addEventListener("click",()=>{ const n=$("bd-novo").value.trim(); if(!n) return; if(!bdSel.includes(n)) bdSel.push(n); $("bd-novo").value=""; renderBD(); });
+  $("bd-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaBD({hora:$("bd-hora").value||"05:00",grupos:bdSel||[],mensagem:$("bd-msg").value.trim()}); salvoOk($("bd-salvar")); });
+  setInterval(()=>{ try{ renderBD(); }catch(e){} },60000);
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
@@ -1564,7 +1748,7 @@
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
+      const d=demoLoad(); S.demo=true; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
       try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta=d.meta||null;
       render(); fluxo(); return;
@@ -1574,6 +1758,8 @@
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.doc("config/bomdia").onSnapshot(s=>{ S.bomdia=s.exists?s.data():null; render(); }, ()=>{});
+    db.doc("config/varredura").onSnapshot(s=>{ S.varredura=s.exists?s.data():null; render(); }, ()=>{});
     db.collection("grupos").onSnapshot(s=>{ S.grupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.collection("agenda").onSnapshot(s=>{ S.agenda=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/perfil").onSnapshot(s=>{ S.perfil=s.exists?s.data():null; S.perfilPronto=true; render(); fluxo(); }, ()=>{ S.perfilPronto=true; fluxo(); });
