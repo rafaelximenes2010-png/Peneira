@@ -349,6 +349,33 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-cal-d.hoje:not(.sel){box-shadow:none;color:var(--accent)}
 .pn-cal-top .pn-btn{min-height:34px;padding:4px 12px;border-radius:17px;background:var(--surface-2);border:0}
 .pn-foot{opacity:.7}
+
+/* varredura estilo antivírus */
+.pn-scan{display:flex;gap:16px;align-items:center;margin-bottom:14px}
+.pn-scan-ring{position:relative;width:112px;height:112px;flex:none}
+.pn-scan-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.pn-scan-ring .trk{fill:none;stroke:var(--surface-2);stroke-width:9}
+.pn-scan-ring .prg{fill:none;stroke:var(--accent);stroke-width:9;stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset .6s ease}
+.pn-scan-radar{position:absolute;inset:14px;border-radius:50%;opacity:0;background:conic-gradient(from 0deg,transparent 0 280deg,color-mix(in srgb,var(--accent) 55%,transparent) 360deg)}
+.pn-scan-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pn-scan-c b{font-size:24px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pn-scan-c span{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+.pn-scan-info{flex:1;display:flex;flex-direction:column;gap:2px}
+.pn-scan-info>b{font-size:17px}
+.pn-scan-info>span{font-size:13px;color:var(--ink-3)}
+.pn-scan-cont{display:flex;gap:14px;margin-top:8px}
+.pn-scan-cont div{display:flex;flex-direction:column}
+.pn-scan-cont b{font-size:18px;font-variant-numeric:tabular-nums}
+.pn-scan-cont span{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.pn-scan.ativo .pn-scan-radar{opacity:1;animation:pnRadar 1.6s linear infinite}
+.pn-scan.ativo .pn-scan-ring{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--accent) 45%,transparent))}
+.pn-scan.ok .prg{stroke:#34c759}
+.pn-scan.espera .pn-scan-radar{opacity:.6;animation:pnRadar 3.2s linear infinite}
+@keyframes pnRadar{to{transform:rotate(360deg)}}
+.pn-live-scan{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:5px 10px}
+.pn-live-scan[hidden]{display:none}
+.pn-live-scan i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pnBlink 1s ease-in-out infinite}
+@keyframes pnBlink{50%{opacity:.25;transform:scale(.7)}}
 </style>
 </head>
 <body>
@@ -393,6 +420,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 
   <header class="pn-top" id="topo">
     <button class="pn-voltar" type="button" id="btn-voltar" hidden>‹ Voltar</button>
+    <div class="pn-live-scan" id="live-scan" hidden><i></i>Varrendo…</div>
     <div class="pn-brand" id="pn-brand">
       <svg aria-hidden="true"><use href="#pnMark"/></svg>
       <div><b>Peneira</b><small>Central do WhatsApp</small></div>
@@ -420,6 +448,21 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     </div>
 
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
+      <div class="pn-scan" id="scan">
+        <div class="pn-scan-ring" id="scan-ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="trk"/>
+            <circle cx="60" cy="60" r="52" class="prg" id="scan-prg"/>
+          </svg>
+          <div class="pn-scan-radar"></div>
+          <div class="pn-scan-c"><b id="scan-pct">—</b><span id="scan-lbl">pronto</span></div>
+        </div>
+        <div class="pn-scan-info">
+          <b id="scan-tit">Varredura pronta</b>
+          <span id="scan-sub">Ative para começar</span>
+          <div class="pn-scan-cont"><div><b id="sc-lidas">0</b><span>lidas</span></div><div><b id="sc-mant">0</b><span>não lidas</span></div><div><b id="sc-imp">0</b><span>importantes</span></div></div>
+        </div>
+      </div>
       <div class="pn-switch">
         <div><b style="font-size:16px">Varrer meu WhatsApp</b><div class="pn-meta" id="varr-sub">Desativado</div></div>
         <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
@@ -1002,6 +1045,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(typeof renderStatus==="function") renderStatus();
     if(typeof renderFarol==="function") renderFarol();
     if(typeof renderVarr==="function") renderVarr();
+    if(typeof renderScan==="function") renderScan();
     if(typeof marcaTitulos==="function") marcaTitulos();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
@@ -1237,8 +1281,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.2";
+  const VERSAO="2.3";
   const VERSOES=[
+    {v:"2.3",data:"13/11/2026",itens:["Varredura estilo antivírus: anel de progresso com radar girando, contadores ao vivo e selo “Varrendo…” no topo","Relatório com mensagens, tempo economizado, indicações e assuntos importantes","Número do WhatsApp da varredura no Início"]},
     {v:"2.2",data:"13/11/2026",itens:["Visual profissional no padrão dos apps da Apple: barra superior translúcida, títulos grandes, abas e cartões limpos","Saudação no topo (Bom dia/Boa tarde)","Correção: tela não corta mais nas laterais e o fundo acompanha o tema"]},
     {v:"2.1",data:"13/11/2026",itens:["Instalar no notebook (Chrome, Edge e Safari do Mac) com passo a passo","QR code para instalar no celular a partir do notebook"]},
     {v:"2.0",data:"13/11/2026",itens:["Agenda no modelo Outlook: calendário do mês, dia selecionado, notas e resposta pronta para mandar pelo WhatsApp","Lembrete de bom dia a partir das 5h nos grupos que você escolher"]},
@@ -1507,6 +1552,23 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 
   let numPre=false;
   $("varr-num-ok").addEventListener("click",()=>{ if(!S.canWrite) return; const n=$("varr-num").value.trim(); salvaVarr({numero:n}); salvoOk($("varr-num-ok")); });
+
+  function renderScan(){
+    const v=S.varredura||{}, m=S.meta||{}, sc=$("scan"); if(!sc) return;
+    const on=!!v.ativa, rodando=!!m.emAndamento, pct=Math.max(0,Math.min(100,Number(m.progresso)||0));
+    sc.classList.toggle("ativo",on&&rodando); sc.classList.toggle("espera",on&&!rodando&&!m.ultimaVarredura); sc.classList.toggle("ok",on&&!rodando&&!!m.ultimaVarredura);
+    const prg=$("scan-prg"); const C=326.7; prg.style.strokeDashoffset = String(C - C*((rodando?pct:(m.ultimaVarredura?100:0))/100));
+    $("live-scan").hidden=!(on&&rodando);
+    if(!on){ $("scan-pct").textContent="—"; $("scan-lbl").textContent="desligado"; $("scan-tit").textContent="Varredura desligada"; $("scan-sub").textContent="Ative abaixo para começar"; }
+    else if(rodando){ $("scan-pct").textContent=pct+"%"; $("scan-lbl").textContent="varrendo"; $("scan-tit").textContent="Varrendo seu WhatsApp…";
+      $("scan-sub").textContent=(m.conversaAtual?"Agora: "+m.conversaAtual+" · ":"")+(m.feitas!=null&&m.total?m.feitas+" de "+m.total+" conversas":"analisando conversas"); }
+    else if(m.ultimaVarredura){ $("scan-pct").textContent="✓"; $("scan-lbl").textContent="protegido"; $("scan-tit").textContent="Tudo peneirado";
+      $("scan-sub").textContent="Última varredura "+fmt(m.ultimaVarredura)+(m.minutosEconomizados?" · "+m.minutosEconomizados+" min economizados":""); }
+    else { $("scan-pct").textContent="…"; $("scan-lbl").textContent="aguardando"; $("scan-tit").textContent="Pronto para varrer"; $("scan-sub").textContent="Aguardando a conexão com o WhatsApp Business"; }
+    $("sc-lidas").textContent=m.marcadasLidas!=null?m.marcadasLidas:(m.conversasLidas||0);
+    $("sc-mant").textContent=m.mantidasNaoLidas||0;
+    $("sc-imp").textContent=S.itens.filter(i=>(i.status||"pendente")==="pendente").length;
+  }
   function renderVarr(){
     const v=S.varredura||{}, on=!!v.ativa, m=S.meta||{};
     if(!numPre && (v.numero || S.dbPronto || S.demo)){ $("varr-num").value=v.numero||""; numPre=true; }
@@ -1520,7 +1582,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const passo=(estado,tit,sub)=>{ const r=el("div","pn-proc "+estado); r.appendChild(el("i",null,estado==="ok"?"✓":estado==="wait"?"…":"")); const t=el("div"); t.appendChild(el("b",null,tit)); if(sub) t.appendChild(el("span",null,sub)); r.appendChild(t); P.appendChild(r); };
     passo("ok","Varredura ativada", v.ativadaEm?"desde "+fmt(v.ativadaEm):"");
     passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":"Conectando ao WhatsApp Business",
-      conectado?(((m.numero||v.numero)?(m.numero||v.numero)+" · ":"")+"linkado pelo WhatsApp Web"):(v.numero?"Número "+v.numero+". ":"")+"Abra o Chrome no computador com a extensão Claude in Chrome e o WhatsApp Web do Business conectado. Na primeira leitura a conexão aparece aqui.");
+      conectado?(((m.numero||v.numero)?(m.numero||v.numero)+" · ":"")+"linkado pelo WhatsApp Web"):(v.numero?"Número "+v.numero+". ":"")+"No notebook, escaneie o QR do WhatsApp Web com o celular (WhatsApp Business → Dispositivos conectados → Conectar). Na primeira leitura a conexão aparece aqui.");
     passo(m.ultimaVarredura?"ok":(conectado?"wait":""), m.ultimaVarredura?"Última varredura "+fmt(m.ultimaVarredura):"Primeira varredura",
       m.ultimaVarredura?((m.conversasLidas!=null?m.conversasLidas+" conversas · ":"")+(m.mantidasNaoLidas!=null?m.mantidasNaoLidas+" mantidas como não lidas":"")):"Vai começar assim que a conexão estiver ok.");
     const box=el("div","pn-drill-box");
