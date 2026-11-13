@@ -148,11 +148,48 @@
 .pn-nums span{background:var(--surface-2);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--ink-2)}
 .pn-dn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
 .pn-dn span:first-child{font-size:16px;line-height:1}
+/* =========================================================
+   5. TELA DE ENTRADA (peneira com letras caindo)
+   ========================================================= */
+.pn-splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 25%,#2a3b6e 0%,#16213f 55%,#0b1226 100%);color:#fff;transition:opacity .5s ease}
+.pn-splash.sai{opacity:0;pointer-events:none}
+.pn-sp-stage{position:relative;width:min(92vw,420px);height:min(86vh,560px)}
+.pn-sp-sieve{position:absolute;left:50%;top:6%;width:62%;transform:translateX(-50%);animation:pnShake .28s ease-in-out 6 alternate}
+.pn-sp-sieve svg{width:100%;height:auto;display:block;overflow:visible}
+@keyframes pnShake{from{transform:translateX(-50%) rotate(-4deg)}to{transform:translateX(-50%) rotate(4deg)}}
+.pn-sp-l{position:absolute;left:0;top:0;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:700;color:#f8de8f;
+  will-change:transform,opacity;text-shadow:0 2px 10px rgba(0,0,0,.35);line-height:1}
+.pn-sp-l.junk{color:#8fa0c8;font-weight:500}
+.pn-sp-tag{position:absolute;left:0;right:0;top:80%;text-align:center;font-family:"Iowan Old Style",Georgia,serif;font-style:italic;
+  font-size:clamp(14px,4vw,18px);opacity:0;color:#e9edf6;transition:opacity .6s ease}
+.pn-sp-tag.on{opacity:.9}
+.pn-sp-pular{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:7px 16px;font:500 13px var(--font-ui);cursor:pointer}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
 <body>
 <div class="pn" id="app">
+<div class="pn-splash" id="splash" aria-hidden="true">
+  <div class="pn-sp-stage" id="sp-stage">
+    <div class="pn-sp-sieve">
+      <svg viewBox="0 0 200 150" aria-hidden="true">
+        <defs><clipPath id="spClip"><ellipse cx="100" cy="88" rx="78" ry="26"/></clipPath>
+          <linearGradient id="spRim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b9812a"/><stop offset=".5" stop-color="#f3c75c"/><stop offset="1" stop-color="#b9812a"/></linearGradient></defs>
+        <path d="M22 60 Q100 30 178 60 L172 88 Q100 118 28 88 Z" fill="#1d2a52" opacity=".55"/>
+        <g clip-path="url(#spClip)" stroke="#e9edf6" stroke-opacity=".5" stroke-width="1.4">
+          <path d="M20 66h160M20 74h160M20 82h160M20 90h160M20 98h160M20 106h160M30 60v60M42 60v60M54 60v60M66 60v60M78 60v60M90 60v60M102 60v60M114 60v60M126 60v60M138 60v60M150 60v60M162 60v60M174 60v60"/>
+        </g>
+        <ellipse cx="100" cy="88" rx="78" ry="26" fill="none" stroke="url(#spRim)" stroke-width="5"/>
+        <path d="M22 60 Q100 30 178 60" fill="none" stroke="url(#spRim)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M22 60 L28 88 M178 60 L172 88" stroke="url(#spRim)" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="pn-sp-tag" id="sp-tag">Passa tudo pela peneira. Fica só o que importa.</div>
+  </div>
+  <button class="pn-sp-pular" type="button" id="sp-pular">Pular</button>
+</div>
 <div class="pn-wrap">
 
   <!-- Marca (peneira) reutilizada no topo e no hero -->
@@ -646,6 +683,44 @@
     window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); evt=e; $("btn-instalar").hidden=false; });
     $("btn-instalar").addEventListener("click",async()=>{ if(!evt) return; evt.prompt(); try{ await evt.userChoice; }catch(e){} evt=null; $("btn-instalar").hidden=true; });
     window.addEventListener("appinstalled",()=>{ $("instalar-box").hidden=true; });
+  })();
+
+  /* ---------- tela de entrada ---------- */
+  (function(){
+    const sp=$("splash"), st=$("sp-stage");
+    let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
+    const calmo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>sp.remove(),600); }
+    $("sp-pular").addEventListener("click",fecha); sp.addEventListener("click",fecha);
+    if(visto || !st.animate){ sp.remove(); return; }
+    const W=st.clientWidth, H=st.clientHeight;
+    const sx=W*.5, sy=H*.06 + W*.62*0.5;            // centro da peneira
+    const nome="PENEIRA", fs=Math.min(W/6.2,64), gap=fs*.78, y0=H*.6;
+    const x0=W/2 - gap*(nome.length-1)/2;
+    const LIX="ABCDEFGHJKLMOQSTUVWXZ@#?!";
+    // letras que ficam "sacudindo" dentro da peneira e somem (o que não importa)
+    for(let i=0;i<36;i++){
+      const l=el("span","pn-sp-l junk",LIX[Math.floor(Math.random()*LIX.length)]);
+      l.style.fontSize=(fs*.42)+"px"; st.appendChild(l);
+      const x=sx+(Math.random()-.5)*W*.5, y=sy-fs*.5+(Math.random()-.5)*fs*.45;
+      l.animate([{transform:`translate(${x}px,${y-60}px)`,opacity:0},{transform:`translate(${x}px,${y}px)`,opacity:.9,offset:.25},
+        {transform:`translate(${x+(Math.random()-.5)*14}px,${y-6}px) rotate(${(Math.random()-.5)*50}deg)`,opacity:.8,offset:.7},
+        {transform:`translate(${x}px,${y-30}px)`,opacity:0}],{duration:calmo?600:2800,delay:Math.random()*300,fill:"forwards",easing:"ease-out"});
+    }
+    // as letras do nome passam pela peneira e se encaixam
+    nome.split("").forEach((c,i)=>{
+      const l=el("span","pn-sp-l",c); l.style.fontSize=fs+"px"; l.style.width=gap+"px"; l.style.textAlign="center"; st.appendChild(l);
+      const ix=sx+(Math.random()-.5)*W*.3 - gap/2, iy=sy-fs*.6, tx=x0+i*gap - gap/2, ty=y0;
+      l.style.opacity="0";
+      l.animate([{transform:`translate(${ix}px,${iy}px) scale(.45) rotate(${(Math.random()-.5)*60}deg)`,opacity:0},
+        {transform:`translate(${ix}px,${iy+fs*.5}px) scale(.55)`,opacity:1,offset:.18},
+        {transform:`translate(${tx}px,${ty+fs*.12}px) scale(1.04)`,opacity:1,offset:.78},
+        {transform:`translate(${tx}px,${ty-fs*.08}px) scale(.98)`,opacity:1,offset:.9},
+        {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],
+        {duration:calmo?400:1150,delay:calmo?0:900+i*170,fill:"forwards",easing:"cubic-bezier(.3,.1,.4,1)"});
+    });
+    setTimeout(()=>$("sp-tag").classList.add("on"), calmo?400:2400);
+    setTimeout(fecha, calmo?1400:3900);
   })();
 
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
