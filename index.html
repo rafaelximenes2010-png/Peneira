@@ -385,6 +385,18 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-temas{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
 .pn-tema{border:0;text-align:left;font:inherit;color:var(--ink);background:var(--surface-2);border-radius:12px;padding:10px;cursor:pointer}
 .pn-tema b{display:block;font-size:20px} .pn-tema span{font-size:12px;color:var(--ink-3)}
+
+.pn-prob{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.pn-prob .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.pn-prob .t b{font-size:15.5px}
+.pn-prob .n{font-size:22px;font-weight:700;color:var(--coral);font-variant-numeric:tabular-nums}
+.pn-prob .acao{background:var(--accent-soft);color:var(--ink);border-radius:10px;padding:8px 10px;font-size:14px}
+.pn-rank{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--border)}
+.pn-rank:first-child{border-top:0}
+.pn-rank .bar{flex:1;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.pn-rank .bar i{display:block;height:100%;background:var(--sky);border-radius:3px}
+.pn-tp{font-weight:700;font-variant-numeric:tabular-nums}
+.pn-tp.v{color:#2fb36b} .pn-tp.a{color:var(--gold-text)} .pn-tp.r{color:var(--coral)}
 </style>
 </head>
 <body>
@@ -566,12 +578,40 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     <div class="pn-chips" id="rel-abas" style="margin:4px 0 12px">
       <button class="pn-chip" type="button" data-aba="dia" aria-pressed="true">Do dia</button>
       <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
+      <button class="pn-chip" type="button" data-aba="prev" aria-pressed="false">Prevenção</button>
     </div>
     <div id="rel-dia">
       <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
       <p class="pn-meta" style="margin:-4px 0 10px" id="rel-horarios"></p>
       <div id="lista-rel"></div>
     </div>
+    <div id="rel-prev" hidden>
+      <div class="pn-h2" style="margin-top:4px">Tempo de resposta da equipe</div>
+      <div class="pn-kpis" style="grid-template-columns:repeat(2,1fr)">
+        <button class="pn-kpi" type="button" data-prev="ext"><div class="k-l">Clientes externos<span data-ico="clock"></span></div><b id="pv-ext">—</b><div class="k-s" id="pv-ext-s">meta —</div></button>
+        <button class="pn-kpi ag" type="button" data-prev="int"><div class="k-l">Clientes internos<span data-ico="clock"></span></div><b id="pv-int">—</b><div class="k-s" id="pv-int-s">meta —</div></button>
+      </div>
+      <div class="pn-card pn-form" style="margin-top:4px">
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px"><label for="pv-meta-ext">Meta externos (min)</label><input id="pv-meta-ext" type="number" min="1" inputmode="numeric"></div>
+          <div style="flex:1;min-width:120px"><label for="pv-meta-int">Meta internos (min)</label><input id="pv-meta-int" type="number" min="1" inputmode="numeric"></div>
+          <button class="pn-btn" type="button" id="pv-meta-ok">Salvar metas</button>
+        </div>
+      </div>
+
+      <div class="pn-h2">Problemas que se repetem · ações preventivas</div>
+      <div id="pv-prob"></div>
+
+      <div class="pn-h2">Quem mais gera demandas pelo WhatsApp</div>
+      <div class="pn-card" id="pv-cli"></div>
+
+      <div class="pn-h2">Respostas da equipe</div>
+      <div class="pn-card" id="pv-eq"></div>
+
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="pv-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="pv-xlsx" style="flex:1">Excel</button></div>
+      <p class="pn-meta" id="pv-fonte" style="margin:8px 4px"></p>
+    </div>
+
     <div id="rel-grupos" hidden>
       <div class="pn-card" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <div style="flex:1;min-width:150px"><b>Exportar todos os grupos</b><div class="pn-meta" id="rg-resumo">—</div></div>
@@ -911,7 +951,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { relGrupos:[], bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { gestao:null, relGrupos:[], bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -981,7 +1021,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
   function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:[],criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[],agenda:[],vips:[]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({gestao:S.gestao,relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -1082,6 +1122,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(typeof renderVarr==="function") renderVarr();
     if(typeof renderScan==="function") renderScan();
     if(typeof renderRelGrupos==="function") renderRelGrupos();
+    if(typeof renderPrev==="function") renderPrev();
     { const t=S.vips.filter(v=>v.relacao==="trabalho").length, f=S.vips.filter(v=>v.relacao==="familia").length; const sub=$("viplista-sub");
       if(sub) sub.textContent=S.vips.length? S.vips.length+" cadastrados"+(t||f?" · "+t+" trabalho · "+f+" família":"") : "Ninguém cadastrado ainda"; }
     if(typeof marcaTitulos==="function") marcaTitulos();
@@ -1319,8 +1360,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.5";
+  const VERSAO="2.6";
   const VERSOES=[
+    {v:"2.6",data:"13/11/2026",itens:["Prevenção: problemas que se repetem com ação preventiva (e botão para levar à Agenda)","Ranking de clientes que mais geram demandas","Tempo de resposta da equipe para clientes internos e externos, com metas e farol","Exportar prevenção em PDF e Excel"]},
     {v:"2.5",data:"13/11/2026",itens:["Relatórios por grupo: assuntos, preocupações, metas, compromissos, reclamações e protagonistas/líderes","Exportar em PDF e Excel (cadastro dos grupos, participantes e assuntos)","Varredura automática a cada 4 horas"]},
     {v:"2.4",data:"13/11/2026",itens:["Botão Lista VIP no Início: veja quem está cadastrado, por Trabalho, Família e Grupos, com busca"]},
     {v:"2.3",data:"13/11/2026",itens:["Varredura estilo antivírus: anel de progresso com radar girando, contadores ao vivo e selo “Varrendo…” no topo","Relatório com mensagens, tempo economizado, indicações e assuntos importantes","Número do WhatsApp da varredura no Início"]},
@@ -1545,6 +1587,10 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     ["ultimo relatorio","O relatório mais recente. Saem dois por dia, nos horários de Ajustes → Horário dos relatórios."],
     ["importantes","Tudo o que passou pela peneira. Filtre pelas categorias no topo; Concluídos mostra o que você já resolveu."],
     ["agenda","Respostas que você precisa dar, processos e prazos. Atrasados ficam em vermelho até você marcar como feito. As leituras também criam lembretes aqui."],
+    ["tempo de resposta","Quanto a equipe demora para dar a primeira resposta, separado em clientes internos e externos. Verde dentro da meta, amarelo até 2×, vermelho acima."],
+    ["problemas que se repetem","Temas que aparecem várias vezes nas conversas, com a causa provável e uma ação para evitar que voltem. Leve a ação para a Agenda com um toque."],
+    ["quem mais gera demandas","Ranking dos clientes (internos e externos) que mais abrem demandas pelo WhatsApp."],
+    ["respostas da equipe","Quem da equipe responde, quantas respostas deu e o tempo médio, com cor pela meta."],
     ["por grupo","Para cada grupo: assuntos, preocupações, metas, compromissos e reclamações, com quem mais fala e quem lidera. Exporte em PDF ou Excel."],
     ["relatorios","Resumo do que importa, duas vezes por dia, com números da leitura: conversas lidas, importantes, favoritadas."],
     ["compartilhar","Manda o link de instalação. Quem recebe faz o próprio cadastro e não vê nada seu."],
@@ -1737,7 +1783,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; }));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; }));
   function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
   function renderRelGrupos(){
     const L=$("rg-lista"); if(!L) return; L.textContent="";
@@ -1811,6 +1857,74 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   }
   $("rg-pdf").addEventListener("click",()=>exportPDF(ultimosPorGrupo(),"Peneira - relatorio por grupo"));
   $("rg-xlsx").addEventListener("click",()=>exportXLSX(ultimosPorGrupo(),"Peneira - cadastro dos grupos"));
+
+  /* ---------- prevenção: problemas recorrentes, clientes e tempo de resposta ---------- */
+  const fmtMin=m=>{ if(m==null||isNaN(m)) return "—"; m=Math.round(m); if(m<60) return m+" min"; const h=Math.floor(m/60), r=m%60; return h+"h"+(r?String(r).padStart(2,"0"):""); };
+  const corTempo=(m,meta)=>m==null?"":m<=meta?"v":m<=2*meta?"a":"r";
+  function metas(){ const g=S.gestao||{}; return {ext:(g.metas&&g.metas.ext)||30, int:(g.metas&&g.metas.int)||60}; }
+  let pvPre=false;
+  async function salvaGestao(patch){
+    const novo={...(S.gestao||{}),...patch,atualizadoEm:new Date().toISOString()};
+    if(S.demo){ S.gestao=novo; demoSave(); render(); return; }
+    if(!S.db) return; try{ await S.db.doc("meta/gestao").set(novo); }catch(e){ aviso("Não consegui salvar agora."); }
+  }
+  $("pv-meta-ok").addEventListener("click",()=>{ if(!S.canWrite) return; salvaGestao({metas:{ext:+$("pv-meta-ext").value||30,int:+$("pv-meta-int").value||60}}); salvoOk($("pv-meta-ok")); });
+  function renderPrev(){
+    const g=S.gestao||{}, mt=metas(); if(!$("pv-prob")) return;
+    if(!pvPre){ $("pv-meta-ext").value=mt.ext; $("pv-meta-int").value=mt.int; pvPre=true; }
+    const t=g.tempos||{};
+    [["ext","externos"],["int","internos"]].forEach(([k])=>{ const v=t[k]; const e=$("pv-"+k); e.textContent=fmtMin(v); e.className="pn-tp "+corTempo(v,mt[k]); e.style.fontSize="30px";
+      $("pv-"+k+"-s").textContent="meta "+fmtMin(mt[k])+(t[k+"Qtd"]!=null?" · "+t[k+"Qtd"]+" conversas":""); });
+    // problemas recorrentes
+    const P=$("pv-prob"); P.textContent="";
+    const probs=(g.problemas||[]).slice().sort((a,b)=>(b.ocorrencias||0)-(a.ocorrencias||0));
+    if(!probs.length) P.appendChild(el("div","pn-empty","Depois de algumas varreduras eu identifico os problemas que se repetem e sugiro ações para preveni-los."));
+    probs.forEach(pr=>{ const c=el("div","pn-card pn-prob");
+      const t1=el("div","t"); const l=el("div"); l.appendChild(el("b",null,pr.tema)); l.appendChild(el("div","pn-meta",[(pr.grupos||[]).join(", "),pr.tendencia?("tendência "+pr.tendencia):""].filter(Boolean).join(" · ")));
+      t1.append(l, el("span","n",String(pr.ocorrencias||0))); c.appendChild(t1);
+      if(pr.causa) c.appendChild(el("div","pn-meta","Causa provável: "+pr.causa));
+      if(pr.acaoPreventiva){ const a=el("div","acao"); a.appendChild(el("b",null,"Ação preventiva: ")); a.appendChild(document.createTextNode(pr.acaoPreventiva+(pr.responsavel?" (responsável: "+pr.responsavel+")":""))); c.appendChild(a); }
+      const bt=el("button","pn-btn","Levar para a Agenda"); bt.type="button"; bt.style.alignSelf="flex-start";
+      bt.onclick=()=>{ if(!S.canWrite) return; const d=new Date(); d.setDate(d.getDate()+1); d.setHours(9,0,0,0);
+        salvaAg("add",{titulo:"Prevenção: "+pr.tema,tipo:"processo",quando:`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T09:00`,contato:pr.responsavel||"",info:pr.acaoPreventiva||"",feito:false,criadoEm:new Date().toISOString(),origem:"prevencao"}); salvoOk(bt,"✓ Na agenda"); };
+      c.appendChild(bt); P.appendChild(c); });
+    // clientes
+    const C=$("pv-cli"); C.textContent=""; const cl=(g.clientes||[]).slice().sort((a,b)=>(b.demandas||0)-(a.demandas||0)); const mx=Math.max(1,...cl.map(x=>x.demandas||0));
+    if(!cl.length) C.appendChild(el("div","pn-meta","Ainda sem dados. Eu conto as demandas por cliente a cada varredura."));
+    cl.slice(0,10).forEach(x=>{ const r=el("div","pn-rank"); const n=el("div"); n.style.minWidth="40%"; n.appendChild(el("b",null,x.nome));
+      n.appendChild(el("div","pn-meta",(x.tipo==="interno"?"Interno":"Externo")+(x.principalAssunto?" · "+x.principalAssunto:"")));
+      const bar=el("div","bar"); const ii=el("i"); ii.style.width=Math.round(100*(x.demandas||0)/mx)+"%"; if(x.tipo==="interno") ii.style.background="var(--accent)"; bar.appendChild(ii);
+      r.append(n,bar,el("b",null,String(x.demandas||0))); C.appendChild(r); });
+    // equipe
+    const E=$("pv-eq"); E.textContent=""; const eq=(g.atendimento||[]).slice().sort((a,b)=>(a.tempoMedioMin??1e9)-(b.tempoMedioMin??1e9));
+    if(!eq.length) E.appendChild(el("div","pn-meta","Ainda sem dados. Eu meço quem responde e em quanto tempo, separando clientes internos e externos."));
+    eq.forEach(x=>{ const meta=x.tipoCliente==="interno"?mt.int:mt.ext; const r=el("div","pn-rank"); const n=el("div"); n.style.flex="1";
+      n.appendChild(el("b",null,x.funcionario)); n.appendChild(el("div","pn-meta",(x.respostas||0)+" respostas · clientes "+(x.tipoCliente==="interno"?"internos":"externos")+(x.semResposta?" · "+x.semResposta+" sem resposta":"")));
+      r.append(n, el("span","pn-tp "+corTempo(x.tempoMedioMin,meta),fmtMin(x.tempoMedioMin))); E.appendChild(r); });
+    $("pv-fonte").textContent = g.atualizadoEm ? "Fonte: varreduras do WhatsApp até "+fmt(g.atualizadoEm)+(g.periodo?" ("+g.periodo+")":"")+". Tempo de resposta = da mensagem do cliente até a primeira resposta da equipe." : "";
+  }
+  document.addEventListener("click",e=>{ const k=e.target.closest("[data-prev]"); if(!k) return; const t=(S.gestao||{}).tempos||{}, mt=metas(), ext=k.dataset.prev==="ext";
+    abreInfo("Tempo de resposta · clientes "+(ext?"externos":"internos"),"Tempo médio entre a mensagem do cliente e a primeira resposta de alguém da equipe, medido nos grupos e conversas lidos.\n\nAtual: "+fmtMin(t[k.dataset.prev])+" · meta: "+fmtMin(mt[k.dataset.prev])+"\nVerde = dentro da meta · Amarelo = até 2× a meta · Vermelho = acima disso."); });
+  function exportPrev(fmtArq){
+    const g=S.gestao||{}; if(!(g.problemas||g.clientes||g.atendimento)){ aviso("Ainda não há dados de prevenção para exportar."); return; }
+    if(fmtArq==="xlsx") return (async()=>{ try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de Excel."); return; }
+      const X=window.XLSX, wb=X.utils.book_new(); const add=(rows,n)=>X.utils.book_append_sheet(wb,X.utils.json_to_sheet(rows.length?rows:[{"":""}]),n);
+      add((g.problemas||[]).map(p=>({"Problema":p.tema,"Ocorrências":p.ocorrencias||0,"Grupos":(p.grupos||[]).join(", "),"Tendência":p.tendencia||"","Causa provável":p.causa||"","Ação preventiva":p.acaoPreventiva||"","Responsável":p.responsavel||""})),"Problemas recorrentes");
+      add((g.clientes||[]).map(c=>({"Cliente":c.nome,"Tipo":c.tipo==="interno"?"Interno":"Externo","Demandas":c.demandas||0,"Principal assunto":c.principalAssunto||""})),"Demandas por cliente");
+      add((g.atendimento||[]).map(a=>({"Funcionário":a.funcionario,"Clientes":a.tipoCliente==="interno"?"Internos":"Externos","Respostas":a.respostas||0,"Tempo médio (min)":a.tempoMedioMin??"","Sem resposta":a.semResposta||0})),"Respostas da equipe");
+      await salvarArquivo("Peneira - prevencao.xlsx",new Blob([X.write(wb,{bookType:"xlsx",type:"array"})])); })();
+    return (async()=>{ try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de PDF."); return; }
+      const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4"}), W=doc.internal.pageSize.getWidth(), verde=[15,118,110], mt=metas(), t=g.tempos||{};
+      doc.setFillColor(...verde); doc.rect(0,0,W,64,"F"); doc.setTextColor(255); doc.setFontSize(18); doc.text("Peneira · Prevenção e atendimento",36,38); doc.setFontSize(10); doc.text("Gerado em "+new Date().toLocaleString("pt-BR"),36,54);
+      doc.setTextColor(30); doc.setFontSize(11); doc.text("Tempo médio de resposta — externos: "+fmtMin(t.ext)+" (meta "+fmtMin(mt.ext)+")   internos: "+fmtMin(t.int)+" (meta "+fmtMin(mt.int)+")",36,88);
+      const H={headStyles:{fillColor:verde},styles:{fontSize:9}};
+      doc.autoTable({startY:104,head:[["Problema recorrente","Ocorr.","Ação preventiva","Responsável"]],body:(g.problemas||[]).map(p=>[p.tema,p.ocorrencias||0,p.acaoPreventiva||"",p.responsavel||""]),...H,columnStyles:{2:{cellWidth:220}}});
+      doc.autoTable({startY:doc.lastAutoTable.finalY+16,head:[["Cliente","Tipo","Demandas","Principal assunto"]],body:(g.clientes||[]).map(c=>[c.nome,c.tipo==="interno"?"Interno":"Externo",c.demandas||0,c.principalAssunto||""]),...H});
+      doc.autoTable({startY:doc.lastAutoTable.finalY+16,head:[["Funcionário","Clientes","Respostas","Tempo médio","Sem resposta"]],body:(g.atendimento||[]).map(a=>[a.funcionario,a.tipoCliente==="interno"?"Internos":"Externos",a.respostas||0,fmtMin(a.tempoMedioMin),a.semResposta||0]),...H});
+      await salvarArquivo("Peneira - prevencao.pdf",doc.output("blob")); })();
+  }
+  $("pv-xlsx").addEventListener("click",()=>exportPrev("xlsx"));
+  $("pv-pdf").addEventListener("click",()=>exportPrev("pdf"));
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
@@ -2056,7 +2170,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.relGrupos=d.relGrupos||[]; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
+      const d=demoLoad(); S.demo=true; S.gestao=d.gestao||null; S.relGrupos=d.relGrupos||[]; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
       try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta=d.meta||null;
       render(); fluxo(); return;
@@ -2066,6 +2180,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.doc("meta/gestao").onSnapshot(s=>{ S.gestao=s.exists?s.data():null; render(); }, ()=>{});
     db.collection("relGrupos").onSnapshot(s=>{ S.relGrupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/bomdia").onSnapshot(s=>{ S.bomdia=s.exists?s.data():null; render(); }, ()=>{});
     db.doc("config/varredura").onSnapshot(s=>{ S.varredura=s.exists?s.data():null; render(); }, ()=>{});
