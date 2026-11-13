@@ -146,6 +146,8 @@
 .pn-rel li{margin-bottom:4px;font-family:var(--font-text);font-size:15px;color:var(--ink-2)}
 .pn-nums{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .pn-nums span{background:var(--surface-2);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--ink-2)}
+.pn-dn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
+.pn-dn span:first-child{font-size:16px;line-height:1}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -175,7 +177,10 @@
       <svg aria-hidden="true"><use href="#pnMark"/></svg>
       <div><b>Peneira</b><small>Central do WhatsApp</small></div>
     </div>
-    <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
+    <div style="display:flex;align-items:center;gap:8px">
+      <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
+      <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico">🌙</span><span id="dn-txt">Noite</span></button>
+    </div>
   </header>
 
   <div class="pn-banner" id="aviso"></div>
@@ -568,9 +573,12 @@
   /* ---------- tema (preferência deste aparelho) ---------- */
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
   let tema="auto"; try{ tema=localStorage.getItem("peneira-tema")||"auto"; }catch(e){}
+  const escuroAgora = () => tema==="noite" || (tema==="auto" && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
   function aplicaTema(){ const r=$("app"); if(tema==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",tema);
+    const esc=escuroAgora(); $("dn-ico").textContent = esc ? "☀️" : "🌙"; $("dn-txt").textContent = esc ? "Dia" : "Noite";
     document.querySelectorAll("#temas .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===tema?"true":"false")); }
   TEMAS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.t=k; b.onclick=()=>{ tema=k; try{localStorage.setItem("peneira-tema",k);}catch(e){} aplicaTema(); }; $("temas").appendChild(b); });
+  $("btn-dn").addEventListener("click",()=>{ tema = escuroAgora() ? "dia" : "noite"; try{localStorage.setItem("peneira-tema",tema);}catch(e){} aplicaTema(); });
   aplicaTema();
   document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 
