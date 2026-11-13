@@ -424,6 +424,10 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
         <div><b style="font-size:16px">Varrer meu WhatsApp</b><div class="pn-meta" id="varr-sub">Desativado</div></div>
         <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
       </div>
+      <div style="display:flex;gap:6px;margin-top:12px;align-items:center">
+        <input id="varr-num" type="tel" inputmode="tel" placeholder="Número do WhatsApp (ex.: 81 98299-1357)" maxlength="20" style="flex:1">
+        <button class="pn-btn" type="button" id="varr-num-ok">Salvar</button>
+      </div>
       <div id="varr-proc" style="display:none;margin-top:12px"></div>
     </div>
     <div class="pn-card" id="bd-hoje" hidden style="margin-bottom:14px;border-color:var(--gold)">
@@ -1486,7 +1490,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const ag=e.target.closest(".pn-ag"); if(ag && !e.target.closest("input,button")){ const a=S.agenda.find(x=>x.id===ag.dataset.id); if(a) abreInfo(a.titulo,"Tipo: "+({responder:"responder alguém",processo:"processo",prazo:"prazo / pagamento",lembrete:"lembrete"}[a.tipo]||"lembrete")+". Quando: "+fmt(a.quando)+(a.contato?". Com: "+a.contato:"")+(a.origem==="leitura"?". Criado pela leitura do WhatsApp.":". Criado por você."),B=>{ const b=el("button","pn-btn pri",a.feito?"Reabrir":"Marcar como feito"); b.style.width="100%"; b.style.marginTop="10px"; b.onclick=()=>{ salvaAg("upd",{id:a.id,patch:{feito:!a.feito,feitoEm:a.feito?null:new Date().toISOString()}}); fechaDrill(); }; B.appendChild(b); }); return; }
     const vp=e.target.closest(".pn-vip[data-nome]"); if(vp && !e.target.closest("button")){ const v=S.vips.find(x=>x.id===vp.dataset.id); if(v){ const n=S.itens.filter(i=>vipDe(i)===v).length; abreInfo(v.nome,(v.tipo==="grupo"?"Grupo":"Pessoa")+" VIP. Som "+(v.som!==false?"ligado":"desligado")+". "+n+" mensagem(ns) já separada(s)."+(v.tel?" Telefone: "+v.tel+".":"")+(v.tipo==="grupo"?" Grupo VIP nunca é silenciado enquanto o som estiver ligado.":"")); } return; }
     const ck=e.target.closest(".pn-crit-card"); if(ck && !e.target.closest("button")){ const k=S.criterios.find(x=>x.id===ck.dataset.id); if(k){ const n=S.itens.filter(i=>i.categoria&&norm(i.categoria).includes(norm(k.nome).split(" ")[0])).length; abreInfo(k.nome,(k.descricao||"")+(k.exemplos?" Exemplos: "+k.exemplos+".":"")+" Situação: "+(k.status||"sugerido")+". "+n+" item(ns) nesta categoria."); } return; }
-    const nr=e.target.closest(".pn-nums span"); if(nr){ abreInfo("Números do relatório","Conversas lidas = quantas conversas eu abri na leitura. Importantes = quantas passaram pela peneira. Favoritadas = marcadas com estrela no WhatsApp. Respostas de ausência = enviadas pelo WhatsApp Business."); return; }
+    const nr=e.target.closest(".pn-nums span"); if(nr){ abreInfo("Números do relatório","Mensagens = total de mensagens não lidas encontradas. Conversas lidas = conversas analisadas. Marcadas como lidas = o que não importava. Mantidas não lidas = VIP, critérios e menções (@). Importantes = o que passou pela peneira. Tempo economizado = estimativa de leitura evitada (cerca de 5 segundos por mensagem descartada + 20 segundos por conversa aberta)."); return; }
     const st=e.target.closest("#status-card .pn-row b"); if(st){ abreInfo("Meu status",ajuda("status")); return; }
     const ft=e.target.closest(".pn-farol-t"); if(ft){ abreInfo("Farol do dia","Vermelho: agir já (alta, VIP e atrasados). Amarelo: atenção (média/baixa e agenda de hoje). Verde: o que você já resolveu. Toque em cada luz para ver a lista."); return; }
   });
@@ -1500,8 +1504,12 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     try{ await S.db.doc("config/varredura").set(novo); }catch(e){ aviso("Não consegui salvar agora."); }
   }
   $("varr-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.varredura&&S.varredura.ativa); salvaVarr({ativa:on, [on?"ativadaEm":"desativadaEm"]:new Date().toISOString()}); });
+
+  let numPre=false;
+  $("varr-num-ok").addEventListener("click",()=>{ if(!S.canWrite) return; const n=$("varr-num").value.trim(); salvaVarr({numero:n}); salvoOk($("varr-num-ok")); });
   function renderVarr(){
     const v=S.varredura||{}, on=!!v.ativa, m=S.meta||{};
+    if(!numPre && (v.numero || S.dbPronto || S.demo)){ $("varr-num").value=v.numero||""; numPre=true; }
     $("varr-tg").setAttribute("aria-checked",on?"true":"false");
     const conectado=!!m.conectado;
     $("varr-sub").textContent="";
@@ -1512,7 +1520,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const passo=(estado,tit,sub)=>{ const r=el("div","pn-proc "+estado); r.appendChild(el("i",null,estado==="ok"?"✓":estado==="wait"?"…":"")); const t=el("div"); t.appendChild(el("b",null,tit)); if(sub) t.appendChild(el("span",null,sub)); r.appendChild(t); P.appendChild(r); };
     passo("ok","Varredura ativada", v.ativadaEm?"desde "+fmt(v.ativadaEm):"");
     passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":"Conectando ao WhatsApp Business",
-      conectado?((m.numero?m.numero+" · ":"")+"linkado pelo WhatsApp Web"):"Abra o Chrome no computador com a extensão Claude in Chrome e o WhatsApp Web do Business conectado. Na primeira leitura a conexão aparece aqui.");
+      conectado?(((m.numero||v.numero)?(m.numero||v.numero)+" · ":"")+"linkado pelo WhatsApp Web"):(v.numero?"Número "+v.numero+". ":"")+"Abra o Chrome no computador com a extensão Claude in Chrome e o WhatsApp Web do Business conectado. Na primeira leitura a conexão aparece aqui.");
     passo(m.ultimaVarredura?"ok":(conectado?"wait":""), m.ultimaVarredura?"Última varredura "+fmt(m.ultimaVarredura):"Primeira varredura",
       m.ultimaVarredura?((m.conversasLidas!=null?m.conversasLidas+" conversas · ":"")+(m.mantidasNaoLidas!=null?m.mantidasNaoLidas+" mantidas como não lidas":"")):"Vai começar assim que a conexão estiver ok.");
     const box=el("div","pn-drill-box");
@@ -1669,7 +1677,11 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
     if(Array.isArray(r.destaques)&&r.destaques.length){ const u=el("ul"); r.destaques.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); }
     const n=r.numeros||{}, nm=el("div","pn-nums");
-    [["lidas","conversas lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
+    [["mensagens","mensagens"],["lidas","conversas lidas"],["marcadasLidas","marcadas como lidas"],["naoLidas","mantidas não lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
+    if(n.minutosEconomizados!=null){ const tz=el("div","pn-drill-box"); tz.style.marginTop="8px"; const h=Math.floor(n.minutosEconomizados/60), mi=n.minutosEconomizados%60;
+      tz.textContent="⏱ Tempo economizado: "+(h?h+"h ":"")+mi+" min"+(n.criterioTempo?" ("+n.criterioTempo+")":""); c.appendChild(tz); }
+    if(Array.isArray(r.indicacoes)&&r.indicacoes.length){ c.appendChild(el("div","pn-ag-g","Indicações")); const u2=el("ul"); r.indicacoes.forEach(d=>u2.appendChild(el("li",null,d))); c.appendChild(u2); }
+    if(Array.isArray(r.assuntos)&&r.assuntos.length){ c.appendChild(el("div","pn-ag-g","Assuntos importantes")); const u3=el("ul"); r.assuntos.forEach(d=>u3.appendChild(el("li",null,d))); c.appendChild(u3); }
     if(nm.childNodes.length) c.appendChild(nm);
     return c;
   }
