@@ -1,6 +1,6 @@
 /* Service worker do Peneira: guarda o app para abrir offline.
-   Ao publicar uma nova versão, altere CACHE (ex.: peneira-v8) para forçar a atualização. */
-const CACHE = "peneira-v8";
+   Ao publicar uma nova versão, altere CACHE (ex.: peneira-v9) para forçar a atualização. */
+const CACHE = "peneira-v9";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./politica.html", "./icons/icon.svg", "./icons/favicon-32.png",
   "./icons/apple-touch-180.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 

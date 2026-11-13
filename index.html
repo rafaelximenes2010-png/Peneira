@@ -170,7 +170,7 @@
 .pn-sp-sieve{position:absolute;left:50%;top:10%;width:70%;transform:translateX(-50%)}
 .pn-sp-sieve svg{width:100%;height:auto;display:block;overflow:visible}
 @keyframes pnShake{from{transform:translateX(-50%) rotate(-4deg)}to{transform:translateX(-50%) rotate(4deg)}}
-.pn-sp-l{position:absolute;left:0;top:0;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:700;color:#f8de8f;
+.pn-sp-l{position:absolute;left:0;top:0;transform:translate(-200px,-200px);font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:700;color:#f8de8f;
   will-change:transform,opacity;text-shadow:0 2px 10px rgba(0,0,0,.35);line-height:1}
 .pn-sp-l.junk{color:#8fa0c8;font-weight:500}
 .pn-sp-tag{position:absolute;left:0;right:0;top:80%;text-align:center;font-family:"Iowan Old Style",Georgia,serif;font-style:italic;
@@ -285,6 +285,11 @@
       <div class="pn-kpi prazo"><b id="k-prazo">–</b><span>Vencem em 7 dias</span></div>
     </div>
 
+    <div class="pn-card" id="status-card" style="margin-bottom:10px">
+      <div class="pn-row" style="align-items:center"><b>Meu status · resposta automática</b><span class="pn-meta" id="st-atual">Disponível</span></div>
+      <div class="pn-chips" id="st-chips" style="margin:10px 0 0"></div>
+      <div id="st-ajuda" class="pn-meta" style="margin-top:8px;display:none"></div>
+    </div>
     <button class="pn-cta" id="cta-inst" type="button" hidden style="margin-bottom:10px;background:var(--accent-soft);border-color:var(--accent);color:var(--accent)">
       <span><b>📲 Instalar o Peneira no celular</b></span><span>Ver como →</span>
     </button>
@@ -495,6 +500,9 @@
         <button class="pn-btn" type="button" data-mute="reativar">Reativar todos</button>
       </div>
     </div>
+
+    <div class="pn-h2">Status com um toque</div>
+    <div class="pn-card"><p class="pn-meta" style="margin:0 0 8px">Ocupado, em trânsito, viajando, férias… escolha no <b>Início</b>, no cartão "Meu status".</p><button class="pn-btn pri" type="button" data-go="inicio">Ir para Meu status</button></div>
 
     <div class="pn-h2">Respostas automáticas · WhatsApp Business</div>
     <div class="pn-card pn-form" id="respostas">
@@ -771,6 +779,7 @@
     Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
     if(typeof renderVips==="function") renderVips();
     if(typeof renderAgenda==="function") renderAgenda();
+    if(typeof renderStatus==="function") renderStatus();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
     if(typeof renderAcoes==="function") renderAcoes();
@@ -813,7 +822,7 @@
     rapida:{nome:"Resposta rápida",onde:["Em <b>Ferramentas</b>, toque em <b>Respostas rápidas</b> → <b>+</b>.","Cole o texto e crie um atalho (ex.: <b>/retorno</b>).","Na conversa, digite <b>/</b> para usar."]}
   };
   const MODELOS_RA={
-    ausencia:MODELOS,
+    ausencia:MODELOS.concat([{k:"transito",nome:"Em trânsito",txt:"Olá! Estou dirigindo/em trânsito e não posso responder agora. Falo com você assim que chegar."},{k:"viajando",nome:"Viajando",txt:"Olá! Estou viajando, com acesso limitado ao WhatsApp. Respondo assim que possível."},{k:"ocupado",nome:"Ocupado",txt:"Olá! Estou ocupado agora e não consigo responder. Retorno assim que possível."}]),
     saudacao:[{k:"s1",nome:"Padrão",txt:"Olá! Obrigado pela mensagem. Respondo assim que possível."},{k:"s2",nome:"Trabalho",txt:"Olá! Aqui é o Rafael. Se for assunto de operação urgente, me ligue. Respondo em breve."}],
     rapida:[{k:"r1",nome:"Retorno",txt:"Recebi, obrigado! Retorno ainda hoje."},{k:"r2",nome:"Em reunião",txt:"Estou em reunião, falo com você em seguida."},{k:"r3",nome:"Confirmado",txt:"Confirmado ✅"}]
   };
@@ -1006,7 +1015,7 @@
   /* ---------- central (novidades, atualizações e mais) ---------- */
   const VERSAO="1.5";
   const VERSOES=[
-    {v:"1.5",data:"13/11/2026",itens:["Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
+    {v:"1.5",data:"13/11/2026",itens:["Meu status com um toque: ocupado, em reunião, em trânsito, viajando, férias","Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
     {v:"1.4",data:"13/11/2026",itens:["Contatos VIP com alerta sonoro","Compartilhar por WhatsApp","Instalação guiada no iPhone e Android"]},
     {v:"1.3",data:"13/11/2026",itens:["Paleta Menta e novo ícone","5 opções de cores no modo dia","Botão Dia/Noite"]},
     {v:"1.0",data:"13/11/2026",itens:["Primeira versão: importantes, critérios, relatórios e ações"]}
@@ -1050,6 +1059,39 @@
   $("hub-fechar").addEventListener("click",()=>{ $("hub").hidden=true; });
   $("hub").addEventListener("click",e=>{ if(e.target.id==="hub") $("hub").hidden=true; });
 
+
+  /* ---------- status com um toque (resposta automática) ---------- */
+  const STATUS=[
+    {k:"ocupado",ico:"🔴",nome:"Ocupado",txt:"Olá! Estou ocupado agora e não consigo responder. Retorno assim que possível."},
+    {k:"reuniao",ico:"🤝",nome:"Em reunião",txt:"Olá! Estou em reunião. Respondo assim que sair. Se for urgente, me ligue."},
+    {k:"transito",ico:"🚗",nome:"Em trânsito",txt:"Olá! Estou dirigindo/em trânsito e não posso responder agora. Falo com você assim que chegar."},
+    {k:"viajando",ico:"✈️",nome:"Viajando",txt:"Olá! Estou viajando, com acesso limitado ao WhatsApp. Respondo assim que possível."},
+    {k:"ferias",ico:"🏖️",nome:"Férias",txt:"Olá! Estou de férias e com acesso limitado ao WhatsApp. Respondo quando voltar."},
+    {k:"fora",ico:"🌙",nome:"Fora do horário",txt:"Olá! Estou fora do horário agora. Respondo no próximo dia útil."}
+  ];
+  async function setStatus(k){
+    const st=STATUS.find(x=>x.k===k);
+    const cust=S.ausencia&&S.ausencia.status&&S.ausencia.status[k];
+    const txt=st?(cust||st.txt):"";
+    const novo={...(S.ausencia||{}),statusAtivo:k||null,statusTexto:txt,statusDesde:k?new Date().toISOString():null,atualizadoEm:new Date().toISOString()};
+    if(k){ try{ await navigator.clipboard.writeText(txt); }catch(e){} }
+    if(S.demo){ S.ausencia=novo; demoSave(); render(); }
+    else if(S.db){ try{ await S.db.doc("config/ausencia").set(novo); }catch(e){ aviso("Não consegui salvar o status agora."); } }
+    else { S.ausencia=novo; render(); }
+  }
+  function renderStatus(){
+    const a=S.ausencia||{}, at=a.statusAtivo, st=STATUS.find(x=>x.k===at);
+    const C=$("st-chips"); C.textContent="";
+    STATUS.forEach(x=>{ const b=el("button","pn-chip",x.ico+" "+x.nome); b.type="button"; b.setAttribute("aria-pressed",x.k===at?"true":"false");
+      b.onclick=()=>{ if(S.canWrite) setStatus(x.k===at?null:x.k); }; C.appendChild(b); });
+    if(at){ const d=el("button","pn-chip","✓ Voltei, estou disponível"); d.type="button"; d.onclick=()=>{ if(S.canWrite) setStatus(null); }; C.appendChild(d); }
+    $("st-atual").textContent = st ? (st.ico+" "+st.nome+(a.statusDesde?" desde "+fmt(a.statusDesde):"")) : "🟢 Disponível";
+    const H=$("st-ajuda");
+    if(st){ H.style.display="block"; H.textContent="";
+      H.appendChild(el("div",null,"Mensagem: “"+(a.statusTexto||st.txt)+"”"));
+      H.appendChild(el("div",null,"✓ Texto copiado. Para valer no WhatsApp: WhatsApp Business → Ferramentas → Mensagem de ausência → cole → ative “Sempre enviar”. Quando o número estiver ligado à API, este toque passa a ativar sozinho."));
+    } else H.style.display="none";
+  }
   /* ---------- tema (preferência deste aparelho) ---------- */
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
   let tema="auto"; try{ tema=localStorage.getItem("peneira-tema")||"auto"; }catch(e){}
@@ -1227,7 +1269,7 @@
     setTimeout(()=>peneira.animate([{transform:"translateX(-50%) rotate(0)"},{transform:"translateX(-52%) rotate(-5deg)"},{transform:"translateX(-48%) rotate(5deg)"},{transform:"translateX(-52%) rotate(-4deg)"},{transform:"translateX(-48%) rotate(4deg)"},{transform:"translateX(-50%) rotate(0)"}],{duration:900*k,iterations:1,easing:"ease-in-out"}), T_SACODE);
     function cai(l,x,y,atraso,rot){ // cai de cima para dentro da peneira
       return l.animate([{transform:`translate(${x}px,${-fs*1.5}px) rotate(${rot}deg)`,opacity:0},{transform:`translate(${x}px,${y-fs*.15}px) rotate(${rot/2}deg)`,opacity:1,offset:.8},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`,opacity:1}],
-        {duration:750*k,delay:atraso*k,fill:"forwards",easing:"cubic-bezier(.5,0,.8,.6)"});
+        {duration:750*k,delay:atraso*k,fill:"both",easing:"cubic-bezier(.5,0,.8,.6)"});
     }
     function chacoalha(l,x,y,rot){ // treme junto com a peneira
       setTimeout(()=>l.animate([{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`},{transform:`translate(${x-6}px,${y-5}px) rotate(${rot/3-15}deg)`},{transform:`translate(${x+6}px,${y-3}px) rotate(${rot/3+15}deg)`},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
@@ -1235,7 +1277,7 @@
     // o que não importa: cai na peneira, sacode e fica (some)
     for(let i=0;i<34;i++){
       const l=el("span","pn-sp-l junk",LIX[Math.floor(Math.random()*LIX.length)]);
-      l.style.fontSize=(fs*.42)+"px"; st.appendChild(l);
+      l.style.fontSize=(fs*.42)+"px"; l.style.opacity="0"; st.appendChild(l);
       const x=sx+(Math.random()-.5)*rv.width*.62 - fs*.12, y=sy-fs*.42+(Math.random()-.5)*fs*.3, rot=(Math.random()-.5)*80;
       cai(l,x,y,Math.random()*700,rot); chacoalha(l,x,y,rot);
       setTimeout(()=>l.animate([{opacity:1},{opacity:0,transform:`translate(${x}px,${y-fs*.2}px) scale(.6)`}],{duration:700*k,fill:"forwards"}), T_PASSA+300*k);
@@ -1245,7 +1287,7 @@
       const l=el("span","pn-sp-l",c); l.style.font=FONTE; l.style.width=larg[i]+"px"; l.style.textAlign="center"; l.style.opacity="0"; st.appendChild(l);
       const ix=sx+(Math.random()-.5)*rv.width*.5 - larg[i]/2, iy=sy-fs*.62, rot=(Math.random()-.5)*70, tx=posX[i], ty=y0;
       const a=l.animate([{transform:`translate(${ix}px,${-fs*1.5}px) rotate(${rot}deg) scale(.55)`,opacity:0},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1}],
-        {duration:750*k,delay:(150+Math.random()*550)*k,fill:"forwards",easing:"cubic-bezier(.5,0,.8,.6)"});
+        {duration:750*k,delay:(150+Math.random()*550)*k,fill:"both",easing:"cubic-bezier(.5,0,.8,.6)"});
       setTimeout(()=>l.animate([{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`},{transform:`translate(${ix-5}px,${iy-6}px) rotate(${rot/3-12}deg) scale(.55)`},{transform:`translate(${ix+5}px,${iy-3}px) rotate(${rot/3+12}deg) scale(.55)`},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
       setTimeout(()=>l.animate([
         {transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1},
