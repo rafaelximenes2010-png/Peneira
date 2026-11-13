@@ -30,12 +30,18 @@
   --font-text:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
 }
 @media (prefers-color-scheme: dark){
-  .pn{ --bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
+  .pn:not([data-theme="dia"]){--bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
     --ink:#efeaf8; --ink-2:#cbc1e0; --ink-3:#9a8fb2;
     --accent:#b69cff; --accent-ink:#1d1236; --accent-soft:#2e2350;
     --gold-soft:#3a2416; --gold-text:#ffab6e; --coral-soft:#3d1f18; --sky-soft:#17283b;
-    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35); }
+    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35);}
 }
+.pn[data-theme="noite"]{--bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
+    --ink:#efeaf8; --ink-2:#cbc1e0; --ink-3:#9a8fb2;
+    --accent:#b69cff; --accent-ink:#1d1236; --accent-soft:#2e2350;
+    --gold-soft:#3a2416; --gold-text:#ffab6e; --coral-soft:#3d1f18; --sky-soft:#17283b;
+    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35);}
+
 
 /* =========================================================
    2. BASE
@@ -121,6 +127,23 @@
 .pn-list{margin:0;padding-left:18px}
 .pn-list li{margin-bottom:4px}
 .pn-banner{background:var(--gold-soft);color:var(--gold-text);border-radius:12px;padding:9px 12px;font-size:13px;margin-bottom:12px;display:none}
+.pn-switch{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.pn-tg{position:relative;width:48px;height:28px;border-radius:14px;border:0;background:var(--border);cursor:pointer;flex:none;transition:background .15s}
+.pn-tg::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .15s}
+.pn-tg[aria-checked="true"]{background:var(--gold)}
+.pn-tg[aria-checked="true"]::after{left:23px}
+.pn-tpl{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.pn-form label{font-size:12px;color:var(--ink-3);font-weight:600}
+.pn-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:10px}
+.pn-q{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:8px 0;border-top:1px solid var(--border)}
+.pn-q:first-child{border-top:0}
+.st-pendente{color:var(--gold-text);font-weight:700} .st-feito{color:var(--accent);font-weight:700}
+.pn-live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:6px;box-shadow:0 0 0 4px var(--gold-soft)}
+.pn-rel h3{margin:0 0 2px;font-size:16px}
+.pn-rel ul{margin:8px 0 0;padding-left:18px}
+.pn-rel li{margin-bottom:4px;font-family:var(--font-text);font-size:15px;color:var(--ink-2)}
+.pn-nums{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pn-nums span{background:var(--surface-2);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--ink-2)}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -179,6 +202,8 @@
 
     <div class="pn-h2">Agora</div>
     <div id="agora"></div>
+    <div class="pn-h2">Último relatório</div>
+    <div id="ultimo-rel"></div>
   </section>
 
   <!-- ========== IMPORTANTES ========== -->
@@ -188,9 +213,44 @@
     <div id="lista-itens"></div>
   </section>
 
+  <!-- ========== RELATÓRIOS ========== -->
+  <section class="pn-view" id="relatorios">
+    <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
+    <p class="pn-meta" style="margin:-4px 0 10px" id="rel-horarios"></p>
+    <div id="lista-rel"></div>
+  </section>
+
+  <!-- ========== AJUSTES ========== -->
+  <section class="pn-view" id="ajustes">
+    <div class="pn-h2" style="margin-top:4px">Aparência</div>
+    <div class="pn-card">
+      <div class="pn-meta" style="margin-bottom:8px">Tema</div>
+      <div class="pn-chips" id="temas" style="margin:0"></div>
+    </div>
+
+    <div class="pn-h2">Notificações no celular</div>
+    <div class="pn-card" id="notifs"></div>
+
+    <div class="pn-h2">Horário dos relatórios</div>
+    <div class="pn-card pn-form">
+      <div class="pn-grid2" style="margin:0">
+        <div><label for="h-manha">Manhã</label><input id="h-manha" type="time"></div>
+        <div><label for="h-noite">Noite</label><input id="h-noite" type="time"></div>
+      </div>
+      <button class="pn-btn pri" type="button" id="h-salvar">Salvar horários</button>
+    </div>
+
+    <div class="pn-h2">Mais</div>
+    <button class="pn-cta" type="button" data-go="criterios" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
+      <span><b>Lista de critérios</b><br><span class="pn-meta" id="aj-crit">O que conta como importante</span></span><span>→</span></button>
+    <button class="pn-cta" type="button" data-go="sobre" style="background:var(--surface);border-color:var(--border);color:var(--ink)">
+      <span><b>Como funciona</b><br><span class="pn-meta">E o que eu nunca faço</span></span><span>→</span></button>
+  </section>
+
   <!-- ========== CRITÉRIOS ========== -->
   <section class="pn-view" id="criterios">
-    <div class="pn-h2" style="margin-top:4px">Lista principal (aprovados)</div>
+    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
+    <div class="pn-h2">Lista principal (aprovados)</div>
     <p class="pn-meta" style="margin:-4px 0 10px">É a lista que eu sigo ao ler suas conversas.</p>
     <div id="crit-aprovados"></div>
     <div class="pn-h2">Sugestões aguardando você</div>
@@ -205,21 +265,56 @@
     </form>
   </section>
 
+  <!-- ========== AÇÕES ========== -->
+  <section class="pn-view" id="acoes">
+    <div class="pn-h2" style="margin-top:4px">Silenciar grupos</div>
+    <div class="pn-card">
+      <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. Você continua no grupo e eu continuo lendo e trazendo o que for importante.</p>
+      <div class="pn-grid2">
+        <button class="pn-btn pri" type="button" data-mute="8h">Por 8 horas</button>
+        <button class="pn-btn pri" type="button" data-mute="1sem">Por 1 semana</button>
+        <button class="pn-btn pri" type="button" data-mute="sempre">Sempre</button>
+        <button class="pn-btn" type="button" data-mute="reativar">Reativar todos</button>
+      </div>
+    </div>
+
+    <div class="pn-h2">Resposta de ausência</div>
+    <div class="pn-card pn-form" id="ausencia">
+      <div class="pn-switch">
+        <div><b id="aus-status">Desligada</b><div class="pn-meta">Respondo só conversas diretas, nunca grupos. Uma vez por pessoa a cada 24h.</div></div>
+        <button class="pn-tg" type="button" role="switch" aria-checked="false" id="aus-tg" aria-label="Ligar resposta de ausência"></button>
+      </div>
+      <div class="pn-tpl" id="aus-modelos"></div>
+      <label for="aus-msg">Mensagem</label>
+      <textarea id="aus-msg" rows="3" maxlength="500"></textarea>
+      <label for="aus-ate">Até quando</label>
+      <input id="aus-ate" type="datetime-local">
+      <label><input type="checkbox" id="aus-fam" style="width:auto;margin-right:6px">Não enviar para a família (eles falam direto comigo)</label>
+      <button class="pn-btn pri" type="button" id="aus-salvar">Salvar mensagem</button>
+      <div class="pn-meta">O WhatsApp pessoal não tem resposta automática própria (só o Business tem). Aqui sou eu que envio durante cada leitura. Antes do primeiro envio de cada período, confirmo com você no chat.</div>
+    </div>
+
+    <div class="pn-h2">Fila de ações</div>
+    <div class="pn-card" id="fila"></div>
+  </section>
+
   <!-- ========== COMO FUNCIONA ========== -->
   <section class="pn-view" id="sobre">
-    <div class="pn-h2" style="margin-top:4px">Como funciona</div>
+    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
+    <div class="pn-h2">Como funciona</div>
     <div class="pn-card">
       <ol class="pn-steps">
         <li><span>Abro o WhatsApp Web no Chrome do seu computador e entro em cada conversa não lida.</span></li>
         <li><span>Leio e deixo como lida. Comparo com a sua lista principal de critérios.</span></li>
         <li><span>O que for importante eu favorito (⭐) no WhatsApp e trago para cá, com prazo e próxima ação.</span></li>
         <li><span>Você resolve por aqui: “Resolvido” ou “Não é importante”.</span></li>
+        <li><span>Na aba Ações você pede para silenciar grupos ou liga a resposta de ausência; eu executo na próxima leitura.</span></li>
       </ol>
     </div>
     <div class="pn-h2">O que eu nunca faço</div>
     <div class="pn-card">
       <ul class="pn-list">
-        <li>Responder ou enviar mensagem sem você aprovar.</li>
+        <li>Responder ou enviar mensagem sem você aprovar (a resposta de ausência só sai com ela ligada e confirmada por você).</li>
         <li>Abrir links, baixar arquivos ou usar códigos de verificação.</li>
         <li>Fazer Pix, pagamento ou qualquer transação.</li>
         <li>Guardar número de cartão, conta ou senha aqui.</li>
@@ -239,19 +334,21 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { itens:[], criterios:[], meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
     { id:"importantes", nome:"Importantes", ico:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>', badge:"b-imp" },
-    { id:"criterios", nome:"Critérios", ico:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>', badge:"b-crit" },
-    { id:"sobre", nome:"Como funciona", ico:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>' }
+    { id:"relatorios", nome:"Relatórios", ico:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>' },
+    { id:"acoes", nome:"Ações", ico:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>', badge:"b-aus" },
+    { id:"ajustes", nome:"Ajustes", ico:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', badge:"b-crit" }
   ];
 
   function el(t,c,x){ const e=document.createElement(t); if(c) e.className=c; if(x!=null) e.textContent=x; return e; }
-  function fmt(s){ if(!s) return ""; const d=new Date(s); if(isNaN(d)) return String(s);
+  const toD = s => /^\d{4}-\d{2}-\d{2}$/.test(String(s)) ? new Date(s+"T12:00:00") : new Date(s);
+  function fmt(s){ if(!s) return ""; const d=toD(s); if(isNaN(d)) return String(s);
     return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}) + (String(s).length>10 ? " " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : ""); }
-  function dias(s){ if(!s) return null; const d=new Date(s); if(isNaN(d)) return null; return Math.ceil((d-new Date())/86400000); }
+  function dias(s){ if(!s) return null; const d=toD(s); if(isNaN(d)) return null; const a=new Date(); a.setHours(12,0,0,0); return Math.round((d-a)/86400000); }
   function aviso(m){ const a=$("aviso"); a.textContent=m||""; a.style.display=m?"block":"none"; }
 
   /* ---------- navegação (hash simples, igual ao SOLA) ---------- */
@@ -267,9 +364,10 @@
   }
   buildNav($("nav-topo")); buildNav($("nav-baixo"));
   function go(id, push){
-    if(!VIEWS.some(v=>v.id===id)) id="inicio";
+    if(!VIEWS.some(v=>v.id===id) && !["criterios","sobre"].includes(id)) id="inicio";
+    const navId = ["criterios","sobre"].includes(id) ? "ajustes" : id;
     document.querySelectorAll(".pn-view").forEach(s=>s.classList.toggle("on", s.id===id));
-    document.querySelectorAll(".pn-nav-btn").forEach(b=>{ if(b.dataset.view===id) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+    document.querySelectorAll(".pn-nav-btn").forEach(b=>{ if(b.dataset.view===navId) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
     if(push!==false){ try{ if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); }catch(e){} }
     window.scrollTo(0,0);
   }
@@ -297,8 +395,11 @@
     ["mencoes","Menções a você em grupos","Quando te marcam ou citam sua mensagem."],
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
-  function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:DEMO_ITENS,criterios:DEMO_CRIT}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({itens:S.itens,criterios:S.criterios})); }catch(e){} }
+  function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:DEMO_ITENS,criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[
+    {id:"r1",geradoEm:new Date(new Date().setHours(7,30,0,0)).toISOString(),periodo:"manha",titulo:"Relatório da manhã",resumo:"Noite tranquila. 3 coisas pedem sua atenção hoje.",
+     destaques:["Fatura do cartão vence em 3 dias.","Possível golpe: número desconhecido pedindo Pix (não cliquei).","Família pediu confirmação do almoço de domingo."],
+     numeros:{lidas:42,importantes:6,favoritadas:5,ausencias:0}}]}; }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -386,6 +487,9 @@
       c.appendChild(a); G[st].appendChild(c);
     });
     Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
+    if(typeof renderAcoes==="function") renderAcoes();
+    if(typeof renderAjustes==="function") renderAjustes();
+    if(typeof renderRel==="function") renderRel();
   }
 
   $("novo-crit").addEventListener("submit", async ev=>{
@@ -397,6 +501,118 @@
       $("nc-nome").value=""; $("nc-desc").value=""; }catch(e){ aviso("Não consegui adicionar o critério agora."); }
   });
 
+  /* ---------- ações ---------- */
+  const MUTE_TXT={ "8h":"Silenciar todos os grupos por 8 horas", "1sem":"Silenciar todos os grupos por 1 semana", "sempre":"Silenciar todos os grupos (sempre)", "reativar":"Reativar notificações de todos os grupos" };
+  const MODELOS=[
+    {k:"reuniao", nome:"Em reunião", txt:"Olá! Estou em reunião agora e não consigo responder. Retorno assim que possível. Se for urgente, me ligue."},
+    {k:"visita", nome:"Visita às regionais", txt:"Olá! Estou em visita às operações, com acesso limitado ao WhatsApp. Respondo assim que possível."},
+    {k:"descanso", nome:"Fora do horário", txt:"Olá! Estou fora do horário agora. Respondo no próximo dia útil."},
+    {k:"ferias", nome:"Férias", txt:"Olá! Estou de férias e com acesso limitado ao WhatsApp. Respondo quando voltar."}
+  ];
+  async function novaAcao(tipo,desc){
+    const a={tipo,descricao:desc,status:"pendente",pedidoEm:new Date().toISOString()};
+    if(S.demo){ S.acoes.unshift({id:"a"+Date.now(),...a}); demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ await S.db.collection("acoes").add(a); }catch(e){ aviso("Não consegui registrar a ação agora."); }
+  }
+  document.querySelectorAll("[data-mute]").forEach(b=>b.addEventListener("click",()=>{
+    if(!S.canWrite) return; const k=b.dataset.mute;
+    if(S.acoes.some(a=>a.status==="pendente"&&a.tipo==="grupos:"+k)) return;
+    novaAcao("grupos:"+k, MUTE_TXT[k]);
+  }));
+  let ausTpl=null;
+  MODELOS.forEach(m=>{ const b=el("button","pn-chip",m.nome); b.type="button"; b.onclick=()=>{ $("aus-msg").value=m.txt; ausTpl=m.k; marcaTpl(); }; b.dataset.k=m.k; $("aus-modelos").appendChild(b); });
+  function marcaTpl(){ document.querySelectorAll("#aus-modelos .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===ausTpl?"true":"false")); }
+  async function salvaAus(patch){
+    const cur=S.ausencia||{ativa:false,mensagem:MODELOS[0].txt,modelo:"reuniao",ate:"",excetoFamilia:true};
+    const novo={...cur,...patch,atualizadoEm:new Date().toISOString()};
+    if(novo.ativa && !String(novo.mensagem||"").trim()){ aviso("Escreva a mensagem antes de ligar."); return; }
+    if(S.demo){ S.ausencia=novo; demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ await S.db.doc("config/ausencia").set(novo); }catch(e){ aviso("Não consegui salvar a resposta de ausência."); }
+  }
+  const formAus=()=>({mensagem:$("aus-msg").value.trim(), modelo:ausTpl||"personalizada", ate:$("aus-ate").value, excetoFamilia:$("aus-fam").checked});
+  $("aus-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.ausencia&&S.ausencia.ativa); salvaAus({...formAus(), ativa:on}); });
+  $("aus-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaAus(formAus()); });
+  let ausPreenchido=false;
+  function renderAcoes(){
+    const a=S.ausencia, on=!!(a&&a.ativa);
+    $("aus-tg").setAttribute("aria-checked",on?"true":"false");
+    $("aus-status").textContent=""; if(on) $("aus-status").appendChild(el("span","pn-live"));
+    $("aus-status").appendChild(document.createTextNode(on?("Ligada"+(a.ate?" até "+fmt(a.ate):"")):"Desligada"));
+    if(!ausPreenchido && (a || S.dbPronto || S.demo)){
+      $("aus-msg").value=(a&&a.mensagem)||MODELOS[0].txt; ausTpl=(a&&a.modelo)||"reuniao";
+      $("aus-ate").value=(a&&a.ate)||""; $("aus-fam").checked=a?!!a.excetoFamilia:true; marcaTpl(); ausPreenchido=true;
+    }
+    document.querySelectorAll('[data-badge="b-aus"]').forEach(b=>{ b.textContent="•"; b.classList.toggle("on",on); b.style.background="var(--gold)"; });
+    const F=$("fila"); F.textContent="";
+    const lista=S.acoes.slice().sort((x,y)=>String(y.pedidoEm||"").localeCompare(String(x.pedidoEm||""))).slice(0,12);
+    if(!lista.length){ F.appendChild(el("div","pn-meta","Nenhuma ação pedida. Faço as pendentes na próxima leitura.")); return; }
+    lista.forEach(x=>{ const r=el("div","pn-q"); const l=el("div"); l.appendChild(el("div",null,x.descricao||x.tipo)); l.appendChild(el("div","pn-meta","Pedido "+fmt(x.pedidoEm)+(x.feitoEm?" · feito "+fmt(x.feitoEm):"")));
+      r.appendChild(l); r.appendChild(el("span","st-"+(x.status||"pendente"), x.status==="feito"?"Feito":"Na fila")); F.appendChild(r); });
+  }
+
+  /* ---------- tema (preferência deste aparelho) ---------- */
+  const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
+  let tema="auto"; try{ tema=localStorage.getItem("peneira-tema")||"auto"; }catch(e){}
+  function aplicaTema(){ const r=$("app"); if(tema==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",tema);
+    document.querySelectorAll("#temas .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===tema?"true":"false")); }
+  TEMAS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.t=k; b.onclick=()=>{ tema=k; try{localStorage.setItem("peneira-tema",k);}catch(e){} aplicaTema(); }; $("temas").appendChild(b); });
+  aplicaTema();
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+
+  /* ---------- notificações + horários ---------- */
+  const NOTIF_PADRAO={alta:true,manha:true,noite:true,golpe:true,horaManha:"07:30",horaNoite:"18:30"};
+  const NOTIFS=[["alta","Prioridade alta","Aviso na hora quando chegar algo importante"],["golpe","Alerta de golpe","Aviso na hora em caso de possível golpe"],["manha","Relatório da manhã",""],["noite","Relatório da noite",""]];
+  async function salvaNotif(patch){
+    const novo={...NOTIF_PADRAO,...(S.notif||{}),...patch,atualizadoEm:new Date().toISOString()};
+    if(S.demo){ S.notif=novo; demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ await S.db.doc("config/notificacoes").set(novo); }catch(e){ aviso("Não consegui salvar as notificações."); }
+  }
+  let horasPreenchidas=false;
+  $("h-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaNotif({horaManha:$("h-manha").value||"07:30",horaNoite:$("h-noite").value||"18:30"}); });
+  function renderAjustes(){
+    const n={...NOTIF_PADRAO,...(S.notif||{})};
+    const N=$("notifs"); N.textContent="";
+    NOTIFS.forEach(([k,nome,desc],idx)=>{
+      const r=el("div","pn-switch"); if(idx) { r.style.borderTop="1px solid var(--border)"; r.style.paddingTop="10px"; } r.style.marginBottom="10px";
+      const t=el("div"); t.appendChild(el("b",null,nome));
+      t.appendChild(el("div","pn-meta", desc || ("Às "+(k==="manha"?n.horaManha:n.horaNoite))));
+      const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label",nome); tg.setAttribute("aria-checked",n[k]?"true":"false");
+      tg.onclick=()=>{ if(S.canWrite) salvaNotif({[k]:!n[k]}); };
+      r.append(t,tg); N.appendChild(r);
+    });
+    N.appendChild(el("div","pn-meta","As notificações chegam pelo app do Claude no seu celular."));
+    if(!horasPreenchidas && (S.notif || S.dbPronto || S.demo)){ $("h-manha").value=n.horaManha; $("h-noite").value=n.horaNoite; horasPreenchidas=true; }
+    const sug=S.criterios.filter(k=>(k.status||"sugerido")==="sugerido").length, apr=S.criterios.filter(k=>k.status==="aprovado").length;
+    $("aj-crit").textContent = apr+" aprovados"+(sug?" · "+sug+" aguardando você":"");
+    $("rel-horarios").textContent="Duas vezes ao dia: às "+n.horaManha+" e às "+n.horaNoite+".";
+  }
+
+  /* ---------- relatórios ---------- */
+  function cardRel(r){
+    const c=el("article","pn-card pn-rel");
+    const top=el("div","pn-row");
+    top.appendChild(el("h3",null, r.titulo || (r.periodo==="noite"?"Relatório da noite":"Relatório da manhã")));
+    top.appendChild(el("span","pn-meta", fmt(r.geradoEm||r.data)));
+    c.appendChild(top);
+    if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
+    if(Array.isArray(r.destaques)&&r.destaques.length){ const u=el("ul"); r.destaques.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); }
+    const n=r.numeros||{}, nm=el("div","pn-nums");
+    [["lidas","conversas lidas"],["importantes","importantes"],["favoritadas","⭐ favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
+    if(nm.childNodes.length) c.appendChild(nm);
+    return c;
+  }
+  function renderRel(){
+    const lista=S.relatorios.slice().sort((a,b)=>String(b.geradoEm||b.data||"").localeCompare(String(a.geradoEm||a.data||"")));
+    const L=$("lista-rel"); L.textContent="";
+    if(!lista.length) L.appendChild(el("div","pn-empty","O primeiro relatório aparece aqui depois da primeira leitura."));
+    lista.slice(0,20).forEach(r=>L.appendChild(cardRel(r)));
+    const U=$("ultimo-rel"); U.textContent="";
+    if(lista.length) U.appendChild(cardRel(lista[0])); else U.appendChild(el("div","pn-empty","Sem relatórios ainda."));
+  }
+
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
   go(location.hash.slice(1)||"inicio", false);
   render();
@@ -406,7 +622,7 @@
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.itens=d.itens; S.criterios=d.criterios;
+      const d=demoLoad(); S.demo=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta={ultimaVarredura:new Date().toISOString(),conversasLidas:42,favoritadas:d.itens.filter(i=>i.favoritado).length};
       aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); return;
     }
@@ -417,6 +633,10 @@
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
     db.collection("itens").onSnapshot(s=>{ S.itens=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.collection("criterios").onSnapshot(s=>{ S.criterios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.collection("relatorios").onSnapshot(s=>{ S.relatorios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.doc("config/notificacoes").onSnapshot(s=>{ S.notif=s.exists?s.data():null; S.dbPronto=true; render(); }, ()=>{});
+    db.collection("acoes").onSnapshot(s=>{ S.acoes=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.doc("config/ausencia").onSnapshot(s=>{ S.ausencia=s.exists?s.data():null; S.dbPronto=true; render(); }, ()=>{});
     db.doc("meta/status").onSnapshot(s=>{ S.meta=s.exists?s.data():null; render(); }, ()=>{});
   })();
 })();
