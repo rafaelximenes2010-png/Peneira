@@ -184,6 +184,13 @@
 .pn-seta{position:fixed;font-size:34px;color:var(--gold);bottom:calc(6px + env(safe-area-inset-bottom));right:22px;animation:pnBob 1s ease-in-out infinite;text-shadow:0 2px 8px rgba(0,0,0,.4)}
 .pn-seta.centro{right:auto;left:50%;transform:translateX(-50%)}
 @keyframes pnBob{0%,100%{translate:0 0}50%{translate:0 8px}}
+.pn-vip{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border)}
+.pn-vip:first-child{border-top:0}
+.pn-vip b{flex:1;font-weight:600}
+.pn-vip .pn-meta{font-size:11px}
+.pn-x{border:0;background:none;color:var(--ink-3);font-size:18px;cursor:pointer;padding:2px 6px}
+.t-vip{background:var(--gold);color:#1b1407}
+.pn-card.vip{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-soft)}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -280,6 +287,20 @@
     <div id="instalar-box" hidden>
       <div class="pn-h2" style="margin-top:4px">Instalar no celular</div>
       <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">📲 Ver como instalar</button></div>
+    </div>
+
+    <div class="pn-h2" id="vip-h">Contatos VIP · alerta sonoro</div>
+    <div class="pn-card" id="vip-card">
+      <p class="pn-meta" style="margin:0 0 10px">Mensagem dessas pessoas ou grupos vira prioridade alta, fica no topo e toca um alerta.</p>
+      <div id="vip-lista"></div>
+      <form class="pn-form" id="vip-form" style="margin-top:12px">
+        <div style="display:flex;gap:6px">
+          <input id="vip-nome" placeholder="Nome como aparece no WhatsApp" maxlength="60" required style="flex:1">
+          <select id="vip-tipo" style="font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)"><option value="pessoa">Pessoa</option><option value="grupo">Grupo</option></select>
+        </div>
+        <button class="pn-btn pri" type="submit">+ Adicionar VIP</button>
+      </form>
+      <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">🔔 Testar o som</button>
     </div>
 
     <div class="pn-h2">Aparência</div>
@@ -410,7 +431,7 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -475,7 +496,7 @@
     {id:"r1",geradoEm:new Date(new Date().setHours(7,30,0,0)).toISOString(),periodo:"manha",titulo:"Relatório da manhã",resumo:"Noite tranquila. 3 coisas pedem sua atenção hoje.",
      destaques:["Fatura do cartão vence em 3 dias.","Possível golpe: número desconhecido pedindo Pix (não cliquei).","Família pediu confirmação do almoço de domingo."],
      numeros:{lidas:42,importantes:6,favoritadas:5,ausencias:0}}]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -491,8 +512,10 @@
   /* ---------- cartão de mensagem ---------- */
   function cardItem(i){
     const pend = (i.status||"pendente")==="pendente";
-    const c = el("article","pn-card"+(pend?"":" done"));
+    const vp = vipDe(i);
+    const c = el("article","pn-card"+(pend?"":" done")+(vp?" vip":""));
     const top = el("div","pn-row"), tags = el("div");
+    if(vp) tags.appendChild(el("span","pn-tag t-vip","🔔 VIP"));
     if(i.prioridade) tags.appendChild(el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade));
     if(i.categoria) tags.appendChild(el("span","pn-tag t-cat", i.categoria));
     if(i.favoritado) tags.appendChild(el("span","pn-tag t-fav","⭐ favoritado"));
@@ -512,7 +535,7 @@
     c.appendChild(a);
     return c;
   }
-  const ordena = (a,b)=>(PRI[a.prioridade]??3)-(PRI[b.prioridade]??3) || String(a.prazo||"9999").localeCompare(String(b.prazo||"9999"));
+  const ordena = (a,b)=>((vipDe(a)?0:1)-(vipDe(b)?0:1)) || (PRI[a.prioridade]??3)-(PRI[b.prioridade]??3) || String(a.prazo||"9999").localeCompare(String(b.prazo||"9999"));
 
   function render(){
     const m=S.meta;
@@ -563,6 +586,7 @@
       c.appendChild(a); G[st].appendChild(c);
     });
     Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
+    if(typeof renderVips==="function") renderVips();
     if(typeof renderAcoes==="function") renderAcoes();
     if(typeof renderAjustes==="function") renderAjustes();
     if(typeof renderRel==="function") renderRel();
@@ -626,6 +650,53 @@
     if(!lista.length){ F.appendChild(el("div","pn-meta","Nenhuma ação pedida. Faço as pendentes na próxima leitura.")); return; }
     lista.forEach(x=>{ const r=el("div","pn-q"); const l=el("div"); l.appendChild(el("div",null,x.descricao||x.tipo)); l.appendChild(el("div","pn-meta","Pedido "+fmt(x.pedidoEm)+(x.feitoEm?" · feito "+fmt(x.feitoEm):"")));
       r.appendChild(l); r.appendChild(el("span","st-"+(x.status||"pendente"), x.status==="feito"?"Feito":"Na fila")); F.appendChild(r); });
+  }
+
+  /* ---------- contatos VIP + alerta sonoro ---------- */
+  const norm = t => String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+  function vipDe(i){ const c=norm(i.contato)+" "+norm(i.grupo); return S.vips.find(v=>v.nome && c.includes(norm(v.nome))); }
+  let ac=null;
+  function destrava(){ try{ if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==="suspended") ac.resume(); }catch(e){} }
+  document.addEventListener("pointerdown",destrava,{once:false,passive:true});
+  function toca(){
+    try{ destrava(); if(!ac) return; const t=ac.currentTime;
+      [[880,0],[1175,.18],[1568,.36]].forEach(([f,d])=>{ const o=ac.createOscillator(), g=ac.createGain(); o.type="sine"; o.frequency.value=f;
+        g.gain.setValueAtTime(0,t+d); g.gain.linearRampToValueAtTime(.35,t+d+.02); g.gain.exponentialRampToValueAtTime(.001,t+d+.5);
+        o.connect(g).connect(ac.destination); o.start(t+d); o.stop(t+d+.55); });
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }catch(e){}
+  }
+  $("vip-testar").addEventListener("click",toca);
+  async function salvaVip(op,v){
+    if(S.demo){ if(op==="add") S.vips.push({id:"v"+Date.now(),...v}); else if(op==="del") S.vips=S.vips.filter(x=>x.id!==v.id); else { const i=S.vips.findIndex(x=>x.id===v.id); if(i>=0) S.vips[i]={...S.vips[i],...v.patch}; } demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ if(op==="add") await S.db.collection("vips").add(v); else if(op==="del") await S.db.doc("vips/"+v.id).delete(); else await S.db.doc("vips/"+v.id).update(v.patch); }
+    catch(e){ aviso("Não consegui salvar o contato VIP agora."); }
+  }
+  $("vip-form").addEventListener("submit",e=>{ e.preventDefault(); const nome=$("vip-nome").value.trim(); if(!nome||!S.canWrite) return;
+    if(S.vips.some(v=>norm(v.nome)===norm(nome))){ aviso("Esse nome já está na lista VIP."); return; }
+    salvaVip("add",{nome,tipo:$("vip-tipo").value,som:true,ordem:S.vips.length+1}); $("vip-nome").value=""; });
+  function renderVips(){
+    const L=$("vip-lista"); L.textContent="";
+    if(!S.vips.length){ L.appendChild(el("div","pn-meta","Nenhum VIP ainda.")); return; }
+    S.vips.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(v=>{
+      const r=el("div","pn-vip"); const n=el("b",null,v.nome); r.appendChild(n);
+      r.appendChild(el("span","pn-tag "+(v.tipo==="grupo"?"t-cat":"t-baixa"), v.tipo==="grupo"?"Grupo":"Pessoa"));
+      const tg=el("button","pn-tg"); tg.type="button"; tg.setAttribute("role","switch"); tg.setAttribute("aria-label","Som para "+v.nome); tg.setAttribute("aria-checked",v.som!==false?"true":"false"); tg.style.transform="scale(.8)";
+      tg.onclick=()=>{ if(S.canWrite) salvaVip("upd",{id:v.id,patch:{som:v.som===false}}); };
+      const x=el("button","pn-x","×"); x.type="button"; x.setAttribute("aria-label","Remover "+v.nome);
+      let conf=false; x.onclick=()=>{ if(!S.canWrite) return; if(!conf){ conf=true; x.textContent="remover?"; x.style.fontSize="12px"; setTimeout(()=>{conf=false;x.textContent="×";x.style.fontSize="";},3000); return; } salvaVip("del",{id:v.id}); };
+      r.append(tg,x); L.appendChild(r);
+    });
+  }
+  // detecta mensagem nova de VIP e toca o alerta
+  const jaVistos=new Set(); let primeiraCarga=true;
+  function checaVips(){
+    const novos=S.itens.filter(i=>(i.status||"pendente")==="pendente" && !jaVistos.has(i.id));
+    novos.forEach(i=>jaVistos.add(i.id));
+    if(primeiraCarga){ primeiraCarga=false; return; }
+    const v=novos.map(i=>[i,vipDe(i)]).find(([i,v])=>v && v.som!==false);
+    if(v){ toca(); aviso("🔔 Mensagem de "+v[1].nome+": "+(v[0].resumo||"")); }
   }
 
   /* ---------- tema (preferência deste aparelho) ---------- */
@@ -812,7 +883,7 @@
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
+      const d=demoLoad(); S.demo=true; S.vips=d.vips||[]; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta={ultimaVarredura:new Date().toISOString(),conversasLidas:42,favoritadas:d.itens.filter(i=>i.favoritado).length};
       aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); return;
     }
@@ -821,7 +892,8 @@
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
-    db.collection("itens").onSnapshot(s=>{ S.itens=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.collection("vips").onSnapshot(s=>{ S.vips=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.collection("itens").onSnapshot(s=>{ S.itens=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); checaVips(); render(); }, fail);
     db.collection("criterios").onSnapshot(s=>{ S.criterios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.collection("relatorios").onSnapshot(s=>{ S.relatorios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/notificacoes").onSnapshot(s=>{ S.notif=s.exists?s.data():null; S.dbPronto=true; render(); }, ()=>{});
