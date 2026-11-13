@@ -30,7 +30,9 @@ Webhook: `https://SEU-ENDERECO.workers.dev/webhook`, token de verificação = `V
 
 ## Passo 2 — Publicar a ponte (Cloudflare Workers, plano grátis)
 
-No notebook, com Node instalado, dentro da pasta `server/` deste repositório:
+**Jeito rápido (um comando):** no notebook, com Node instalado, dentro da pasta `server/`: `node instalar.mjs`. Ele abre a Cloudflare para você clicar em *Allow*, publica a ponte, gera as senhas e mostra o endereço e a senha para colar no app e no provedor.
+
+Jeito manual, dentro da pasta `server/`:
 
 ```bash
 npx wrangler login
