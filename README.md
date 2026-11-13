@@ -1,5 +1,7 @@
 # Peneira · Central do WhatsApp
 
+Peneirando mensagens e notificações.
+
 > Passa tudo pela peneira. Fica só o que importa.
 
 Projeto pessoal de **Rafael Ximenes**. O Peneira lê as conversas do WhatsApp pessoal, marca como lidas,
