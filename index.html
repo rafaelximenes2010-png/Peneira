@@ -376,6 +376,15 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-live-scan[hidden]{display:none}
 .pn-live-scan i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pnBlink 1s ease-in-out infinite}
 @keyframes pnBlink{50%{opacity:.25;transform:scale(.7)}}
+
+.pn-rg h3{margin:0;font-size:17px}
+.pn-prot{display:flex;align-items:center;gap:10px;padding:6px 0}
+.pn-prot .bar{flex:1;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.pn-prot .bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.pn-prot .lid{font-size:10.5px;font-weight:700;color:var(--gold-text);background:var(--gold-soft);border-radius:6px;padding:1px 6px}
+.pn-temas{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:10px}
+.pn-tema{border:0;text-align:left;font:inherit;color:var(--ink);background:var(--surface-2);border-radius:12px;padding:10px;cursor:pointer}
+.pn-tema b{display:block;font-size:20px} .pn-tema span{font-size:12px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -554,9 +563,24 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 
   <!-- ========== RELATÓRIOS ========== -->
   <section class="pn-view" id="relatorios">
-    <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
-    <p class="pn-meta" style="margin:-4px 0 10px" id="rel-horarios"></p>
-    <div id="lista-rel"></div>
+    <div class="pn-chips" id="rel-abas" style="margin:4px 0 12px">
+      <button class="pn-chip" type="button" data-aba="dia" aria-pressed="true">Do dia</button>
+      <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
+    </div>
+    <div id="rel-dia">
+      <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
+      <p class="pn-meta" style="margin:-4px 0 10px" id="rel-horarios"></p>
+      <div id="lista-rel"></div>
+    </div>
+    <div id="rel-grupos" hidden>
+      <div class="pn-card" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:150px"><b>Exportar todos os grupos</b><div class="pn-meta" id="rg-resumo">—</div></div>
+        <button class="pn-btn" type="button" id="rg-pdf">PDF</button>
+        <button class="pn-btn pri" type="button" id="rg-xlsx">Excel</button>
+      </div>
+      <div class="pn-meta" style="margin:8px 4px 0" id="rg-auto">Varredura automática a cada 4 horas.</div>
+      <div id="rg-lista"></div>
+    </div>
   </section>
 
   <!-- ========== AJUSTES ========== -->
@@ -887,7 +911,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { relGrupos:[], bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -957,7 +981,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
   function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:[],criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[],agenda:[],vips:[]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -1057,6 +1081,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(typeof renderFarol==="function") renderFarol();
     if(typeof renderVarr==="function") renderVarr();
     if(typeof renderScan==="function") renderScan();
+    if(typeof renderRelGrupos==="function") renderRelGrupos();
     { const t=S.vips.filter(v=>v.relacao==="trabalho").length, f=S.vips.filter(v=>v.relacao==="familia").length; const sub=$("viplista-sub");
       if(sub) sub.textContent=S.vips.length? S.vips.length+" cadastrados"+(t||f?" · "+t+" trabalho · "+f+" família":"") : "Ninguém cadastrado ainda"; }
     if(typeof marcaTitulos==="function") marcaTitulos();
@@ -1294,8 +1319,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.4";
+  const VERSAO="2.5";
   const VERSOES=[
+    {v:"2.5",data:"13/11/2026",itens:["Relatórios por grupo: assuntos, preocupações, metas, compromissos, reclamações e protagonistas/líderes","Exportar em PDF e Excel (cadastro dos grupos, participantes e assuntos)","Varredura automática a cada 4 horas"]},
     {v:"2.4",data:"13/11/2026",itens:["Botão Lista VIP no Início: veja quem está cadastrado, por Trabalho, Família e Grupos, com busca"]},
     {v:"2.3",data:"13/11/2026",itens:["Varredura estilo antivírus: anel de progresso com radar girando, contadores ao vivo e selo “Varrendo…” no topo","Relatório com mensagens, tempo economizado, indicações e assuntos importantes","Número do WhatsApp da varredura no Início"]},
     {v:"2.2",data:"13/11/2026",itens:["Visual profissional no padrão dos apps da Apple: barra superior translúcida, títulos grandes, abas e cartões limpos","Saudação no topo (Bom dia/Boa tarde)","Correção: tela não corta mais nas laterais e o fundo acompanha o tema"]},
@@ -1519,6 +1545,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     ["ultimo relatorio","O relatório mais recente. Saem dois por dia, nos horários de Ajustes → Horário dos relatórios."],
     ["importantes","Tudo o que passou pela peneira. Filtre pelas categorias no topo; Concluídos mostra o que você já resolveu."],
     ["agenda","Respostas que você precisa dar, processos e prazos. Atrasados ficam em vermelho até você marcar como feito. As leituras também criam lembretes aqui."],
+    ["por grupo","Para cada grupo: assuntos, preocupações, metas, compromissos e reclamações, com quem mais fala e quem lidera. Exporte em PDF ou Excel."],
     ["relatorios","Resumo do que importa, duas vezes por dia, com números da leitura: conversas lidas, importantes, favoritadas."],
     ["compartilhar","Manda o link de instalação. Quem recebe faz o próprio cadastro e não vê nada seu."],
     ["contatos vip","Pessoas e grupos que sempre viram prioridade alta, ficam no topo e tocam alerta. Grupo VIP nunca é silenciado, a não ser que você desligue o som dele aqui."],
@@ -1705,6 +1732,85 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   $("vs-x").addEventListener("click",()=>{ $("vip-sheet").hidden=true; });
   $("vip-sheet").addEventListener("click",e=>{ if(e.target.id==="vip-sheet") $("vip-sheet").hidden=true; });
   $("vs-editar").addEventListener("click",()=>{ $("vip-sheet").hidden=true; go("ajustes"); setTimeout(()=>{ const e=$("vip-h"); if(e) e.scrollIntoView({behavior:"smooth"}); },80); });
+
+  /* ---------- relatórios por grupo + exportação PDF / Excel ---------- */
+  const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"]];
+  document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; }));
+  function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
+  function renderRelGrupos(){
+    const L=$("rg-lista"); if(!L) return; L.textContent="";
+    const rs=ultimosPorGrupo();
+    $("rg-resumo").textContent = rs.length ? rs.length+" grupos · "+rs.reduce((a,r)=>a+(r.mensagens||0),0)+" mensagens analisadas" : "Nenhum grupo analisado ainda";
+    const prox=S.meta&&S.meta.proximaVarredura; $("rg-auto").textContent="Varredura automática a cada 4 horas"+(prox?" · próxima "+fmt(prox):"")+".";
+    if(!rs.length){ L.appendChild(el("div","pn-empty","Os relatórios por grupo aparecem aqui depois da primeira varredura: assuntos, preocupações, metas, compromissos, reclamações e quem lidera cada conversa.")); return; }
+    rs.forEach(r=>{
+      const c=el("article","pn-card pn-rg"); c.style.marginTop="12px";
+      const top=el("div","pn-row"); const t=el("div"); t.appendChild(el("h3",null,r.grupo));
+      t.appendChild(el("div","pn-meta",(r.mensagens||0)+" mensagens · "+((r.participantes||[]).length)+" participantes · "+fmt(r.geradoEm)+(r.periodo?" · "+r.periodo:"")));
+      top.appendChild(t); c.appendChild(top);
+      if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
+      const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0)); const max=Math.max(1,...ps.map(x=>x.msgs||0));
+      if(ps.length){ c.appendChild(el("div","pn-ag-g","Protagonistas e líderes"));
+        ps.slice(0,5).forEach(x=>{ const row=el("div","pn-prot"); const n=el("div"); n.style.minWidth="38%"; n.appendChild(el("b",null,x.nome));
+          if(x.papel) { const l=el("span","lid",x.papel); l.style.marginLeft="6px"; n.appendChild(l); }
+          const bar=el("div","bar"); const ii=el("i"); ii.style.width=Math.round(100*(x.msgs||0)/max)+"%"; bar.appendChild(ii);
+          row.append(n,bar,el("span","pn-meta",String(x.msgs||0))); c.appendChild(row); }); }
+      const tg=el("div","pn-temas");
+      TEMAS_G.forEach(([k,nome])=>{ const arr=r[k]||[]; if(!arr.length) return; const b=el("button","pn-tema"); b.type="button"; b.appendChild(el("b",null,String(arr.length))); b.appendChild(el("span",null,nome));
+        b.onclick=()=>abreInfo(nome+" · "+r.grupo, arr.map(x=>"• "+(typeof x==="string"?x:(x.texto||"")+(x.quem?" ("+x.quem+")":"")+(x.prazo?" — prazo "+x.prazo:""))).join("\n")); tg.appendChild(b); });
+      if(tg.childNodes.length) c.appendChild(tg);
+      const acts=el("div","pn-acts"); const bp=el("button","pn-btn","PDF do grupo"); bp.type="button"; bp.onclick=()=>exportPDF([r],"Peneira - "+r.grupo);
+      const bx=el("button","pn-btn pri","Excel do grupo"); bx.type="button"; bx.onclick=()=>exportXLSX([r],"Peneira - "+r.grupo); acts.append(bp,bx); c.appendChild(acts);
+      L.appendChild(c);
+    });
+  }
+  const carregados={};
+  function carrega(src){ if(carregados[src]) return carregados[src]; return carregados[src]=new Promise((ok,er)=>{ const sc=document.createElement("script"); sc.src=src; sc.onload=ok; sc.onerror=()=>{ delete carregados[src]; er(new Error("falha ao carregar")); }; document.head.appendChild(sc); }); }
+  async function salvarArquivo(nome,blob){
+    if(window.claude && window.claude.use){ const d=await window.claude.use("downloads"); if(!d){ aviso("Download indisponível nesta tela."); return; }
+      try{ await d.save({filename:nome,data:blob}); }catch(e){ if(e&&e.code!=="declined") aviso("Não consegui gerar o arquivo agora."); } return; }
+    const u=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=u; a.download=nome; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000);
+  }
+  const txt=x=>typeof x==="string"?x:(x.texto||"");
+  function linhasCadastro(rs){ return rs.map(r=>{ const g=S.grupos.find(x=>norm(x.nome)===norm(r.grupo))||{}; const v=S.vips.find(x=>norm(x.nome)===norm(r.grupo));
+    const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0));
+    return {"Grupo":r.grupo,"Participantes":(r.participantes||[]).length,"Mensagens no período":r.mensagens||0,"Líder / protagonista":ps[0]?ps[0].nome:"","Silenciado":g.silenciar?"Sim":"Não","VIP":v?"Sim":"Não","Última análise":fmt(r.geradoEm),"Resumo":r.resumo||""}; }); }
+  async function exportXLSX(rs,base){
+    if(!rs.length){ aviso("Ainda não há grupos analisados para exportar."); return; }
+    try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de Excel."); return; }
+    const X=window.XLSX, wb=X.utils.book_new();
+    X.utils.book_append_sheet(wb,X.utils.json_to_sheet(linhasCadastro(rs)),"Cadastro dos grupos");
+    const part=[]; rs.forEach(r=>(r.participantes||[]).forEach(p=>part.push({"Grupo":r.grupo,"Participante":p.nome,"Mensagens":p.msgs||0,"Papel":p.papel||""})));
+    X.utils.book_append_sheet(wb,X.utils.json_to_sheet(part.length?part:[{"Grupo":"","Participante":"","Mensagens":"","Papel":""}]),"Participantes");
+    const temas=[]; rs.forEach(r=>TEMAS_G.forEach(([k,nome])=>(r[k]||[]).forEach(x=>temas.push({"Grupo":r.grupo,"Tipo":nome,"Descrição":txt(x),"Quem":x.quem||"","Prazo":x.prazo||""}))));
+    X.utils.book_append_sheet(wb,X.utils.json_to_sheet(temas.length?temas:[{"Grupo":"","Tipo":"","Descrição":"","Quem":"","Prazo":""}]),"Assuntos e pontos");
+    const out=X.write(wb,{bookType:"xlsx",type:"array"});
+    await salvarArquivo(base+".xlsx",new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  }
+  async function exportPDF(rs,base){
+    if(!rs.length){ aviso("Ainda não há grupos analisados para exportar."); return; }
+    try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }
+    catch(e){ aviso("Não consegui carregar o gerador de PDF."); return; }
+    const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4"}); const W=doc.internal.pageSize.getWidth();
+    const verde=[15,118,110];
+    doc.setFillColor(...verde); doc.rect(0,0,W,64,"F"); doc.setTextColor(255); doc.setFontSize(18); doc.text("Peneira · Relatório por grupo",36,38);
+    doc.setFontSize(10); doc.text("Gerado em "+new Date().toLocaleString("pt-BR"),36,54); doc.setTextColor(30);
+    doc.autoTable({startY:84,head:[["Grupo","Partic.","Mensagens","Líder","Silenciado","VIP"]],body:linhasCadastro(rs).map(x=>[x["Grupo"],x["Participantes"],x["Mensagens no período"],x["Líder / protagonista"],x["Silenciado"],x["VIP"]]),
+      headStyles:{fillColor:verde},styles:{fontSize:9}});
+    rs.forEach(r=>{ doc.addPage(); doc.setFontSize(15); doc.setTextColor(...verde); doc.text(r.grupo,36,48); doc.setTextColor(90); doc.setFontSize(9);
+      doc.text((r.mensagens||0)+" mensagens · "+(r.participantes||[]).length+" participantes · "+fmt(r.geradoEm),36,64);
+      let y=80; if(r.resumo){ doc.setTextColor(30); doc.setFontSize(10); const ln=doc.splitTextToSize(r.resumo,W-72); doc.text(ln,36,y); y+=ln.length*13+8; }
+      const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0)).slice(0,10);
+      if(ps.length){ doc.autoTable({startY:y,head:[["Protagonistas e líderes","Mensagens","Papel"]],body:ps.map(p=>[p.nome,p.msgs||0,p.papel||""]),headStyles:{fillColor:verde},styles:{fontSize:9}}); y=doc.lastAutoTable.finalY+12; }
+      const body=[]; TEMAS_G.forEach(([k,nome])=>(r[k]||[]).forEach(x=>body.push([nome,txt(x),x.quem||"",x.prazo||""])));
+      if(body.length) doc.autoTable({startY:y,head:[["Tipo","Descrição","Quem","Prazo"]],body,headStyles:{fillColor:verde},styles:{fontSize:9},columnStyles:{1:{cellWidth:260}}});
+    });
+    await salvarArquivo(base+".pdf", doc.output("blob"));
+  }
+  $("rg-pdf").addEventListener("click",()=>exportPDF(ultimosPorGrupo(),"Peneira - relatorio por grupo"));
+  $("rg-xlsx").addEventListener("click",()=>exportXLSX(ultimosPorGrupo(),"Peneira - cadastro dos grupos"));
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
@@ -1950,7 +2056,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
+      const d=demoLoad(); S.demo=true; S.relGrupos=d.relGrupos||[]; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
       try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta=d.meta||null;
       render(); fluxo(); return;
@@ -1960,6 +2066,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.collection("relGrupos").onSnapshot(s=>{ S.relGrupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/bomdia").onSnapshot(s=>{ S.bomdia=s.exists?s.data():null; render(); }, ()=>{});
     db.doc("config/varredura").onSnapshot(s=>{ S.varredura=s.exists?s.data():null; render(); }, ()=>{});
     db.collection("grupos").onSnapshot(s=>{ S.grupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
