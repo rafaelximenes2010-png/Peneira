@@ -1,13 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<defs>
-  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33487f"/><stop offset="1" stop-color="#16213f"/></linearGradient>
-  <clipPath id="c"><circle cx="32" cy="34" r="17"/></clipPath>
-</defs>
-<rect width="64" height="64" rx="16" fill="url(#g)"/>
-<circle cx="32" cy="34" r="20" fill="none" stroke="#e0a93b" stroke-width="4"/>
-<g clip-path="url(#c)" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.6">
-  <path d="M14 22h36M14 28h36M14 34h36M14 40h36M14 46h36M20 14v40M26 14v40M32 14v40M38 14v40M44 14v40"/>
-</g>
-<circle cx="32" cy="34" r="4.2" fill="#f8de8f"/>
-<circle cx="32" cy="9" r="3" fill="#f8de8f"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33487f"/><stop offset="1" stop-color="#16213f"/></linearGradient><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c8922f"/><stop offset=".5" stop-color="#f3c75c"/><stop offset="1" stop-color="#c8922f"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#n)"/><path d="M86 170 Q256 110 426 170 L410 240 Q256 300 102 240Z" fill="#1d2a52"/><clipPath id="c256205"><circle cx="256" cy="205" r="150"/></clipPath><g transform="scale(1 .3) translate(0 478)" clip-path="url(#c256205)" stroke="#fff" stroke-opacity="0.55" stroke-width="8"><path d="M106 -55h300M-4 55v300M106 -29h300M22 55v300M106 -3h300M48 55v300M106 23h300M74 55v300M106 49h300M100 55v300M106 75h300M126 55v300M106 101h300M152 55v300M106 127h300M178 55v300M106 153h300M204 55v300M106 179h300M230 55v300M106 205h300M256 55v300M106 231h300M282 55v300M106 257h300M308 55v300M106 283h300M334 55v300M106 309h300M360 55v300M106 335h300M386 55v300M106 361h300M412 55v300M106 387h300M438 55v300M106 413h300M464 55v300M106 439h300M490 55v300M106 465h300M516 55v300"/></g><path d="M86 170 Q256 110 426 170" fill="none" stroke="url(#g)" stroke-width="22" stroke-linecap="round"/><ellipse cx="256" cy="215" rx="165" ry="52" fill="none" stroke="url(#g)" stroke-width="20"/><text x="256" y="420" text-anchor="middle" font-family="Georgia,serif" font-size="120" font-weight="700" fill="#f8de8f">P</text><circle cx="190" cy="320" r="10" fill="#f8de8f"/><circle cx="322" cy="330" r="8" fill="#f8de8f"/></svg>
