@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6d4ad6">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Peneira">
+<meta name="application-name" content="Peneira">
+<link rel="apple-touch-icon" href="icons/apple-touch-180.png">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<meta name="description" content="Peneira · Central do WhatsApp — lê suas conversas, marca como lido e separa só o que importa.">
+<title>Peneira · Central do WhatsApp</title>
+<style>
+/* =========================================================
+   1. TOKENS DE TEMA (mesmo esquema do SOLA)
+   ========================================================= */
+.pn{
+  --bg:#f8f5ff; --surface:#ffffff; --surface-2:#f1ebff; --border:#e4dbf7;
+  --ink:#221a33; --ink-2:#463c5c; --ink-3:#6b6180;
+  --accent:#6d4ad6; --accent-ink:#ffffff; --accent-soft:#ece5ff;
+  --gold:#ff8a3d; --gold-soft:#fff0e3; --gold-text:#b5520f;
+  --coral:#e8452f; --coral-soft:#fde5e1; --sky:#3f78b8; --sky-soft:#e3eefa;
+  --hero-a:#5b3cc4; --hero-b:#ff8a3d;
+  --shadow:0 6px 22px rgba(91,60,196,.12);
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-text:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  .pn{ --bg:#13101c; --surface:#1c1729; --surface-2:#251e36; --border:#33294a;
+    --ink:#efeaf8; --ink-2:#cbc1e0; --ink-3:#9a8fb2;
+    --accent:#b69cff; --accent-ink:#1d1236; --accent-soft:#2e2350;
+    --gold-soft:#3a2416; --gold-text:#ffab6e; --coral-soft:#3d1f18; --sky-soft:#17283b;
+    --hero-a:#3f2a8f; --hero-b:#c8601f; --shadow:0 6px 22px rgba(0,0,0,.35); }
+}
+
+/* =========================================================
+   2. BASE
+   ========================================================= */
+.pn *{box-sizing:border-box}
+.pn{font-family:var(--font-ui);background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.45;
+    padding:calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+.pn-wrap{max-width:860px;margin:0 auto}
+.pn button{font-family:inherit}
+.pn-view{display:none}
+.pn-view.on{display:block;animation:pnIn .18s ease-out}
+@keyframes pnIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* =========================================================
+   3. TOPO (desktop) + NAVEGAÇÃO
+   ========================================================= */
+.pn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.pn-brand{display:flex;align-items:center;gap:10px}
+.pn-brand svg{width:36px;height:36px;border-radius:10px;flex:none}
+.pn-brand b{display:block;font-size:17px;letter-spacing:.01em}
+.pn-brand small{display:block;color:var(--ink-3);font-size:12px}
+.pn-nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px}
+.pn-nav-btn{border:0;background:none;color:var(--ink-3);padding:7px 12px;border-radius:9px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.pn-nav-btn[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.pn-badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center}
+.pn-badge.on{display:inline-flex}
+.pn-bottom{display:none}
+@media (max-width:640px){
+  .pn-top .pn-nav{display:none}
+  .pn-bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--border);
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .pn-bottom .pn-nav-btn{flex:1;flex-direction:column;gap:2px;font-size:11px;padding:6px 2px;position:relative}
+  .pn-bottom .pn-nav-btn svg{width:22px;height:22px}
+  .pn-bottom .pn-badge{position:absolute;top:2px;left:calc(50% + 6px)}
+}
+.pn-nav-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* =========================================================
+   4. HERO + CARTÕES
+   ========================================================= */
+.pn-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,var(--hero-a) 0%,#9b6cf0 55%,var(--hero-b) 100%);
+  color:#fff;border-radius:22px;padding:20px 22px;box-shadow:var(--shadow);overflow:hidden;position:relative;margin-bottom:14px}
+.pn-hero h1{font-family:var(--font-text);font-size:26px;margin:0 0 2px;font-weight:600}
+.pn-hero p{margin:0;opacity:.85;font-size:13px}
+.pn-hero .pn-quote{font-family:var(--font-text);font-style:italic;opacity:.92;margin-top:10px;font-size:14px}
+.pn-hero-mark{width:84px;height:84px;flex:none;opacity:.95}
+.pn-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.pn-kpi{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px;box-shadow:var(--shadow)}
+.pn-kpi b{display:block;font-size:26px;line-height:1.1}
+.pn-kpi span{font-size:12px;color:var(--ink-3)}
+.pn-kpi.alta b{color:var(--coral)} .pn-kpi.prazo b{color:var(--gold-text)}
+.pn-h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:18px 0 8px;font-weight:700}
+.pn-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:10px}
+.pn-card.done{opacity:.55}
+.pn-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.pn-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin:0 4px 2px 0}
+.t-alta{background:var(--coral-soft);color:var(--coral)}
+.t-media{background:var(--gold-soft);color:var(--gold-text)}
+.t-baixa,.t-fav{background:var(--sky-soft);color:var(--sky)}
+.t-cat{background:var(--accent-soft);color:var(--accent)}
+.pn-who{font-weight:700;margin:6px 0 2px}
+.pn-sum{font-family:var(--font-text);font-size:16px;margin:0 0 6px;color:var(--ink-2)}
+.pn-meta{font-size:12px;color:var(--ink-3)}
+.pn-acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.pn-btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer}
+.pn-btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pn-btn.no{color:var(--coral)}
+.pn-btn:disabled{opacity:.5;cursor:default}
+.pn-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pn-chip{border:1px solid var(--border);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.pn-chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pn-empty{text-align:center;color:var(--ink-3);padding:26px 12px;border:1px dashed var(--border);border-radius:16px;background:var(--surface)}
+.pn-cta{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--gold-soft);border:1px solid var(--gold);color:var(--gold-text);border-radius:16px;padding:12px 14px;cursor:pointer;width:100%;text-align:left;font-size:14px}
+.pn-cta b{font-size:15px}
+.pn-cta[hidden]{display:none}
+.pn-st{font-size:12px;font-weight:700}
+.st-aprovado{color:var(--accent)} .st-sugerido{color:var(--gold-text)} .st-recusado{color:var(--coral)}
+.pn-form{display:grid;gap:8px}
+.pn-form input,.pn-form textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)}
+.pn-steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.pn-steps li{counter-increment:s;display:flex;gap:10px;margin-bottom:10px}
+.pn-steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px;display:grid;place-items:center}
+.pn-list{margin:0;padding-left:18px}
+.pn-list li{margin-bottom:4px}
+.pn-banner{background:var(--gold-soft);color:var(--gold-text);border-radius:12px;padding:9px 12px;font-size:13px;margin-bottom:12px;display:none}
+.pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
+</style>
+</head>
+<body>
+<div class="pn" id="app">
+<div class="pn-wrap">
+
+  <!-- Marca (peneira) reutilizada no topo e no hero -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="pnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9b6cf0"/><stop offset="1" stop-color="#5b3cc4"/></linearGradient>
+      <clipPath id="pnClip"><circle cx="32" cy="34" r="17"/></clipPath>
+      <symbol id="pnMark" viewBox="0 0 64 64">
+        <rect width="64" height="64" rx="16" fill="url(#pnG)"/>
+        <circle cx="32" cy="34" r="20" fill="none" stroke="#ff8a3d" stroke-width="4"/>
+        <g clip-path="url(#pnClip)" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.6">
+          <path d="M14 22h36M14 28h36M14 34h36M14 40h36M14 46h36M20 14v40M26 14v40M32 14v40M38 14v40M44 14v40"/>
+        </g>
+        <circle cx="32" cy="34" r="4.2" fill="#ffb27a"/>
+        <circle cx="32" cy="9" r="3" fill="#ffb27a"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="pn-top" id="topo">
+    <div class="pn-brand">
+      <svg aria-hidden="true"><use href="#pnMark"/></svg>
+      <div><b>Peneira</b><small>Central do WhatsApp</small></div>
+    </div>
+    <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
+  </header>
+
+  <div class="pn-banner" id="aviso"></div>
+
+  <!-- ========== INÍCIO ========== -->
+  <main>
+  <section class="pn-view" id="inicio">
+    <div class="pn-hero" id="hero">
+      <div>
+        <h1>Peneira</h1>
+        <p id="ultima">Aguardando a primeira varredura do seu WhatsApp.</p>
+        <div class="pn-quote">Passa tudo pela peneira. Fica só o que importa.</div>
+      </div>
+      <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
+    </div>
+
+    <div class="pn-kpis" id="resumo">
+      <div class="pn-kpi"><b id="k-pend">–</b><span>Pendentes</span></div>
+      <div class="pn-kpi alta"><b id="k-alta">–</b><span>Prioridade alta</span></div>
+      <div class="pn-kpi prazo"><b id="k-prazo">–</b><span>Vencem em 7 dias</span></div>
+    </div>
+
+    <button class="pn-cta" id="cta-crit" type="button" hidden>
+      <span><b id="cta-n">0</b> critérios esperando sua aprovação</span><span>Revisar →</span>
+    </button>
+
+    <div class="pn-h2">Agora</div>
+    <div id="agora"></div>
+  </section>
+
+  <!-- ========== IMPORTANTES ========== -->
+  <section class="pn-view" id="importantes">
+    <div class="pn-h2" style="margin-top:4px">Importantes</div>
+    <div class="pn-chips" id="filtros"></div>
+    <div id="lista-itens"></div>
+  </section>
+
+  <!-- ========== CRITÉRIOS ========== -->
+  <section class="pn-view" id="criterios">
+    <div class="pn-h2" style="margin-top:4px">Lista principal (aprovados)</div>
+    <p class="pn-meta" style="margin:-4px 0 10px">É a lista que eu sigo ao ler suas conversas.</p>
+    <div id="crit-aprovados"></div>
+    <div class="pn-h2">Sugestões aguardando você</div>
+    <div id="crit-sugeridos"></div>
+    <div class="pn-h2">Recusados</div>
+    <div id="crit-recusados"></div>
+    <div class="pn-h2">Adicionar critério seu</div>
+    <form class="pn-card pn-form" id="novo-crit">
+      <input id="nc-nome" placeholder="Nome (ex.: Escola da minha filha)" required maxlength="80">
+      <textarea id="nc-desc" rows="2" placeholder="O que entra (ex.: avisos, mensalidade, eventos)" maxlength="300"></textarea>
+      <button class="pn-btn pri" type="submit">Adicionar à lista principal</button>
+    </form>
+  </section>
+
+  <!-- ========== COMO FUNCIONA ========== -->
+  <section class="pn-view" id="sobre">
+    <div class="pn-h2" style="margin-top:4px">Como funciona</div>
+    <div class="pn-card">
+      <ol class="pn-steps">
+        <li><span>Abro o WhatsApp Web no Chrome do seu computador e entro em cada conversa não lida.</span></li>
+        <li><span>Leio e deixo como lida. Comparo com a sua lista principal de critérios.</span></li>
+        <li><span>O que for importante eu favorito (⭐) no WhatsApp e trago para cá, com prazo e próxima ação.</span></li>
+        <li><span>Você resolve por aqui: “Resolvido” ou “Não é importante”.</span></li>
+      </ol>
+    </div>
+    <div class="pn-h2">O que eu nunca faço</div>
+    <div class="pn-card">
+      <ul class="pn-list">
+        <li>Responder ou enviar mensagem sem você aprovar.</li>
+        <li>Abrir links, baixar arquivos ou usar códigos de verificação.</li>
+        <li>Fazer Pix, pagamento ou qualquer transação.</li>
+        <li>Guardar número de cartão, conta ou senha aqui.</li>
+      </ul>
+    </div>
+    <div class="pn-h2">Para funcionar</div>
+    <div class="pn-card pn-meta" style="font-size:14px">Computador ligado com o Chrome aberto, a extensão Claude in Chrome ativa e o WhatsApp Web conectado em <i>Dispositivos conectados</i>.</div>
+  </section>
+  </main>
+
+  <p class="pn-foot">Peneira · projeto pessoal de Rafael Ximenes</p>
+</div>
+
+<nav class="pn-bottom" id="nav-baixo" aria-label="Seções"></nav>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const S = { itens:[], criterios:[], meta:null, filtro:"todos", db:null, canWrite:true };
+  const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
+  const VIEWS = [
+    { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
+    { id:"importantes", nome:"Importantes", ico:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>', badge:"b-imp" },
+    { id:"criterios", nome:"Critérios", ico:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>', badge:"b-crit" },
+    { id:"sobre", nome:"Como funciona", ico:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/>' }
+  ];
+
+  function el(t,c,x){ const e=document.createElement(t); if(c) e.className=c; if(x!=null) e.textContent=x; return e; }
+  function fmt(s){ if(!s) return ""; const d=new Date(s); if(isNaN(d)) return String(s);
+    return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}) + (String(s).length>10 ? " " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : ""); }
+  function dias(s){ if(!s) return null; const d=new Date(s); if(isNaN(d)) return null; return Math.ceil((d-new Date())/86400000); }
+  function aviso(m){ const a=$("aviso"); a.textContent=m||""; a.style.display=m?"block":"none"; }
+
+  /* ---------- navegação (hash simples, igual ao SOLA) ---------- */
+  function buildNav(box){
+    VIEWS.forEach(v=>{
+      const b = el("button","pn-nav-btn"); b.type="button"; b.dataset.view=v.id;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg","svg"); svg.setAttribute("viewBox","0 0 24 24"); svg.innerHTML=v.ico;
+      b.appendChild(svg); b.appendChild(el("span",null,v.nome));
+      if(v.badge){ const bd=el("span","pn-badge"); bd.dataset.badge=v.badge; b.appendChild(bd); }
+      b.addEventListener("click",()=>go(v.id));
+      box.appendChild(b);
+    });
+  }
+  buildNav($("nav-topo")); buildNav($("nav-baixo"));
+  function go(id, push){
+    if(!VIEWS.some(v=>v.id===id)) id="inicio";
+    document.querySelectorAll(".pn-view").forEach(s=>s.classList.toggle("on", s.id===id));
+    document.querySelectorAll(".pn-nav-btn").forEach(b=>{ if(b.dataset.view===id) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+    if(push!==false){ try{ if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); }catch(e){} }
+    window.scrollTo(0,0);
+  }
+  window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
+  $("cta-crit").addEventListener("click",()=>go("criterios"));
+
+  /* ---------- modo demonstração (fora do Claude: GitHub Pages) ---------- */
+  const DEMO_KEY="peneira-demo-v1";
+  const hoje=new Date(), em=d=>{const x=new Date(hoje);x.setDate(x.getDate()+d);return x.toISOString().slice(0,10);};
+  const DEMO_ITENS=[
+    {id:"d1",categoria:"Bancos e cartões",prioridade:"alta",contato:"Banco Exemplo",resumo:"Fatura do cartão fechou. Vencimento em 3 dias.",acao:"Conferir lançamentos e pagar pelo app do banco",prazo:em(3),favoritado:true,status:"pendente"},
+    {id:"d2",categoria:"Órgãos oficiais",prioridade:"alta",contato:"Detran (exemplo)",resumo:"Licenciamento do veículo disponível para pagamento.",acao:"Emitir guia no site oficial",prazo:em(12),favoritado:true,status:"pendente"},
+    {id:"d3",categoria:"Alerta de golpe",prioridade:"alta",contato:"Número desconhecido",resumo:"\"Oi, troquei de número, me faz um Pix?\" — possível golpe. Não cliquei em nada.",acao:"Confirmar por ligação no número antigo",favoritado:true,status:"pendente"},
+    {id:"d4",categoria:"Família",prioridade:"media",contato:"Família (exemplo)",resumo:"Pediu confirmação do horário do almoço de domingo.",acao:"Responder confirmando",prazo:em(2),favoritado:true,status:"pendente"},
+    {id:"d5",categoria:"Contas e boletos",prioridade:"media",contato:"Condomínio (exemplo)",resumo:"Boleto do condomínio deste mês disponível.",prazo:em(6),favoritado:true,status:"pendente"},
+    {id:"d6",categoria:"Compras e entregas",prioridade:"baixa",contato:"Loja (exemplo)",resumo:"Entrega reagendada para amanhã à tarde.",favoritado:false,status:"pendente"}
+  ];
+  const DEMO_CRIT=[
+    ["bancos","Bancos e cartões","Fatura, débito, limite, Pix fora do comum, alerta de transação."],
+    ["oficial","Órgãos oficiais e governo","Receita, gov.br, Detran, INSS, prefeitura, cartório."],
+    ["contas","Contas e boletos","Energia, água, internet, celular, condomínio, escola."],
+    ["golpe","Alerta de segurança / possível golpe","Código não pedido, \"troquei de número\", link de bloqueio."],
+    ["familia","Família direta","Pedidos, combinados e datas."],
+    ["pedido","Pedido direto com prazo ou sem resposta","Perguntas e prazos sem resposta há mais de 24h."],
+    ["mencoes","Menções a você em grupos","Quando te marcam ou citam sua mensagem."],
+    ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
+  ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
+  function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:DEMO_ITENS,criterios:DEMO_CRIT}; }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({itens:S.itens,criterios:S.criterios})); }catch(e){} }
+  function demoUpdate(path,data){
+    const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
+    const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
+    demoSave(); render();
+  }
+
+  async function salvar(path,data){
+    if(S.demo) return demoUpdate(path,data);
+    if(!S.db) return;
+    try{ await S.db.doc(path).update(data); }catch(e){ aviso("Não consegui salvar agora. Tente de novo em instantes."); }
+  }
+
+  /* ---------- cartão de mensagem ---------- */
+  function cardItem(i){
+    const pend = (i.status||"pendente")==="pendente";
+    const c = el("article","pn-card"+(pend?"":" done"));
+    const top = el("div","pn-row"), tags = el("div");
+    if(i.prioridade) tags.appendChild(el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade));
+    if(i.categoria) tags.appendChild(el("span","pn-tag t-cat", i.categoria));
+    if(i.favoritado) tags.appendChild(el("span","pn-tag t-fav","⭐ favoritado"));
+    top.appendChild(tags);
+    if(i.prazo){ const d=dias(i.prazo); top.appendChild(el("span","pn-meta","Prazo "+fmt(i.prazo)+(d!=null?(d<0?" (vencido)":d===0?" (hoje)":" ("+d+"d)"):""))); }
+    c.appendChild(top);
+    c.appendChild(el("div","pn-who", i.contato||"Contato"));
+    c.appendChild(el("p","pn-sum", i.resumo||""));
+    if(i.acao) c.appendChild(el("div","pn-meta","➡️ "+i.acao));
+    if(i.recebidoEm) c.appendChild(el("div","pn-meta","Recebida "+fmt(i.recebidoEm)));
+    const a = el("div","pn-acts");
+    if(pend){
+      const ok=el("button","pn-btn pri","✓ Resolvido"); ok.disabled=!S.canWrite; ok.onclick=()=>salvar("itens/"+i.id,{status:"feito"});
+      const ig=el("button","pn-btn","Não é importante"); ig.disabled=!S.canWrite; ig.onclick=()=>salvar("itens/"+i.id,{status:"ignorado"});
+      a.append(ok,ig);
+    } else { const r=el("button","pn-btn","↺ Reabrir"); r.disabled=!S.canWrite; r.onclick=()=>salvar("itens/"+i.id,{status:"pendente"}); a.append(r); }
+    c.appendChild(a);
+    return c;
+  }
+  const ordena = (a,b)=>(PRI[a.prioridade]??3)-(PRI[b.prioridade]??3) || String(a.prazo||"9999").localeCompare(String(b.prazo||"9999"));
+
+  function render(){
+    const m=S.meta;
+    if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
+      (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" ⭐":"");
+    const pend = S.itens.filter(i=>(i.status||"pendente")==="pendente");
+    const alta = pend.filter(i=>i.prioridade==="alta");
+    $("k-pend").textContent=pend.length; $("k-alta").textContent=alta.length;
+    $("k-prazo").textContent=pend.filter(i=>{const d=dias(i.prazo);return d!=null&&d<=7;}).length;
+    const sug = S.criterios.filter(k=>(k.status||"sugerido")==="sugerido").length;
+    $("cta-crit").hidden = !sug; $("cta-n").textContent = sug;
+    document.querySelectorAll('[data-badge="b-imp"]').forEach(b=>{ b.textContent=alta.length; b.classList.toggle("on",alta.length>0); });
+    document.querySelectorAll('[data-badge="b-crit"]').forEach(b=>{ b.textContent=sug; b.classList.toggle("on",sug>0); });
+
+    // Agora (top 3)
+    const ag=$("agora"); ag.textContent="";
+    const top3 = pend.slice().sort(ordena).slice(0,3);
+    if(!top3.length) ag.appendChild(el("div","pn-empty", S.itens.length ? "Nada urgente agora. 🎉" : "Ainda não li suas conversas. Depois da primeira leitura, o mais importante aparece aqui."));
+    top3.forEach(i=>ag.appendChild(cardItem(i)));
+
+    // Filtros + lista
+    const cats = Array.from(new Set(S.itens.map(i=>i.categoria).filter(Boolean))).sort();
+    const f=$("filtros"); f.textContent="";
+    ["todos",...cats,"concluídos"].forEach(c=>{ const b=el("button","pn-chip",c==="todos"?"Todos pendentes":c); b.type="button";
+      b.setAttribute("aria-pressed",S.filtro===c?"true":"false"); b.onclick=()=>{S.filtro=c;render();}; f.appendChild(b); });
+    let lista=S.itens.slice();
+    if(S.filtro==="concluídos") lista=lista.filter(i=>i.status&&i.status!=="pendente");
+    else { lista=lista.filter(i=>(i.status||"pendente")==="pendente"); if(S.filtro!=="todos") lista=lista.filter(i=>i.categoria===S.filtro); }
+    lista.sort(ordena);
+    const L=$("lista-itens"); L.textContent="";
+    if(!lista.length) L.appendChild(el("div","pn-empty", S.itens.length?"Nada aqui. 🎉":"Ainda não há mensagens."));
+    lista.forEach(i=>L.appendChild(cardItem(i)));
+
+    // Critérios
+    const G={aprovado:$("crit-aprovados"),sugerido:$("crit-sugeridos"),recusado:$("crit-recusados")};
+    Object.values(G).forEach(g=>g.textContent="");
+    S.criterios.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(k=>{
+      const st=G[k.status]?k.status:"sugerido";
+      const c=el("div","pn-card"), r=el("div","pn-row");
+      r.appendChild(el("b",null,k.nome||k.id));
+      r.appendChild(el("span","pn-st st-"+st, st==="aprovado"?"Aprovado":st==="recusado"?"Recusado":"Sugerido"));
+      c.appendChild(r);
+      if(k.descricao) c.appendChild(el("p","pn-sum",k.descricao));
+      if(k.exemplos) c.appendChild(el("div","pn-meta","Ex.: "+k.exemplos));
+      const a=el("div","pn-acts");
+      if(st!=="aprovado"){ const b=el("button","pn-btn pri","Aprovar"); b.disabled=!S.canWrite; b.onclick=()=>salvar("criterios/"+k.id,{status:"aprovado"}); a.appendChild(b); }
+      if(st!=="recusado"){ const b=el("button","pn-btn no","Recusar"); b.disabled=!S.canWrite; b.onclick=()=>salvar("criterios/"+k.id,{status:"recusado"}); a.appendChild(b); }
+      c.appendChild(a); G[st].appendChild(c);
+    });
+    Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
+  }
+
+  $("novo-crit").addEventListener("submit", async ev=>{
+    ev.preventDefault();
+    const nome=$("nc-nome").value.trim(); if(!nome) return;
+    if(S.demo){ S.criterios.push({id:"c"+Date.now(),nome,descricao:$("nc-desc").value.trim(),status:"aprovado",ordem:50+S.criterios.length}); demoSave(); render(); $("nc-nome").value=""; $("nc-desc").value=""; return; }
+    if(!S.db) return;
+    try{ await S.db.collection("criterios").add({nome, descricao:$("nc-desc").value.trim(), status:"aprovado", ordem:50+S.criterios.length, origem:"Rafael"});
+      $("nc-nome").value=""; $("nc-desc").value=""; }catch(e){ aviso("Não consegui adicionar o critério agora."); }
+  });
+
+  if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
+  go(location.hash.slice(1)||"inicio", false);
+  render();
+
+  (async ()=>{
+    let db=null; try{ if(window.claude && window.claude.use) db = await window.claude.use("db"); }catch(e){}
+    const inClaude = !!window.claude || /claude/i.test(location.hostname);
+    if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
+    if(!db){
+      const d=demoLoad(); S.demo=true; S.itens=d.itens; S.criterios=d.criterios;
+      S.meta={ultimaVarredura:new Date().toISOString(),conversasLidas:42,favoritadas:d.itens.filter(i=>i.favoritado).length};
+      aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); return;
+    }
+    S.db=db;
+    try{ const u=await window.claude.use("user"); const w=u&&u.can?await u.can("data.write"):null; if(w===false) S.canWrite=false; }catch(e){}
+    const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
+    const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
+    const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.collection("itens").onSnapshot(s=>{ S.itens=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.collection("criterios").onSnapshot(s=>{ S.criterios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.doc("meta/status").onSnapshot(s=>{ S.meta=s.exists?s.data():null; render(); }, ()=>{});
+  })();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "Peneira · Central do WhatsApp",
+  "short_name": "Peneira",
+  "description": "Lê suas conversas do WhatsApp, marca como lido e separa só o que importa: bancos, órgãos oficiais, contas, família e alertas de golpe.",
+  "lang": "pt-BR",
+  "id": "./",
+  "start_url": "./index.html#inicio",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f5ff",
+  "theme_color": "#6d4ad6",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Importantes", "url": "./index.html#importantes", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Critérios", "url": "./index.html#criterios", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
