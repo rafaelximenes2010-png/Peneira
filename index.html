@@ -659,6 +659,17 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">Testar o som</button>
     </div>
 
+    <div class="pn-h2" id="ponte-h">Ponte oficial · conversas individuais 24h</div>
+    <div class="pn-card pn-form" id="ponte-card">
+      <p class="pn-meta" style="margin:0 0 10px">Recebe as conversas individuais do WhatsApp Business em tempo real pela API oficial da Meta, sem Chrome e sem notebook. Grupos continuam na varredura de hora em hora.</p>
+      <div id="ponte-st" class="pn-meta" style="margin:0 0 10px;font-weight:600">Não conectada.</div>
+      <label for="ponte-url">Endereço da ponte</label><input id="ponte-url" placeholder="https://peneira-ponte.SEU-NOME.workers.dev" autocomplete="off" inputmode="url">
+      <label for="ponte-tok">Senha da ponte</label><input id="ponte-tok" type="password" placeholder="a mesma do PENEIRA_TOKEN" autocomplete="off">
+      <button class="pn-btn pri" type="button" id="ponte-ok">Conectar e testar</button>
+      <button class="pn-btn" type="button" id="ponte-sair" style="margin-top:8px" hidden>Desconectar</button>
+      <a class="pn-meta" href="https://github.com/rafaelximenes2010-png/Peneira/blob/main/docs/PONTE-API.md" target="_blank" rel="noopener" style="display:block;margin-top:10px">Passo a passo para criar a ponte →</a>
+    </div>
+
     <div class="pn-h2">Aparência</div>
     <div class="pn-card">
       <div class="pn-meta" style="margin-bottom:8px">Tema</div>
@@ -1366,8 +1377,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.8";
+  const VERSAO="2.9";
   const VERSOES=[
+    {v:"2.9",data:"13/11/2026",itens:["Ponte oficial (API da Meta): conversas individuais em tempo real, 24h, sem Chrome","Modelo híbrido: grupos seguem na varredura de hora em hora","Dá baixa sozinho quando você responde pelo WhatsApp"]},
     {v:"2.8",data:"13/11/2026",itens:["Varredura automática de hora em hora, 24 horas por dia","De madrugada (23h–5h) só avisa VIP urgente ou golpe"]},
     {v:"2.7",data:"13/11/2026",itens:["Adicionar VIP buscando nos contatos e grupos do WhatsApp"]},
     {v:"2.6",data:"13/11/2026",itens:["Prevenção: problemas que se repetem com ação preventiva (e botão para levar à Agenda)","Ranking de clientes que mais geram demandas","Tempo de resposta da equipe para clientes internos e externos, com metas e farol","Exportar prevenção em PDF e Excel"]},
@@ -1765,6 +1777,42 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   $("bd-add").addEventListener("click",()=>{ const n=$("bd-novo").value.trim(); if(!n) return; if(!bdSel.includes(n)) bdSel.push(n); $("bd-novo").value=""; renderBD(); });
   $("bd-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaBD({hora:$("bd-hora").value||"05:00",grupos:bdSel||[],mensagem:$("bd-msg").value.trim()}); salvoOk($("bd-salvar")); });
   setInterval(()=>{ try{ renderBD(); }catch(e){} },60000);
+
+  // ===== Ponte oficial (Cloud API · coexistência) =====
+  const PONTE_KEY="peneira-ponte";
+  let ponte=null; try{ ponte=JSON.parse(localStorage.getItem(PONTE_KEY)); }catch(e){}
+  let ponteCfgHash="", ponteTimer=null;
+  function ponteMostra(t,ok){ const e=$("ponte-st"); if(!e) return; e.textContent=t; e.style.color=ok===true?"var(--ok,#1a8f5a)":ok===false?"#c0392b":""; }
+  async function ponteReq(caminho,op){ const r=await fetch(ponte.url.replace(/\/+$/,"")+caminho,{...(op||{}),headers:{authorization:"Bearer "+ponte.tok,"content-type":"application/json"}}); if(!r.ok) throw new Error(r.status===401?"senha":"http "+r.status); return r.json(); }
+  async function ponteSync(){
+    if(!ponte||!ponte.url||!ponte.tok) return;
+    try{
+      const cfg={vips:(S.vips||[]).map(v=>({nome:v.nome,som:v.som!==false})),criterios:(S.criterios||[]).filter(c=>c.status==="aprovado").map(c=>({nome:c.nome}))};
+      const h=JSON.stringify(cfg); if(h!==ponteCfgHash){ await ponteReq("/config",{method:"POST",body:h}); ponteCfgHash=h; }
+      const desde=ponte.desde?new Date(Date.parse(ponte.desde)-120000).toISOString():"";
+      const r=await ponteReq("/itens"+(desde?"?desde="+encodeURIComponent(desde):""));
+      const tem=new Set((S.itens||[]).map(i=>i.id)); let novos=0;
+      for(const it of (r.itens||[])){
+        if(tem.has(it.id)) continue; const {id,de,respondidoNoWhats,...dado}=it; novos++;
+        if(respondidoNoWhats) dado.status="feito";
+        if(S.demo){ S.itens.push({id,...dado}); }
+        else if(S.db && S.canWrite!==false){ try{ await S.db.doc("itens/"+id).set(dado); }catch(e){} }
+      }
+      ponte.desde=r.agora||new Date().toISOString(); localStorage.setItem(PONTE_KEY,JSON.stringify(ponte));
+      if(S.demo && novos){ demoSave(); checaVips(); render(); }
+      let st=null; try{ st=await ponteReq("/status"); }catch(e){}
+      ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
+    }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
+  }
+  function ponteLiga(){ clearInterval(ponteTimer); if(ponte&&ponte.url){ $("ponte-url").value=ponte.url; $("ponte-tok").value=ponte.tok?"••••••••":""; $("ponte-sair").hidden=false; ponteTimer=setInterval(ponteSync,60000); setTimeout(ponteSync,2500); } else { $("ponte-sair").hidden=true; ponteMostra("Não conectada."); } }
+  $("ponte-ok").addEventListener("click",async()=>{
+    const url=$("ponte-url").value.trim(); let tok=$("ponte-tok").value.trim(); if(tok==="••••••••"&&ponte) tok=ponte.tok;
+    if(!/^https:\/\//.test(url)||!tok){ ponteMostra("Preencha o endereço (https://…) e a senha.",false); return; }
+    ponte={url,tok,desde:(ponte&&ponte.url===url)?ponte.desde:""}; ponteCfgHash=""; localStorage.setItem(PONTE_KEY,JSON.stringify(ponte));
+    ponteMostra("Testando…"); ponteLiga(); await ponteSync();
+  });
+  $("ponte-sair").addEventListener("click",()=>{ ponte=null; try{ localStorage.removeItem(PONTE_KEY); }catch(e){} $("ponte-url").value=""; $("ponte-tok").value=""; ponteLiga(); });
+  ponteLiga();
 
   /* ---------- lista VIP (ver quem está cadastrado) ---------- */
   function renderVipLista(){

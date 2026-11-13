@@ -1,0 +1,23 @@
+# Ponte oficial do Peneira (WhatsApp Cloud API · coexistência) — Cloudflare Workers, plano grátis.
+name = "peneira-ponte"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+# Crie com:  npx wrangler kv namespace create PENEIRA   e cole o id abaixo.
+[[kv_namespaces]]
+binding = "KV"
+id = "COLE_AQUI_O_ID_DO_KV"
+
+[vars]
+# "sim" = marca como lidas as mensagens sem importância (o remetente vê o tique azul). Padrão: não.
+MARCAR_LIDAS = "nao"
+GRAPH_VERSION = "v23.0"
+
+# Segredos (não ficam no código) — defina com  npx wrangler secret put NOME :
+#   VERIFY_TOKEN     palavra que você inventa e repete no painel da Meta (verificação do webhook)
+#   APP_SECRET       "Chave secreta do app" no painel da Meta (rota direta: confere a assinatura de cada aviso)
+#   WEBHOOK_KEY      rota pelo provedor (BSP): senha que vai no fim do endereço do webhook (?k=...)
+#   PENEIRA_TOKEN    senha longa que você inventa e cola no app (Ajustes → Ponte oficial)
+#   WA_TOKEN         token de acesso do WhatsApp (só se MARCAR_LIDAS = "sim")
+#   PHONE_NUMBER_ID  id do número no painel da Meta (só se MARCAR_LIDAS = "sim")
+#   ANTHROPIC_API_KEY  opcional: resumo e classificação com Claude; sem ela, usa regras de palavras
