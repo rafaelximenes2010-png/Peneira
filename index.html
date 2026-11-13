@@ -397,6 +397,11 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-rank .bar i{display:block;height:100%;background:var(--sky);border-radius:3px}
 .pn-tp{font-weight:700;font-variant-numeric:tabular-nums}
 .pn-tp.v{color:#2fb36b} .pn-tp.a{color:var(--gold-text)} .pn-tp.r{color:var(--coral)}
+
+.pn-sug{background:var(--surface);border:1px solid var(--border);border-radius:12px;max-height:240px;overflow:auto;box-shadow:var(--shadow)}
+.pn-sug button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--border);background:none;color:var(--ink);font:inherit;padding:10px 12px;cursor:pointer}
+.pn-sug button:last-child{border-bottom:0}
+.pn-sug button .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;background:var(--accent-soft);color:var(--accent);flex:none}
 </style>
 </head>
 <body>
@@ -645,10 +650,11 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <div id="vip-lista"></div>
       <form class="pn-form" id="vip-form" style="margin-top:12px">
         <div style="display:flex;gap:6px">
-          <input id="vip-nome" placeholder="Nome como aparece no WhatsApp" maxlength="60" required style="flex:1">
+          <input id="vip-nome" placeholder="Buscar nos contatos do WhatsApp" maxlength="60" required style="flex:1" autocomplete="off">
           <select id="vip-tipo" style="font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)"><option value="pessoa">Pessoa</option><option value="grupo">Grupo</option></select>
         </div>
-        <button class="pn-btn" type="submit">+ Adicionar pelo nome</button>
+        <div id="vip-sug" class="pn-sug" hidden></div>
+        <button class="pn-btn" type="submit">+ Adicionar</button>
       </form>
       <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">Testar o som</button>
     </div>
@@ -951,7 +957,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { gestao:null, relGrupos:[], bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { contatos:[], gestao:null, relGrupos:[], bomdia:null, varredura:null, grupos:[], agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
@@ -1360,8 +1366,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.6";
+  const VERSAO="2.7";
   const VERSOES=[
+    {v:"2.7",data:"13/11/2026",itens:["Adicionar VIP buscando nos contatos e grupos do WhatsApp"]},
     {v:"2.6",data:"13/11/2026",itens:["Prevenção: problemas que se repetem com ação preventiva (e botão para levar à Agenda)","Ranking de clientes que mais geram demandas","Tempo de resposta da equipe para clientes internos e externos, com metas e farol","Exportar prevenção em PDF e Excel"]},
     {v:"2.5",data:"13/11/2026",itens:["Relatórios por grupo: assuntos, preocupações, metas, compromissos, reclamações e protagonistas/líderes","Exportar em PDF e Excel (cadastro dos grupos, participantes e assuntos)","Varredura automática a cada 4 horas"]},
     {v:"2.4",data:"13/11/2026",itens:["Botão Lista VIP no Início: veja quem está cadastrado, por Trabalho, Família e Grupos, com busca"]},
@@ -1925,6 +1932,31 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   }
   $("pv-xlsx").addEventListener("click",()=>exportPrev("xlsx"));
   $("pv-pdf").addEventListener("click",()=>exportPrev("pdf"));
+
+  /* ---------- adicionar VIP buscando nos contatos do WhatsApp ---------- */
+  function contatosWhats(){
+    const m=new Map(); const add=(nome,tipo,extra)=>{ if(!nome) return; const k=norm(nome); if(!m.has(k)) m.set(k,{nome,tipo,...(extra||{})}); };
+    (S.contatos||[]).forEach(c=>add(c.nome,c.tipo||"pessoa",{tel:c.tel||""}));
+    S.grupos.forEach(g=>add(g.nome,"grupo"));
+    S.itens.forEach(i=>{ add(i.contato,"pessoa"); if(i.grupo) add(i.grupo,"grupo"); });
+    (S.gestao&&S.gestao.atendimento||[]).forEach(a=>add(a.funcionario,"pessoa"));
+    return [...m.values()];
+  }
+  function mostraSug(){
+    const q=norm($("vip-nome").value), B=$("vip-sug"); B.textContent="";
+    const ja=new Set(S.vips.map(v=>norm(v.nome)));
+    let lista=contatosWhats().filter(c=>!ja.has(norm(c.nome)));
+    if(q) lista=lista.filter(c=>norm(c.nome).includes(q));
+    lista=lista.sort((a,b)=>a.nome.localeCompare(b.nome)).slice(0,30);
+    if(!lista.length){ const d=el("div","pn-meta", (S.contatos&&S.contatos.length)||S.grupos.length ? "Nenhum contato encontrado com esse nome. Toque em + Adicionar para cadastrar assim mesmo." : "A lista dos seus contatos do WhatsApp aparece aqui depois da primeira varredura. Por enquanto, digite o nome e toque em + Adicionar."); d.style.padding="10px 12px"; B.appendChild(d); }
+    lista.forEach(c=>{ const b=el("button"); b.type="button"; const av=el("span","av",c.nome.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase()); const t=el("div"); t.appendChild(el("b",null,c.nome)); t.appendChild(el("div","pn-meta",c.tipo==="grupo"?"Grupo do WhatsApp":"Contato do WhatsApp"+(c.tel?" · "+c.tel:"")));
+      b.append(av,t); b.onclick=()=>{ if(!S.canWrite) return; salvaVip("add",{nome:c.nome,tel:c.tel||"",tipo:c.tipo==="grupo"?"grupo":"pessoa",som:true,ordem:S.vips.length+1}); $("vip-nome").value=""; B.hidden=true; salvoOk($("vip-form").querySelector("button[type=submit]"),"✓ "+c.nome.split(" ")[0]+" é VIP"); };
+      B.appendChild(b); });
+    B.hidden=false;
+  }
+  $("vip-nome").addEventListener("focus",mostraSug);
+  $("vip-nome").addEventListener("input",mostraSug);
+  document.addEventListener("click",e=>{ if(!e.target.closest("#vip-form")) $("vip-sug").hidden=true; });
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
@@ -2180,6 +2212,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.collection("contatos").onSnapshot(s=>{ S.contatos=s.docs.map(d=>({id:d.id,...d.data()})); render(); }, ()=>{});
     db.doc("meta/gestao").onSnapshot(s=>{ S.gestao=s.exists?s.data():null; render(); }, ()=>{});
     db.collection("relGrupos").onSnapshot(s=>{ S.relGrupos=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/bomdia").onSnapshot(s=>{ S.bomdia=s.exists?s.data():null; render(); }, ()=>{});
