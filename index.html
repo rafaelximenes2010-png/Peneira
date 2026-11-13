@@ -148,6 +148,8 @@
 .pn-nums span{background:var(--surface-2);border-radius:8px;padding:3px 8px;font-size:12px;color:var(--ink-2)}
 .pn-dn{display:flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)}
 .pn-dn span:first-child{font-size:16px;line-height:1}
+#btn-hub{position:relative;padding:7px 13px;font-size:18px;letter-spacing:1px}
+@media (max-width:420px){#dn-txt{display:none}}
 /* Paletas do modo dia */
 .pn[data-modo="dia"][data-paleta="areia"]{--bg:#fbf7f0;--surface:#ffffff;--surface-2:#f4eee3;--border:#e6dccb;--ink:#1f2336;--ink-2:#434960;--ink-3:#5f6479;--accent:#2b3a67;--accent-soft:#e3e8f6;--gold:#d9a23a;--gold-soft:#fbefd2;--gold-text:#7a560f;--hero-a:#2b3a67;--hero-b:#4a5f9e}
 .pn[data-modo="dia"][data-paleta="branco"]{--bg:#ffffff;--surface:#ffffff;--surface-2:#f3f4f6;--border:#e5e7eb;--ink:#111827;--ink-2:#374151;--ink-3:#6b7280;--accent:#1e3a8a;--accent-soft:#e0e7ff;--gold:#f59e0b;--gold-soft:#fef3c7;--gold-text:#92400e;--hero-a:#1e3a8a;--hero-b:#3b5bdb}
@@ -165,7 +167,7 @@
   background:radial-gradient(120% 90% at 50% 25%,#2a3b6e 0%,#16213f 55%,#0b1226 100%);color:#fff;transition:opacity .5s ease}
 .pn-splash.sai{opacity:0;pointer-events:none}
 .pn-sp-stage{position:relative;width:min(92vw,420px);height:min(86vh,560px)}
-.pn-sp-sieve{position:absolute;left:50%;top:6%;width:62%;transform:translateX(-50%)}
+.pn-sp-sieve{position:absolute;left:50%;top:10%;width:70%;transform:translateX(-50%)}
 .pn-sp-sieve svg{width:100%;height:auto;display:block;overflow:visible}
 @keyframes pnShake{from{transform:translateX(-50%) rotate(-4deg)}to{transform:translateX(-50%) rotate(4deg)}}
 .pn-sp-l{position:absolute;left:0;top:0;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:700;color:#f8de8f;
@@ -191,6 +193,23 @@
 .pn-x{border:0;background:none;color:var(--ink-3);font-size:18px;cursor:pointer;padding:2px 6px}
 .t-vip{background:var(--gold);color:#1b1407}
 .pn-card.vip{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-soft)}
+.pn-full{position:fixed;inset:0;z-index:80;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;
+  padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom))}
+.pn-full[hidden]{display:none}
+.pn-full-in{width:100%;max-width:420px}
+.pn-hub{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.pn-hub button{position:relative;border:1px solid var(--border);background:var(--surface-2);border-radius:16px;padding:12px 4px 10px;cursor:pointer;color:var(--ink);font-size:11.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pn-hub button span:first-child{font-size:22px;line-height:1}
+.pn-hub .pn-badge{position:absolute;top:6px;right:8px;min-width:9px;height:9px;padding:0}
+.pn-ag-g{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:16px 0 6px}
+.pn-ag-g.atr{color:var(--coral)}
+.pn-ag{display:flex;gap:10px;align-items:flex-start}
+.pn-ag input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--accent);flex:none}
+.pn-ag.feito .pn-ag-t{text-decoration:line-through;opacity:.55}
+.pn-pol h1{font-family:var(--font-text);font-size:22px;margin:0 0 4px}
+.pn-pol h2{font-size:15px;margin:18px 0 6px}
+.pn-pol p,.pn-pol li{font-size:14.5px;color:var(--ink-2)}
+.pn-pol ul{padding-left:18px}
 .pn-foot{text-align:center;font-size:12px;color:var(--ink-3);margin-top:22px}
 </style>
 </head>
@@ -199,16 +218,23 @@
 <div class="pn-splash" id="splash" aria-hidden="true">
   <div class="pn-sp-stage" id="sp-stage">
     <div class="pn-sp-sieve">
-      <svg viewBox="0 0 200 150" aria-hidden="true">
-        <defs><clipPath id="spClip"><ellipse cx="100" cy="88" rx="78" ry="26"/></clipPath>
-          <linearGradient id="spRim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b9812a"/><stop offset=".5" stop-color="#f3c75c"/><stop offset="1" stop-color="#b9812a"/></linearGradient></defs>
-        <path d="M22 60 Q100 30 178 60 L172 88 Q100 118 28 88 Z" fill="#1d2a52" opacity=".55"/>
-        <g clip-path="url(#spClip)" stroke="#e9edf6" stroke-opacity=".5" stroke-width="1.4">
-          <path d="M20 66h160M20 74h160M20 82h160M20 90h160M20 98h160M20 106h160M30 60v60M42 60v60M54 60v60M66 60v60M78 60v60M90 60v60M102 60v60M114 60v60M126 60v60M138 60v60M150 60v60M162 60v60M174 60v60"/>
+      <svg viewBox="0 0 240 150" aria-hidden="true">
+        <defs>
+          <linearGradient id="spOuro" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a8741f"/><stop offset=".5" stop-color="#f6cf6a"/><stop offset="1" stop-color="#a8741f"/></linearGradient>
+          <linearGradient id="spLado" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0a93b"/><stop offset="1" stop-color="#8a5c17"/></linearGradient>
+          <clipPath id="spMalha"><ellipse cx="120" cy="104" rx="86" ry="20"/></clipPath>
+        </defs>
+        <ellipse cx="120" cy="140" rx="80" ry="7" fill="#000" opacity=".25"/>
+        <path d="M18 48 L34 104 A86 20 0 0 0 206 104 L222 48 A102 24 0 0 1 18 48Z" fill="url(#spLado)" opacity=".35"/>
+        <ellipse cx="120" cy="104" rx="86" ry="20" fill="#0f1830"/>
+        <g clip-path="url(#spMalha)" stroke="#dfe6f5" stroke-opacity=".55" stroke-width="1.3">
+          <path d="M30 88h180M30 94h180M30 100h180M30 106h180M30 112h180M30 118h180"/>
+          <path d="M42 80v50M54 80v50M66 80v50M78 80v50M90 80v50M102 80v50M114 80v50M126 80v50M138 80v50M150 80v50M162 80v50M174 80v50M186 80v50M198 80v50"/>
         </g>
-        <ellipse cx="100" cy="88" rx="78" ry="26" fill="none" stroke="url(#spRim)" stroke-width="5"/>
-        <path d="M22 60 Q100 30 178 60" fill="none" stroke="url(#spRim)" stroke-width="6" stroke-linecap="round"/>
-        <path d="M22 60 L28 88 M178 60 L172 88" stroke="url(#spRim)" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="120" cy="104" rx="86" ry="20" fill="none" stroke="url(#spOuro)" stroke-width="4"/>
+        <path d="M18 48 L34 104 M222 48 L206 104" stroke="url(#spOuro)" stroke-width="5" stroke-linecap="round"/>
+        <ellipse cx="120" cy="48" rx="102" ry="24" fill="none" stroke="url(#spOuro)" stroke-width="7"/>
+        <ellipse cx="120" cy="46" rx="96" ry="20" fill="none" stroke="#fff3c4" stroke-opacity=".35" stroke-width="1.5"/>
       </svg>
     </div>
     <div class="pn-sp-tag" id="sp-tag">Passa tudo pela peneira. Fica só o que importa.</div>
@@ -234,6 +260,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
+      <button class="pn-dn" type="button" id="btn-hub" aria-label="Central: novidades, atualizações e mais"><span>⋯</span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
       <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico">🌙</span><span id="dn-txt">Noite</span></button>
     </div>
   </header>
@@ -277,6 +304,23 @@
     <div class="pn-h2" style="margin-top:4px">Importantes</div>
     <div class="pn-chips" id="filtros"></div>
     <div id="lista-itens"></div>
+  </section>
+
+  <!-- ========== AGENDA ========== -->
+  <section class="pn-view" id="agenda">
+    <div class="pn-h2" style="margin-top:4px">Agenda · para não esquecer</div>
+    <p class="pn-meta" style="margin:-4px 0 10px">Respostas que você precisa dar, processos e prazos futuros. Eu também coloco aqui o que encontrar nas leituras.</p>
+    <form class="pn-card pn-form" id="ag-form">
+      <input id="ag-tit" placeholder="O que fazer (ex.: responder Wellington sobre orçamento)" maxlength="140" required>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <select id="ag-tipo" style="flex:1;min-width:130px;font:inherit;padding:8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink)">
+          <option value="responder">💬 Responder</option><option value="processo">📋 Processo</option><option value="prazo">⏰ Prazo / pagamento</option><option value="lembrete">📌 Lembrete</option></select>
+        <input id="ag-quando" type="datetime-local" style="flex:1;min-width:170px" required>
+      </div>
+      <input id="ag-contato" placeholder="Pessoa ou grupo (opcional)" maxlength="60">
+      <button class="pn-btn pri" type="submit">+ Agendar</button>
+    </form>
+    <div id="ag-lista"></div>
   </section>
 
   <!-- ========== RELATÓRIOS ========== -->
@@ -337,8 +381,87 @@
     <div class="pn-h2">Mais</div>
     <button class="pn-cta" type="button" data-go="criterios" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
       <span><b>Lista de critérios</b><br><span class="pn-meta" id="aj-crit">O que conta como importante</span></span><span>→</span></button>
+    <button class="pn-cta" type="button" data-go="acoes" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
+      <span><b>Ações e respostas automáticas</b><br><span class="pn-meta">Silenciar grupos, ausência, saudação</span></span><span>→</span></button>
+    <button class="pn-cta" type="button" data-go="perfil" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
+      <span><b>Meu cadastro e Face ID</b><br><span class="pn-meta" id="aj-perfil">Seus dados e bloqueio do app</span></span><span>→</span></button>
+    <button class="pn-cta" type="button" data-go="politica" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
+      <span><b>Política de privacidade</b><br><span class="pn-meta">Como seus dados são usados (LGPD)</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="sobre" style="background:var(--surface);border-color:var(--border);color:var(--ink)">
-      <span><b>Como funciona</b><br><span class="pn-meta">E o que eu nunca faço</span></span><span>→</span></button>
+      <span><b>Como funciona e regras de segurança</b><br><span class="pn-meta">O que eu nunca faço</span></span><span>→</span></button>
+  </section>
+
+  <!-- ========== POLÍTICA ========== -->
+  <section class="pn-view" id="politica">
+    <button class="pn-btn" type="button" data-go="ajustes">← Voltar</button>
+    <div class="pn-card pn-pol" style="margin-top:12px"><h1>Política de Privacidade do Peneira</h1>
+<p class="pn-meta">Versão 1.0 · vigente desde 13 de novembro de 2026</p>
+
+<p>O <b>Peneira · Central do WhatsApp</b> é um projeto pessoal de Rafael Ximenes, ainda em fase de teste. Ele organiza mensagens do WhatsApp para destacar o que é importante. Esta política explica, em linguagem simples, quais dados o app usa, para quê, e quais são os seus direitos pela Lei Geral de Proteção de Dados (LGPD, Lei nº 13.709/2018).</p>
+
+<h2>1. Quem é o responsável</h2>
+<p>O responsável pelos dados (controlador) é o criador do Peneira, Rafael Ximenes. Para falar sobre privacidade, use a área de contato do repositório oficial do projeto no GitHub ou o canal indicado no próprio app.</p>
+
+<h2>2. Quais dados usamos</h2>
+<ul>
+  <li><b>Cadastro:</b> nome, como prefere ser chamado, número de WhatsApp e, se quiser, e-mail.</li>
+  <li><b>Preferências:</b> lista de critérios, contatos VIP, horários de relatório, tema e cores.</li>
+  <li><b>Conteúdo das mensagens:</b> só quando você liga a leitura. O texto é processado para identificar o que é importante. Guardamos apenas um <b>resumo</b>, o contato, o prazo e a prioridade. A mensagem completa não é armazenada.</li>
+  <li><b>Agenda e relatórios:</b> os lembretes que você ou a leitura criam e os relatórios do dia.</li>
+</ul>
+<p>Não coletamos senhas, códigos de verificação, dados de cartão ou de conta bancária. O app nunca pede esses dados.</p>
+
+<h2>3. Face ID e biometria</h2>
+<p>O desbloqueio com Face ID (ou digital) usa o recurso do próprio aparelho. <b>A sua biometria nunca sai do celular</b> e o Peneira nunca tem acesso a ela. O app recebe apenas a confirmação de que o desbloqueio deu certo.</p>
+
+<h2>4. Para que usamos</h2>
+<ul>
+  <li>Separar mensagens importantes (bancos, contas, órgãos oficiais, família, trabalho).</li>
+  <li>Alertar sobre possíveis golpes e informações que não batem.</li>
+  <li>Gerar relatórios diários e manter a agenda de pendências.</li>
+</ul>
+<p>Não usamos seus dados para publicidade, não vendemos e não compartilhamos com terceiros para fins comerciais.</p>
+
+<h2>5. Regras de segurança</h2>
+<p>O Peneira <b>nunca responde mensagens</b>, <b>nunca abre links, anexos ou arquivos</b> e <b>nunca faz pagamentos</b>. Respostas automáticas só existem dentro do próprio WhatsApp Business, configuradas por você.</p>
+
+<h2>6. Onde os dados ficam</h2>
+<ul>
+  <li><b>Versão de demonstração (site público):</b> tudo fica só no seu aparelho. Nada vai para servidor.</li>
+  <li><b>Versão pessoal:</b> os dados ficam na conta Claude do titular, com acesso restrito a ele.</li>
+  <li><b>Futuro (WhatsApp Business / API):</b> as mensagens passam pela plataforma oficial da Meta e por um provedor autorizado. Antes disso, esta política será atualizada e você será avisado no app.</li>
+</ul>
+
+<h2>7. Base legal</h2>
+<p>Usamos seus dados com base no seu <b>consentimento</b> (art. 7º, I, da LGPD), dado no cadastro. Você pode retirar o consentimento a qualquer momento.</p>
+
+<h2>8. Por quanto tempo</h2>
+<p>Resumos e relatórios ficam guardados por até 12 meses, ou até você apagar. O cadastro fica enquanto você usar o app.</p>
+
+<h2>9. Seus direitos</h2>
+<p>Você pode, a qualquer momento: confirmar se tratamos seus dados, acessar, corrigir, pedir a exclusão, revogar o consentimento e pedir a portabilidade (art. 18 da LGPD). No app, use <b>Ajustes → Meu cadastro → Apagar meu cadastro</b>.</p>
+
+<h2>10. Crianças e adolescentes</h2>
+<p>O Peneira não é destinado a menores de 18 anos.</p>
+
+<h2>11. Mudanças nesta política</h2>
+<p>Quando esta política mudar, a nova versão aparece na <b>Central de novidades</b> do app, com a data.</p>
+
+<p class="pn-meta">WhatsApp é marca registrada da Meta Platforms, Inc. O Peneira é um projeto independente, sem vínculo com a Meta.</p>
+</div>
+  </section>
+
+  <!-- ========== MEU CADASTRO ========== -->
+  <section class="pn-view" id="perfil">
+    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
+    <div class="pn-h2">Meu cadastro</div>
+    <div class="pn-card" id="perfil-box"></div>
+    <div class="pn-h2">Segurança do app</div>
+    <div class="pn-card">
+      <div class="pn-switch"><div><b>Abrir com Face ID</b><div class="pn-meta" id="fid-status">Pede Face ID (ou digital) toda vez que o app abrir.</div></div>
+      <button class="pn-tg" type="button" role="switch" aria-checked="false" id="fid-tg" aria-label="Abrir com Face ID"></button></div>
+    </div>
+    <button class="pn-btn no" type="button" id="perfil-apagar" style="width:100%;margin-top:14px">Apagar meu cadastro deste aparelho</button>
   </section>
 
   <!-- ========== CRITÉRIOS ========== -->
@@ -361,7 +484,8 @@
 
   <!-- ========== AÇÕES ========== -->
   <section class="pn-view" id="acoes">
-    <div class="pn-h2" style="margin-top:4px">Silenciar grupos</div>
+    <button class="pn-btn" type="button" data-go="ajustes">← Ajustes</button>
+    <div class="pn-h2">Silenciar grupos</div>
     <div class="pn-card">
       <p class="pn-meta" style="margin:0;font-size:14px">Silencio as notificações dos grupos no WhatsApp. Você continua no grupo e eu continuo lendo e trazendo o que for importante.</p>
       <div class="pn-grid2">
@@ -372,20 +496,15 @@
       </div>
     </div>
 
-    <div class="pn-h2">Resposta de ausência</div>
-    <div class="pn-card pn-form" id="ausencia">
-      <div class="pn-switch">
-        <div><b id="aus-status">Desligada</b><div class="pn-meta">Respondo só conversas diretas, nunca grupos. Uma vez por pessoa a cada 24h.</div></div>
-        <button class="pn-tg" type="button" role="switch" aria-checked="false" id="aus-tg" aria-label="Ligar resposta de ausência"></button>
-      </div>
-      <div class="pn-tpl" id="aus-modelos"></div>
-      <label for="aus-msg">Mensagem</label>
-      <textarea id="aus-msg" rows="3" maxlength="500"></textarea>
-      <label for="aus-ate">Até quando</label>
-      <input id="aus-ate" type="datetime-local">
-      <label><input type="checkbox" id="aus-fam" style="width:auto;margin-right:6px">Não enviar para a família (eles falam direto comigo)</label>
-      <button class="pn-btn pri" type="button" id="aus-salvar">Salvar mensagem</button>
-      <div class="pn-meta">O WhatsApp pessoal não tem resposta automática própria (só o Business tem). Aqui sou eu que envio durante cada leitura. Antes do primeiro envio de cada período, confirmo com você no chat.</div>
+    <div class="pn-h2">Respostas automáticas · WhatsApp Business</div>
+    <div class="pn-card pn-form" id="respostas">
+      <p class="pn-meta" style="margin:0">Pela regra de segurança, <b>o Peneira nunca responde por você</b>. As respostas automáticas ficam no próprio WhatsApp Business: escreva aqui, copie e cole lá.</p>
+      <div class="pn-chips" id="ra-tipos" style="margin:6px 0 0"></div>
+      <div class="pn-tpl" id="ra-modelos"></div>
+      <label for="ra-txt" id="ra-label">Mensagem</label>
+      <textarea id="ra-txt" rows="4" maxlength="700"></textarea>
+      <div style="display:flex;gap:6px"><button class="pn-btn pri" type="button" id="ra-salvar" style="flex:1">Salvar</button><button class="pn-btn" type="button" id="ra-copiar" style="flex:1">Copiar texto</button></div>
+      <div class="pn-card" style="background:var(--surface-2);margin:4px 0 0"><b style="font-size:13px">Onde colar no WhatsApp Business</b><ol class="pn-steps" id="ra-onde" style="margin-top:8px;font-size:14px"></ol></div>
     </div>
 
     <div class="pn-h2">Fila de ações</div>
@@ -405,6 +524,17 @@
         <li><span>Na aba Ações você pede para silenciar grupos ou liga a resposta de ausência; eu executo na próxima leitura.</span></li>
       </ol>
     </div>
+    <div class="pn-h2" id="seguranca">🔒 Regras de segurança · sempre ativas</div>
+    <div class="pn-card" style="border-color:var(--coral)">
+      <ul class="pn-list">
+        <li><b>Nunca respondo</b> nenhuma mensagem do WhatsApp. Respostas automáticas só existem no próprio WhatsApp Business, configuradas por você.</li>
+        <li><b>Nunca abro</b> links, anexos, fotos, áudios, documentos ou QR codes.</li>
+        <li><b>Nunca uso</b> códigos de verificação, nem ajudo a "confirmar" contas.</li>
+        <li><b>Nunca faço</b> Pix, pagamento, transferência ou compra.</li>
+        <li><b>Sinalizo com rigor</b> o que estiver errado: golpe, cobrança indevida, valor ou data que não bate, número desconhecido se passando por alguém, pressão de urgência.</li>
+        <li>Na dúvida, trato como suspeito e te aviso.</li>
+      </ul>
+    </div>
     <div class="pn-h2">O que eu nunca faço</div>
     <div class="pn-card">
       <ul class="pn-list">
@@ -420,6 +550,42 @@
   </main>
 
   <p class="pn-foot">Peneira · projeto pessoal de Rafael Ximenes</p>
+</div>
+
+<div class="pn-full" id="lock" hidden>
+  <div class="pn-full-in" style="text-align:center">
+    <svg style="width:84px;height:84px;border-radius:20px" aria-hidden="true"><use href="#pnMark"/></svg>
+    <h2 style="font-family:var(--font-text);margin:14px 0 4px">Peneira</h2>
+    <p class="pn-meta" id="lock-ola">Desbloqueie para continuar.</p>
+    <button class="pn-btn pri" type="button" id="lock-btn" style="width:100%;padding:13px;font-size:16px;margin-top:18px">🔐 Entrar com Face ID</button>
+    <p class="pn-meta" id="lock-erro" style="color:var(--coral);min-height:18px;margin-top:10px"></p>
+    <button class="pn-btn" type="button" id="lock-reset" hidden style="margin-top:6px">Não consigo entrar</button>
+  </div>
+</div>
+
+<div class="pn-full" id="onb" hidden>
+  <form class="pn-full-in pn-form" id="onb-form">
+    <div style="text-align:center"><svg style="width:68px;height:68px;border-radius:17px" aria-hidden="true"><use href="#pnMark"/></svg></div>
+    <h2 style="font-family:var(--font-text);margin:6px 0 0;text-align:center">Bem-vindo ao Peneira</h2>
+    <p class="pn-meta" style="text-align:center;margin:0 0 6px">Um cadastro rápido para o app ficar com a sua cara.</p>
+    <label for="onb-nome">Nome completo</label><input id="onb-nome" required maxlength="80" autocomplete="name">
+    <label for="onb-apelido">Como quer ser chamado</label><input id="onb-apelido" maxlength="30" autocomplete="nickname">
+    <label for="onb-whats">WhatsApp</label><input id="onb-whats" type="tel" inputmode="tel" maxlength="20" placeholder="(81) 99999-9999" autocomplete="tel">
+    <label for="onb-email">E-mail (opcional)</label><input id="onb-email" type="email" maxlength="80" autocomplete="email">
+    <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500;color:var(--ink-2)"><input type="checkbox" id="onb-fid" style="width:auto;margin-top:3px"> Proteger o app com Face ID (ou digital)</label>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-weight:500;color:var(--ink-2)"><input type="checkbox" id="onb-ok" required style="width:auto;margin-top:3px"> <span>Li e aceito a <a href="#politica" id="onb-pol" style="color:var(--accent)">Política de Privacidade</a></span></label>
+    <p class="pn-meta" id="onb-erro" style="color:var(--coral);min-height:16px;margin:0"></p>
+    <button class="pn-btn pri" type="submit" style="padding:12px;font-size:16px">Começar</button>
+  </form>
+</div>
+
+<div class="pn-sheet" id="hub" hidden role="dialog" aria-label="Central">
+  <div class="pn-sheet-card">
+    <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
+    <div class="pn-hub" id="hub-grid"></div>
+    <div id="hub-det"></div>
+    <button class="pn-btn" type="button" id="hub-fechar" style="width:100%;margin-top:10px">Fechar</button>
+  </div>
 </div>
 
 <div class="pn-sheet" id="inst-sheet" hidden role="dialog" aria-labelledby="inst-tit">
@@ -442,13 +608,13 @@
 <script>
 (function(){
   const $ = id => document.getElementById(id);
-  const S = { vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
+  const S = { agenda:[], perfil:null, perfilPronto:false, vips:[], itens:[], criterios:[], acoes:[], ausencia:null, relatorios:[], notif:null, meta:null, filtro:"todos", db:null, canWrite:true };
   const PRI = { alta:0, media:1, baixa:2 }, PRI_TXT = { alta:"Alta", media:"Média", baixa:"Baixa" };
   const VIEWS = [
     { id:"inicio", nome:"Início", ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
     { id:"importantes", nome:"Importantes", ico:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>', badge:"b-imp" },
+    { id:"agenda", nome:"Agenda", ico:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', badge:"b-ag" },
     { id:"relatorios", nome:"Relatórios", ico:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>' },
-    { id:"acoes", nome:"Ações", ico:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>', badge:"b-aus" },
     { id:"ajustes", nome:"Ajustes", ico:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', badge:"b-crit" }
   ];
 
@@ -472,8 +638,9 @@
   }
   buildNav($("nav-topo")); buildNav($("nav-baixo"));
   function go(id, push){
-    if(!VIEWS.some(v=>v.id===id) && !["criterios","sobre"].includes(id)) id="inicio";
-    const navId = ["criterios","sobre"].includes(id) ? "ajustes" : id;
+    const OCULTAS=["criterios","sobre","acoes","politica","perfil"];
+    if(!VIEWS.some(v=>v.id===id) && !OCULTAS.includes(id)) id="inicio";
+    const navId = OCULTAS.includes(id) ? "ajustes" : id;
     document.querySelectorAll(".pn-view").forEach(s=>s.classList.toggle("on", s.id===id));
     document.querySelectorAll(".pn-nav-btn").forEach(b=>{ if(b.dataset.view===navId) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
     if(push!==false){ try{ if(location.hash!=="#"+id) history.replaceState(null,"","#"+id); }catch(e){} }
@@ -504,11 +671,15 @@
     ["mencoes","Menções a você em grupos","Quando te marcam ou citam sua mensagem."],
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
+  const DEMO_AG=()=>{ const h=new Date(); const f=(d,hh)=>{ const x=new Date(h); x.setDate(x.getDate()+d); x.setHours(hh,0,0,0); return x.toISOString().slice(0,16); };
+    return [{id:"g1",titulo:"Responder a família sobre o almoço de domingo",tipo:"responder",quando:f(0,18),contato:"Família (exemplo)",feito:false},
+            {id:"g2",titulo:"Pagar fatura do cartão",tipo:"prazo",quando:f(3,9),contato:"Banco Exemplo",feito:false},
+            {id:"g3",titulo:"Emitir guia do licenciamento",tipo:"processo",quando:f(10,10),contato:"Detran (exemplo)",feito:false}]; };
   function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:DEMO_ITENS,criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[
     {id:"r1",geradoEm:new Date(new Date().setHours(7,30,0,0)).toISOString(),periodo:"manha",titulo:"Relatório da manhã",resumo:"Noite tranquila. 3 coisas pedem sua atenção hoje.",
      destaques:["Fatura do cartão vence em 3 dias.","Possível golpe: número desconhecido pedindo Pix (não cliquei).","Família pediu confirmação do almoço de domingo."],
      numeros:{lidas:42,importantes:6,favoritadas:5,ausencias:0}}]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -599,6 +770,9 @@
     });
     Object.entries(G).forEach(([k,g])=>{ if(!g.childNodes.length) g.appendChild(el("div","pn-meta",k==="sugerido"?"Nenhuma sugestão pendente.":"Nenhum.")); });
     if(typeof renderVips==="function") renderVips();
+    if(typeof renderAgenda==="function") renderAgenda();
+    if(typeof renderPerfil==="function") renderPerfil();
+    if(typeof renderHub==="function") renderHub();
     if(typeof renderAcoes==="function") renderAcoes();
     if(typeof renderAjustes==="function") renderAjustes();
     if(typeof renderRel==="function") renderRel();
@@ -632,31 +806,35 @@
     if(S.acoes.some(a=>a.status==="pendente"&&a.tipo==="grupos:"+k)) return;
     novaAcao("grupos:"+k, MUTE_TXT[k]);
   }));
-  let ausTpl=null;
-  MODELOS.forEach(m=>{ const b=el("button","pn-chip",m.nome); b.type="button"; b.onclick=()=>{ $("aus-msg").value=m.txt; ausTpl=m.k; marcaTpl(); }; b.dataset.k=m.k; $("aus-modelos").appendChild(b); });
-  function marcaTpl(){ document.querySelectorAll("#aus-modelos .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.k===ausTpl?"true":"false")); }
-  async function salvaAus(patch){
-    const cur=S.ausencia||{ativa:false,mensagem:MODELOS[0].txt,modelo:"reuniao",ate:"",excetoFamilia:true};
-    const novo={...cur,...patch,atualizadoEm:new Date().toISOString()};
-    if(novo.ativa && !String(novo.mensagem||"").trim()){ aviso("Escreva a mensagem antes de ligar."); return; }
-    if(S.demo){ S.ausencia=novo; demoSave(); render(); return; }
+  /* respostas automáticas (configuradas no WhatsApp Business, nunca enviadas pelo Peneira) */
+  const RA={
+    ausencia:{nome:"Ausência",onde:["Abra o WhatsApp Business e toque em <b>Ferramentas</b> (ou ⚙️ Configurações).","Toque em <b>Mensagem de ausência</b> e ative <b>Enviar mensagem de ausência</b>.","Cole o texto, escolha o <b>horário</b> e os <b>destinatários</b> e salve."]},
+    saudacao:{nome:"Saudação",onde:["Em <b>Ferramentas</b>, toque em <b>Mensagem de saudação</b>.","Ative, cole o texto e escolha os destinatários (ex.: quem não está nos contatos).","Salve."]},
+    rapida:{nome:"Resposta rápida",onde:["Em <b>Ferramentas</b>, toque em <b>Respostas rápidas</b> → <b>+</b>.","Cole o texto e crie um atalho (ex.: <b>/retorno</b>).","Na conversa, digite <b>/</b> para usar."]}
+  };
+  const MODELOS_RA={
+    ausencia:MODELOS,
+    saudacao:[{k:"s1",nome:"Padrão",txt:"Olá! Obrigado pela mensagem. Respondo assim que possível."},{k:"s2",nome:"Trabalho",txt:"Olá! Aqui é o Rafael. Se for assunto de operação urgente, me ligue. Respondo em breve."}],
+    rapida:[{k:"r1",nome:"Retorno",txt:"Recebi, obrigado! Retorno ainda hoje."},{k:"r2",nome:"Em reunião",txt:"Estou em reunião, falo com você em seguida."},{k:"r3",nome:"Confirmado",txt:"Confirmado ✅"}]
+  };
+  let raTipo="ausencia", raPreenchido=false;
+  Object.entries(RA).forEach(([k,v])=>{ const b=el("button","pn-chip",v.nome); b.type="button"; b.dataset.t=k; b.onclick=()=>{ raTipo=k; raPreenchido=false; renderAcoes(); }; $("ra-tipos").appendChild(b); });
+  async function salvaRA(){
+    const cur=S.ausencia&&S.ausencia.respostas?S.ausencia.respostas:{};
+    const novo={...(S.ausencia||{}),respostas:{...cur,[raTipo]:$("ra-txt").value.trim()},atualizadoEm:new Date().toISOString()};
+    if(S.demo){ S.ausencia=novo; demoSave(); aviso("Salvo. Agora copie e cole no WhatsApp Business."); return; }
     if(!S.db) return;
-    try{ await S.db.doc("config/ausencia").set(novo); }catch(e){ aviso("Não consegui salvar a resposta de ausência."); }
+    try{ await S.db.doc("config/ausencia").set(novo); aviso("Salvo. Agora copie e cole no WhatsApp Business."); }catch(e){ aviso("Não consegui salvar agora."); }
   }
-  const formAus=()=>({mensagem:$("aus-msg").value.trim(), modelo:ausTpl||"personalizada", ate:$("aus-ate").value, excetoFamilia:$("aus-fam").checked});
-  $("aus-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.ausencia&&S.ausencia.ativa); salvaAus({...formAus(), ativa:on}); });
-  $("aus-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaAus(formAus()); });
-  let ausPreenchido=false;
+  $("ra-salvar").addEventListener("click",()=>{ if(S.canWrite) salvaRA(); });
+  $("ra-copiar").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText($("ra-txt").value); $("ra-copiar").textContent="Copiado ✓"; }catch(e){ $("ra-txt").select(); $("ra-copiar").textContent="Selecionado — copie"; } setTimeout(()=>$("ra-copiar").textContent="Copiar texto",2500); });
   function renderAcoes(){
-    const a=S.ausencia, on=!!(a&&a.ativa);
-    $("aus-tg").setAttribute("aria-checked",on?"true":"false");
-    $("aus-status").textContent=""; if(on) $("aus-status").appendChild(el("span","pn-live"));
-    $("aus-status").appendChild(document.createTextNode(on?("Ligada"+(a.ate?" até "+fmt(a.ate):"")):"Desligada"));
-    if(!ausPreenchido && (a || S.dbPronto || S.demo)){
-      $("aus-msg").value=(a&&a.mensagem)||MODELOS[0].txt; ausTpl=(a&&a.modelo)||"reuniao";
-      $("aus-ate").value=(a&&a.ate)||""; $("aus-fam").checked=a?!!a.excetoFamilia:true; marcaTpl(); ausPreenchido=true;
-    }
-    document.querySelectorAll('[data-badge="b-aus"]').forEach(b=>{ b.textContent="•"; b.classList.toggle("on",on); b.style.background="var(--gold)"; });
+    document.querySelectorAll("#ra-tipos .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.t===raTipo?"true":"false"));
+    const M=$("ra-modelos"); M.textContent="";
+    (MODELOS_RA[raTipo]||[]).forEach(m=>{ const b=el("button","pn-chip",m.nome); b.type="button"; b.onclick=()=>{ $("ra-txt").value=m.txt; }; M.appendChild(b); });
+    if(!raPreenchido){ const sv=S.ausencia&&S.ausencia.respostas&&S.ausencia.respostas[raTipo]; $("ra-txt").value=sv||(MODELOS_RA[raTipo][0]||{}).txt||""; raPreenchido=true; }
+    $("ra-label").textContent="Mensagem de "+RA[raTipo].nome.toLowerCase();
+    const O=$("ra-onde"); O.textContent=""; RA[raTipo].onde.forEach(h=>{ const li=document.createElement("li"); const sp=document.createElement("span"); sp.innerHTML=h; li.appendChild(sp); O.appendChild(li); });
     const F=$("fila"); F.textContent="";
     const lista=S.acoes.slice().sort((x,y)=>String(y.pedidoEm||"").localeCompare(String(x.pedidoEm||""))).slice(0,12);
     if(!lista.length){ F.appendChild(el("div","pn-meta","Nenhuma ação pedida. Faço as pendentes na próxima leitura.")); return; }
@@ -710,6 +888,167 @@
     const v=novos.map(i=>[i,vipDe(i)]).find(([i,v])=>v && v.som!==false);
     if(v){ toca(); aviso("🔔 Mensagem de "+v[1].nome+": "+(v[0].resumo||"")); }
   }
+
+
+  /* ---------- agenda ---------- */
+  const AG_ICO={responder:"💬",processo:"📋",prazo:"⏰",lembrete:"📌"};
+  async function salvaAg(op,v){
+    if(S.demo){ if(op==="add") S.agenda.push({id:"g"+Date.now(),...v}); else if(op==="del") S.agenda=S.agenda.filter(x=>x.id!==v.id); else { const i=S.agenda.findIndex(x=>x.id===v.id); if(i>=0) S.agenda[i]={...S.agenda[i],...v.patch}; } demoSave(); render(); return; }
+    if(!S.db) return;
+    try{ if(op==="add") await S.db.collection("agenda").add(v); else if(op==="del") await S.db.doc("agenda/"+v.id).delete(); else await S.db.doc("agenda/"+v.id).update(v.patch); }catch(e){ aviso("Não consegui salvar na agenda agora."); }
+  }
+  (function(){ const d=new Date(); d.setHours(d.getHours()+2,0,0,0); const pad=n=>String(n).padStart(2,"0");
+    $("ag-quando").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:00`; })();
+  $("ag-form").addEventListener("submit",e=>{ e.preventDefault(); if(!S.canWrite) return; const t=$("ag-tit").value.trim(); if(!t) return;
+    salvaAg("add",{titulo:t,tipo:$("ag-tipo").value,quando:$("ag-quando").value,contato:$("ag-contato").value.trim(),feito:false,criadoEm:new Date().toISOString(),origem:"manual"});
+    $("ag-tit").value=""; $("ag-contato").value=""; });
+  function grupoAg(q){ const d=new Date(q); if(isNaN(d)) return "prox"; const h=new Date(); const ini=new Date(h); ini.setHours(0,0,0,0);
+    if(d<h) return "atr"; const dia=Math.floor((d-ini)/86400000); return dia===0?"hoje":dia===1?"amanha":"prox"; }
+  function renderAgenda(){
+    const L=$("ag-lista"); L.textContent="";
+    const ab=S.agenda.filter(a=>!a.feito).sort((a,b)=>String(a.quando).localeCompare(String(b.quando)));
+    const G={atr:[],hoje:[],amanha:[],prox:[]}; ab.forEach(a=>G[grupoAg(a.quando)].push(a));
+    const urg=G.atr.length+G.hoje.length;
+    document.querySelectorAll('[data-badge="b-ag"]').forEach(b=>{ b.textContent=urg; b.classList.toggle("on",urg>0); });
+    const NOMES={atr:"Atrasados",hoje:"Hoje",amanha:"Amanhã",prox:"Próximos"};
+    let algum=false;
+    Object.keys(G).forEach(k=>{ if(!G[k].length) return; algum=true; L.appendChild(el("div","pn-ag-g"+(k==="atr"?" atr":""),NOMES[k]+" · "+G[k].length)); G[k].forEach(a=>L.appendChild(cardAg(a))); });
+    const feitos=S.agenda.filter(a=>a.feito).slice(-8).reverse();
+    if(feitos.length){ L.appendChild(el("div","pn-ag-g","Feitos")); feitos.forEach(a=>L.appendChild(cardAg(a))); }
+    if(!algum && !feitos.length) L.appendChild(el("div","pn-empty","Nada agendado. Use o formulário acima para não esquecer respostas e prazos."));
+  }
+  function cardAg(a){
+    const c=el("div","pn-card pn-ag"+(a.feito?" feito":"")); const ck=document.createElement("input"); ck.type="checkbox"; ck.checked=!!a.feito; ck.setAttribute("aria-label","Marcar como feito");
+    ck.onchange=()=>{ if(S.canWrite) salvaAg("upd",{id:a.id,patch:{feito:ck.checked,feitoEm:ck.checked?new Date().toISOString():null}}); };
+    const t=el("div"); t.style.flex="1"; t.appendChild(el("div","pn-ag-t",(AG_ICO[a.tipo]||"📌")+" "+(a.titulo||"")));
+    t.appendChild(el("div","pn-meta",fmt(a.quando)+(a.contato?" · "+a.contato:"")+(a.origem==="leitura"?" · da leitura":"")));
+    const x=el("button","pn-x","×"); x.type="button"; x.setAttribute("aria-label","Remover"); let conf=false;
+    x.onclick=()=>{ if(!S.canWrite) return; if(!conf){ conf=true; x.textContent="remover?"; x.style.fontSize="12px"; setTimeout(()=>{conf=false;x.textContent="×";x.style.fontSize="";},3000); return; } salvaAg("del",{id:a.id}); };
+    c.append(ck,t,x); return c;
+  }
+
+  /* ---------- cadastro, Face ID e fluxo de abertura ---------- */
+  const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+  const temFid=()=>{ try{ return !!localStorage.getItem("peneira-fid"); }catch(e){ return false; } };
+  async function fidDisponivel(){ try{ return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }catch(e){ return false; } }
+  async function fidCriar(nome){
+    const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:"Peneira"},
+      user:{id:crypto.getRandomValues(new Uint8Array(16)),name:nome||"Peneira",displayName:nome||"Peneira"},
+      pubKeyCredParams:[{type:"public-key",alg:-7},{type:"public-key",alg:-257}],
+      authenticatorSelection:{authenticatorAttachment:"platform",userVerification:"required",residentKey:"preferred"},timeout:60000,attestation:"none"}});
+    localStorage.setItem("peneira-fid",b64(c.rawId));
+  }
+  async function fidVerificar(){
+    const r=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:"public-key",id:unb64(localStorage.getItem("peneira-fid"))}],userVerification:"required",timeout:60000}});
+    return !!r;
+  }
+  let splashFim=false, desbloqueado=false;
+  try{ desbloqueado = sessionStorage.getItem("peneira-ok")==="1"; }catch(e){}
+  window.addEventListener("pn-splash-fim",()=>{ splashFim=true; fluxo(); });
+  function fluxo(){
+    if(!splashFim) return;
+    if(temFid() && !desbloqueado){ const ap=S.perfil&&(S.perfil.apelido||S.perfil.nome); $("lock-ola").textContent=ap?("Olá, "+ap.split(" ")[0]+"! Desbloqueie para continuar."):"Desbloqueie para continuar."; $("lock").hidden=false; return; }
+    $("lock").hidden=true;
+    if(S.perfilPronto && !S.perfil){ $("onb").hidden=false; return; }
+    $("onb").hidden=true;
+    window.dispatchEvent(new Event("pn-pronto"));
+  }
+  let falhas=0;
+  $("lock-btn").addEventListener("click",async()=>{
+    $("lock-erro").textContent="";
+    try{ if(await fidVerificar()){ desbloqueado=true; try{sessionStorage.setItem("peneira-ok","1");}catch(e){} fluxo(); } }
+    catch(e){ falhas++; $("lock-erro").textContent="Não foi possível confirmar. Tente de novo."; if(falhas>=2) $("lock-reset").hidden=false; }
+  });
+  let resetConf=false;
+  $("lock-reset").addEventListener("click",()=>{
+    if(!resetConf){ resetConf=true; $("lock-reset").textContent="Desligar o Face ID neste aparelho? Toque de novo para confirmar"; return; }
+    try{ localStorage.removeItem("peneira-fid"); if(S.demo) localStorage.removeItem("peneira-perfil"); }catch(e){}
+    if(S.demo) S.perfil=null; desbloqueado=true; fluxo();
+  });
+  $("onb-pol").addEventListener("click",e=>{ e.preventDefault(); $("onb").hidden=true; go("politica"); const volta=()=>{ window.removeEventListener("hashchange",volta); }; setTimeout(()=>{ const b=document.querySelector('#politica [data-go]'); if(b) b.addEventListener("click",()=>{ if(!S.perfil) $("onb").hidden=false; },{once:true}); },0); });
+  (async()=>{ if(!(await fidDisponivel())){ $("onb-fid").closest("label").style.display="none"; } })();
+  $("onb-form").addEventListener("submit",async e=>{
+    e.preventDefault(); $("onb-erro").textContent="";
+    const perfil={nome:$("onb-nome").value.trim(),apelido:$("onb-apelido").value.trim(),whatsapp:$("onb-whats").value.trim(),email:$("onb-email").value.trim(),
+      aceitouPoliticaEm:new Date().toISOString(),versaoPolitica:"1.0"};
+    if(!perfil.nome){ $("onb-erro").textContent="Informe seu nome."; return; }
+    if($("onb-fid").checked){ try{ await fidCriar(perfil.apelido||perfil.nome); desbloqueado=true; try{sessionStorage.setItem("peneira-ok","1");}catch(e){} }
+      catch(err){ $("onb-erro").textContent="O Face ID não pôde ser ativado aqui. Ele funciona no app instalado na tela de início. Você pode ativar depois em Ajustes."; $("onb-fid").checked=false; return; } }
+    await salvaPerfil(perfil); fluxo();
+  });
+  async function salvaPerfil(perfil){
+    if(S.demo){ S.perfil=perfil; try{ localStorage.setItem("peneira-perfil",JSON.stringify(perfil)); }catch(e){} render(); return; }
+    S.perfil=perfil; if(!S.db) return;
+    try{ await S.db.doc("config/perfil").set(perfil); }catch(e){ aviso("Não consegui salvar o cadastro agora."); }
+  }
+  function renderPerfil(){
+    const P=S.perfil, B=$("perfil-box"); B.textContent="";
+    if(!P){ B.appendChild(el("div","pn-meta","Sem cadastro ainda.")); }
+    else [["Nome",P.nome],["Como prefere ser chamado",P.apelido],["WhatsApp",P.whatsapp],["E-mail",P.email],["Aceitou a política",P.aceitouPoliticaEm?fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")":""]].forEach(([k,v])=>{ if(!v) return; const r=el("div","pn-q"); r.appendChild(el("span","pn-meta",k)); r.appendChild(el("b",null,v)); B.appendChild(r); });
+    $("aj-perfil").textContent = P ? (P.apelido||P.nome)+(temFid()?" · Face ID ligado":"") : "Seus dados e bloqueio do app";
+    $("fid-tg").setAttribute("aria-checked",temFid()?"true":"false");
+  }
+  $("fid-tg").addEventListener("click",async()=>{
+    if(temFid()){ try{ localStorage.removeItem("peneira-fid"); }catch(e){} renderPerfil(); return; }
+    if(!(await fidDisponivel())){ aviso("Este aparelho ou navegador não oferece Face ID para o app. Instale na tela de início e tente de novo."); return; }
+    try{ await fidCriar(S.perfil&&(S.perfil.apelido||S.perfil.nome)); renderPerfil(); aviso("Face ID ligado. Ele será pedido sempre que o app abrir."); }
+    catch(e){ aviso("O Face ID não pôde ser ativado aqui. Ele funciona no app instalado na tela de início."); }
+  });
+  let apagaConf=false;
+  $("perfil-apagar").addEventListener("click",async()=>{
+    if(!apagaConf){ apagaConf=true; $("perfil-apagar").textContent="Tem certeza? Toque de novo para apagar"; setTimeout(()=>{apagaConf=false;$("perfil-apagar").textContent="Apagar meu cadastro deste aparelho";},4000); return; }
+    try{ localStorage.removeItem("peneira-fid"); localStorage.removeItem("peneira-perfil"); }catch(e){}
+    if(!S.demo && S.db){ try{ await S.db.doc("config/perfil").delete(); }catch(e){} }
+    S.perfil=null; render(); go("inicio"); fluxo();
+  });
+
+  /* ---------- central (novidades, atualizações e mais) ---------- */
+  const VERSAO="1.5";
+  const VERSOES=[
+    {v:"1.5",data:"13/11/2026",itens:["Cadastro na primeira abertura","Abertura com Face ID (ou digital)","Agenda para não esquecer respostas e prazos","Respostas automáticas no WhatsApp Business","Regras de segurança sempre ativas","Política de privacidade","Nova abertura com a peneira redesenhada"]},
+    {v:"1.4",data:"13/11/2026",itens:["Contatos VIP com alerta sonoro","Compartilhar por WhatsApp","Instalação guiada no iPhone e Android"]},
+    {v:"1.3",data:"13/11/2026",itens:["Paleta Menta e novo ícone","5 opções de cores no modo dia","Botão Dia/Noite"]},
+    {v:"1.0",data:"13/11/2026",itens:["Primeira versão: importantes, critérios, relatórios e ações"]}
+  ];
+  const visto=()=>{ try{ return localStorage.getItem("peneira-versao-vista"); }catch(e){ return null; } };
+  const HUB=[
+    ["novidades","🆕","Novidades"],["atualizacoes","🔄","Atualizações"],["avisos","📣","Avisos"],["agenda","📅","Agenda"],
+    ["acoes","⚡","Ações"],["seguranca","🔒","Segurança"],["instalar","📲","Instalar"],["compartilhar","💬","Compartilhar"],
+    ["politica","📄","Política"],["perfil","👤","Cadastro"],["ajustes","⚙️","Ajustes"],["sobre","❓","Ajuda"]];
+  function hubDet(k){
+    const D=$("hub-det"); D.textContent="";
+    const box=el("div","pn-card"); box.style.marginTop="12px"; box.style.background="var(--surface-2)";
+    if(k==="novidades"){ VERSOES.forEach(v=>{ box.appendChild(el("b",null,"Versão "+v.v+" · "+v.data)); const u=el("ul","pn-list"); u.style.margin="6px 0 12px"; v.itens.forEach(t=>u.appendChild(el("li",null,t))); box.appendChild(u); });
+      try{ localStorage.setItem("peneira-versao-vista",VERSAO); }catch(e){} renderHub(); }
+    if(k==="atualizacoes"){ const m=S.meta||{}; const ult=S.relatorios.slice().sort((a,b)=>String(b.geradoEm||"").localeCompare(String(a.geradoEm||"")))[0];
+      [["Última leitura do WhatsApp",m.ultimaVarredura?fmt(m.ultimaVarredura):"ainda não houve"],["Último relatório",ult?fmt(ult.geradoEm||ult.data):"ainda não houve"],
+       ["Pendentes agora",String(S.itens.filter(i=>(i.status||"pendente")==="pendente").length)],["Na agenda (hoje/atrasados)",String(S.agenda.filter(a=>!a.feito&&["hoje","atr"].includes(grupoAg(a.quando))).length)],["Versão do app",VERSAO]]
+       .forEach(([a,b])=>{ const r=el("div","pn-q"); r.appendChild(el("span",null,a)); r.appendChild(el("b",null,b)); box.appendChild(r); }); }
+    if(k==="avisos"){ const av=(S.meta&&Array.isArray(S.meta.avisos))?S.meta.avisos:[];
+      if(!av.length) box.appendChild(el("div","pn-meta","Nenhum aviso no momento.")); else av.forEach(a=>box.appendChild(el("p",null,"• "+a))); }
+    D.appendChild(box);
+  }
+  function renderHub(){
+    const G=$("hub-grid"); if(!G) return; G.textContent=""; $("hub-ver").textContent="v"+VERSAO;
+    const novo = visto()!==VERSAO;
+    $("hub-dot").classList.toggle("on",novo);
+    HUB.forEach(([k,ico,nome])=>{ const b=el("button"); b.type="button"; b.appendChild(el("span",null,ico)); b.appendChild(el("span",null,nome));
+      if(k==="novidades"&&novo){ const d=el("span","pn-badge on"); b.appendChild(d); }
+      if(k==="agenda"){ const n=S.agenda.filter(a=>!a.feito&&["hoje","atr"].includes(grupoAg(a.quando))).length; if(n){ const d=el("span","pn-badge on"); b.appendChild(d); } }
+      b.onclick=()=>{
+        if(["novidades","atualizacoes","avisos"].includes(k)) return hubDet(k);
+        $("hub").hidden=true;
+        if(k==="instalar") return $("btn-ver-inst").click();
+        if(k==="compartilhar") return $("btn-share-wa").click();
+        if(k==="seguranca"){ go("sobre"); setTimeout(()=>{ const e=$("seguranca"); if(e) e.scrollIntoView({behavior:"smooth"}); },50); return; }
+        go(k);
+      };
+      G.appendChild(b); });
+  }
+  $("btn-hub").addEventListener("click",()=>{ $("hub-det").textContent=""; renderHub(); $("hub").hidden=false; });
+  $("hub-fechar").addEventListener("click",()=>{ $("hub").hidden=true; });
+  $("hub").addEventListener("click",e=>{ if(e.target.id==="hub") $("hub").hidden=true; });
 
   /* ---------- tema (preferência deste aparelho) ---------- */
   const TEMAS=[["auto","Automático"],["dia","☀️ Dia"],["noite","🌙 Noite"]];
@@ -861,7 +1200,7 @@
     window.addEventListener("appinstalled",()=>{ fecha(false); $("instalar-box").hidden=true; $("cta-inst").hidden=true; });
     // mostra sozinho depois da entrada, se não foi adiado nos últimos 3 dias e é celular
     let adiado=0; try{ adiado=+localStorage.getItem("peneira-inst-adiado")||0; }catch(e){}
-    if((ios||and) && Date.now()-adiado > 3*86400000) setTimeout(abre, 4800);
+    if((ios||and) && Date.now()-adiado > 3*86400000) window.addEventListener("pn-pronto",()=>setTimeout(()=>{ if($("onb").hidden && $("lock").hidden) abre(); },900),{once:true});
   })();
 
   /* ---------- tela de entrada: letras caem na peneira, ela sacode e o nome passa ---------- */
@@ -869,12 +1208,19 @@
     const sp=$("splash"), st=$("sp-stage");
     let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
     const calmo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>sp.remove(),600); }
+    function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>{ sp.remove(); window.dispatchEvent(new Event("pn-splash-fim")); },600); }
     $("sp-pular").addEventListener("click",fecha); sp.addEventListener("click",fecha);
-    if(visto || !st.animate){ sp.remove(); return; }
+    if(visto || !st.animate){ sp.remove(); setTimeout(()=>window.dispatchEvent(new Event("pn-splash-fim")),0); return; }
     const W=st.clientWidth, H=st.clientHeight, k=calmo?.35:1;
-    const sx=W*.5, sy=H*.06 + W*.62*0.55;
-    const nome="PENEIRA", fs=Math.min(W/6.2,64), gap=fs*.78, y0=H*.6, x0=W/2 - gap*(nome.length-1)/2;
+    const rs=st.getBoundingClientRect(), rv=st.querySelector(".pn-sp-sieve").getBoundingClientRect();
+    const sx=rv.left-rs.left+rv.width/2, sy=rv.top-rs.top+rv.height*0.62;   // fundo da peneira (malha)
+    const nome="PENEIRA", fs=Math.min(W/6.4,62), y0=H*.6;
+    const FONTE=`700 ${fs}px "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif`;
+    const cv=document.createElement("canvas").getContext("2d"); cv.font=FONTE;
+    const larg=nome.split("").map(c=>cv.measureText(c).width), esp=fs*.04;
+    const total=larg.reduce((a,b)=>a+b,0)+esp*(nome.length-1);
+    const posX=[]; larg.reduce((x,w,i)=>{ posX[i]=x; return x+w+esp; }, W/2-total/2);
+    const gap=fs*.78;
     const LIX="ABCDEFGHJKLMOQSTUVWXZ";
     const T_SACODE=1150*k, T_PASSA=2050*k;
     const peneira=st.querySelector(".pn-sp-sieve");
@@ -890,14 +1236,14 @@
     for(let i=0;i<34;i++){
       const l=el("span","pn-sp-l junk",LIX[Math.floor(Math.random()*LIX.length)]);
       l.style.fontSize=(fs*.42)+"px"; st.appendChild(l);
-      const x=sx+(Math.random()-.5)*W*.48 - fs*.15, y=sy-fs*.55+(Math.random()-.5)*fs*.4, rot=(Math.random()-.5)*80;
+      const x=sx+(Math.random()-.5)*rv.width*.62 - fs*.12, y=sy-fs*.42+(Math.random()-.5)*fs*.3, rot=(Math.random()-.5)*80;
       cai(l,x,y,Math.random()*700,rot); chacoalha(l,x,y,rot);
       setTimeout(()=>l.animate([{opacity:1},{opacity:0,transform:`translate(${x}px,${y-fs*.2}px) scale(.6)`}],{duration:700*k,fill:"forwards"}), T_PASSA+300*k);
     }
     // o que importa: cai na peneira, sacode e passa pela malha formando o nome
     nome.split("").forEach((c,i)=>{
-      const l=el("span","pn-sp-l",c); l.style.fontSize=(fs)+"px"; l.style.width=gap+"px"; l.style.textAlign="center"; l.style.opacity="0"; st.appendChild(l);
-      const ix=sx+(Math.random()-.5)*W*.32 - gap/2, iy=sy-fs*.75, rot=(Math.random()-.5)*70, tx=x0+i*gap-gap/2, ty=y0;
+      const l=el("span","pn-sp-l",c); l.style.font=FONTE; l.style.width=larg[i]+"px"; l.style.textAlign="center"; l.style.opacity="0"; st.appendChild(l);
+      const ix=sx+(Math.random()-.5)*rv.width*.5 - larg[i]/2, iy=sy-fs*.62, rot=(Math.random()-.5)*70, tx=posX[i], ty=y0;
       const a=l.animate([{transform:`translate(${ix}px,${-fs*1.5}px) rotate(${rot}deg) scale(.55)`,opacity:0},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1}],
         {duration:750*k,delay:(150+Math.random()*550)*k,fill:"forwards",easing:"cubic-bezier(.5,0,.8,.6)"});
       setTimeout(()=>l.animate([{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`},{transform:`translate(${ix-5}px,${iy-6}px) rotate(${rot/3-12}deg) scale(.55)`},{transform:`translate(${ix+5}px,${iy-3}px) rotate(${rot/3+12}deg) scale(.55)`},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
@@ -921,15 +1267,18 @@
     const inClaude = !!window.claude || /claude/i.test(location.hostname);
     if(!db && inClaude){ aviso("Os dados aparecem quando você abre o app logado no Claude."); return; }
     if(!db){
-      const d=demoLoad(); S.demo=true; S.vips=d.vips||[]; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
+      const d=demoLoad(); S.demo=true; S.agenda=d.agenda||DEMO_AG(); S.vips=d.vips||[];
+      try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
       S.meta={ultimaVarredura:new Date().toISOString(),conversasLidas:42,favoritadas:d.itens.filter(i=>i.favoritado).length};
-      aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); return;
+      aviso("Modo demonstração: exemplos fictícios. Os dados reais ficam na sua versão privada."); render(); fluxo(); return;
     }
     S.db=db;
     try{ const u=await window.claude.use("user"); const w=u&&u.can?await u.can("data.write"):null; if(w===false) S.canWrite=false; }catch(e){}
     const t=setTimeout(()=>aviso("Ainda carregando… os dados podem estar desatualizados."),10000);
     const ok=s=>{ if(!s.metadata||!s.metadata.fromCache){ clearTimeout(t); aviso(""); } };
     const fail=()=>{ clearTimeout(t); aviso("Não consegui carregar os dados agora."); };
+    db.collection("agenda").onSnapshot(s=>{ S.agenda=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
+    db.doc("config/perfil").onSnapshot(s=>{ S.perfil=s.exists?s.data():null; S.perfilPronto=true; render(); fluxo(); }, ()=>{ S.perfilPronto=true; fluxo(); });
     db.collection("vips").onSnapshot(s=>{ S.vips=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.collection("itens").onSnapshot(s=>{ S.itens=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); checaVips(); render(); }, fail);
     db.collection("criterios").onSnapshot(s=>{ S.criterios=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);

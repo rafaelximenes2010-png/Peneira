@@ -1,7 +1,7 @@
 /* Service worker do Peneira: guarda o app para abrir offline.
-   Ao publicar uma nova versão, altere CACHE (ex.: peneira-v7) para forçar a atualização. */
-const CACHE = "peneira-v7";
-const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg", "./icons/favicon-32.png",
+   Ao publicar uma nova versão, altere CACHE (ex.: peneira-v8) para forçar a atualização. */
+const CACHE = "peneira-v8";
+const FILES = ["./", "./index.html", "./manifest.webmanifest", "./politica.html", "./icons/icon.svg", "./icons/favicon-32.png",
   "./icons/apple-touch-180.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
