@@ -258,12 +258,16 @@
       <div class="pn-kpi prazo"><b id="k-prazo">–</b><span>Vencem em 7 dias</span></div>
     </div>
 
+    <button class="pn-cta" id="cta-inst" type="button" hidden style="margin-bottom:10px;background:var(--accent-soft);border-color:var(--accent);color:var(--accent)">
+      <span><b>📲 Instalar o Peneira no celular</b></span><span>Ver como →</span>
+    </button>
     <button class="pn-cta" id="cta-crit" type="button" hidden>
       <span><b id="cta-n">0</b> critérios esperando sua aprovação</span><span>Revisar →</span>
     </button>
 
     <div class="pn-h2">Agora</div>
     <div id="agora"></div>
+    <a class="pn-btn" id="btn-share-wa2" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:12px;padding:10px;color:#1f8a4c;border-color:#bfe3cc;font-weight:600">Compartilhar o Peneira por WhatsApp</a>
     <div class="pn-h2">Último relatório</div>
     <div id="ultimo-rel"></div>
   </section>
@@ -287,6 +291,13 @@
     <div id="instalar-box" hidden>
       <div class="pn-h2" style="margin-top:4px">Instalar no celular</div>
       <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">📲 Ver como instalar</button></div>
+    </div>
+
+    <div class="pn-h2">Compartilhar o Peneira</div>
+    <div class="pn-card">
+      <p class="pn-meta" style="margin:0 0 10px">Manda o link do app para alguém testar. Quem recebe vê a versão de demonstração, sem nenhum dado seu.</p>
+      <a class="pn-btn pri" id="btn-share-wa" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;background:#25a35a;border-color:#25a35a;color:#fff;font-weight:600">Compartilhar por WhatsApp</a>
+      <button class="pn-btn" type="button" id="btn-share-copiar" style="width:100%;margin-top:8px">Copiar link</button>
     </div>
 
     <div class="pn-h2" id="vip-h">Contatos VIP · alerta sonoro</div>
@@ -470,6 +481,7 @@
   }
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
   $("cta-crit").addEventListener("click",()=>go("criterios"));
+  $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
 
   /* ---------- modo demonstração (fora do Claude: GitHub Pages) ---------- */
   const DEMO_KEY="peneira-demo-v1";
@@ -773,12 +785,38 @@
     if(lista.length) U.appendChild(cardRel(lista[0])); else U.appendChild(el("div","pn-empty","Sem relatórios ainda."));
   }
 
+  /* ---------- compartilhar ---------- */
+  const LINK_PUB="https://rafaelximenes2010-png.github.io/Peneira/", LINK_PRIV="https://claude.ai/artifact/YKzSBnR8q7qd39HaM8dYXV";
+  const TXT_SHARE="Conheça o Peneira 📲 — ele lê o WhatsApp, marca como lido e separa só o que importa (bancos, contas, órgãos oficiais, família e alertas de golpe). Instale grátis: "+LINK_PUB;
+  ["btn-share-wa","btn-share-wa2"].forEach(id=>{ const a=$(id); a.href="https://wa.me/?text="+encodeURIComponent(TXT_SHARE);
+    a.addEventListener("click",async e=>{ if(navigator.share && !window.claude){ e.preventDefault(); try{ await navigator.share({title:"Peneira",text:TXT_SHARE}); }catch(err){} } }); });
+  $("btn-share-copiar").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(LINK_PUB); $("btn-share-copiar").textContent="Link copiado ✓"; }catch(e){ $("btn-share-copiar").textContent=LINK_PUB; } setTimeout(()=>$("btn-share-copiar").textContent="Copiar link",3000); });
+
   /* ---------- instalação (iOS e Android) ---------- */
   (function(){
     const fora = !window.claude && !/claude/i.test(location.hostname);
     const instalado = (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
-    if(!fora || instalado) return;
-    $("instalar-box").hidden=false;
+    if(instalado) return;
+    if(!fora){
+      // dentro do Claude: ensina a pôr ESTA versão (com seus dados) na tela de início
+      $("instalar-box").hidden=false; $("cta-inst").hidden=false;
+      const P=$("inst-passos");
+      const passo=h=>{ const li=document.createElement("li"); const sp=document.createElement("span"); sp.innerHTML=h; li.appendChild(sp); P.appendChild(li); };
+      $("btn-ver-inst").addEventListener("click",()=>{
+        P.textContent="";
+        passo('Toque em <b>Copiar link</b> abaixo e cole no <b>Safari</b> (no Android, no Chrome).');
+        passo('Entre na sua conta do Claude, se ele pedir.');
+        passo('iPhone: toque em <b class="k">•••</b> → <b>Compartilhar</b> → <b>Adicionar à Tela de Início</b> → <b>Adicionar</b>.<br>Android: <b class="k">⋮</b> → <b>Adicionar à tela inicial</b>.');
+        passo('Pronto: o ícone abre o Peneira com <b>os seus dados</b>.');
+        $("inst-nativo").hidden=false; $("inst-nativo").textContent="Copiar link da minha versão";
+        $("inst-nativo").onclick=async()=>{ try{ await navigator.clipboard.writeText(LINK_PRIV); $("inst-nativo").textContent="Link copiado ✓ — agora cole no Safari"; }catch(e){ $("inst-nativo").textContent=LINK_PRIV; } };
+        $("inst-sheet").hidden=false;
+      });
+      $("inst-fechar").addEventListener("click",()=>{ $("inst-sheet").hidden=true; });
+      $("inst-sheet").addEventListener("click",e=>{ if(e.target.id==="inst-sheet") $("inst-sheet").hidden=true; });
+      return;
+    }
+    $("instalar-box").hidden=false; $("cta-inst").hidden=false;
     const ua=navigator.userAgent||"";
     const ios=/iphone|ipad|ipod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
     const and=/android/i.test(ua);
@@ -820,7 +858,7 @@
     $("inst-sheet").addEventListener("click",e=>{ if(e.target.id==="inst-sheet") fecha(true); });
     window.addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); evt=e; if(!$("inst-sheet").hidden) monta(); });
     $("inst-nativo").addEventListener("click",async()=>{ if(!evt) return; evt.prompt(); try{ await evt.userChoice; }catch(e){} evt=null; fecha(false); });
-    window.addEventListener("appinstalled",()=>{ fecha(false); $("instalar-box").hidden=true; });
+    window.addEventListener("appinstalled",()=>{ fecha(false); $("instalar-box").hidden=true; $("cta-inst").hidden=true; });
     // mostra sozinho depois da entrada, se não foi adiado nos últimos 3 dias e é celular
     let adiado=0; try{ adiado=+localStorage.getItem("peneira-inst-adiado")||0; }catch(e){}
     if((ios||and) && Date.now()-adiado > 3*86400000) setTimeout(abre, 4800);
