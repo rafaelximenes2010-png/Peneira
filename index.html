@@ -484,6 +484,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <button class="pn-luz a" type="button" data-drill="amarelo"><i></i><div><b id="fl-a">0</b><span>Atenção</span></div></button>
       <button class="pn-luz v" type="button" data-drill="verde"><i></i><div><b id="fl-v">0</b><span>Resolvido</span></div></button>
     </div>
+    <button class="pn-cta" type="button" id="btn-viplista" style="margin-bottom:14px;background:var(--surface);border:0;color:var(--ink);box-shadow:var(--shadow)">
+      <span style="display:flex;align-items:center;gap:10px"><span data-ico="star"></span><span><b>Lista VIP</b><br><span class="pn-meta" id="viplista-sub">Quem está cadastrado</span></span></span><span class="pn-meta">Ver →</span></button>
     <div class="pn-kpis" id="resumo">
       <button class="pn-kpi" type="button" data-drill="pend"><div class="k-l">Pendentes<span data-ico="inbox"></span></div><b id="k-pend">–</b><div class="k-s">para tratar</div></button>
       <button class="pn-kpi alta" type="button" data-drill="alta"><div class="k-l">Prioridade alta<span data-ico="alert"></span></div><b id="k-alta">–</b><div class="k-s">agir primeiro</div></button>
@@ -842,6 +844,15 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   </div>
 </div>
 
+<div class="pn-sheet" id="vip-sheet" hidden role="dialog" aria-labelledby="vs-t">
+  <div class="pn-sheet-card">
+    <div class="pn-row" style="align-items:center"><b id="vs-t" style="font-size:17px">Lista VIP</b><button class="pn-btn" type="button" id="vs-x">← Voltar</button></div>
+    <input id="vs-busca" type="search" placeholder="Buscar nome" style="width:100%;margin:10px 0 4px">
+    <div id="vs-lista"></div>
+    <button class="pn-btn pri" type="button" id="vs-editar" style="width:100%;margin-top:12px">Adicionar ou editar VIPs</button>
+  </div>
+</div>
+
 <div class="pn-sheet" id="hub" hidden role="dialog" aria-label="Central">
   <div class="pn-sheet-card" style="max-height:88vh;overflow:auto">
     <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
@@ -1046,6 +1057,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(typeof renderFarol==="function") renderFarol();
     if(typeof renderVarr==="function") renderVarr();
     if(typeof renderScan==="function") renderScan();
+    { const t=S.vips.filter(v=>v.relacao==="trabalho").length, f=S.vips.filter(v=>v.relacao==="familia").length; const sub=$("viplista-sub");
+      if(sub) sub.textContent=S.vips.length? S.vips.length+" cadastrados"+(t||f?" · "+t+" trabalho · "+f+" família":"") : "Ninguém cadastrado ainda"; }
     if(typeof marcaTitulos==="function") marcaTitulos();
     if(typeof renderPerfil==="function") renderPerfil();
     if(typeof renderHub==="function") renderHub();
@@ -1281,8 +1294,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.3";
+  const VERSAO="2.4";
   const VERSOES=[
+    {v:"2.4",data:"13/11/2026",itens:["Botão Lista VIP no Início: veja quem está cadastrado, por Trabalho, Família e Grupos, com busca"]},
     {v:"2.3",data:"13/11/2026",itens:["Varredura estilo antivírus: anel de progresso com radar girando, contadores ao vivo e selo “Varrendo…” no topo","Relatório com mensagens, tempo economizado, indicações e assuntos importantes","Número do WhatsApp da varredura no Início"]},
     {v:"2.2",data:"13/11/2026",itens:["Visual profissional no padrão dos apps da Apple: barra superior translúcida, títulos grandes, abas e cartões limpos","Saudação no topo (Bom dia/Boa tarde)","Correção: tela não corta mais nas laterais e o fundo acompanha o tema"]},
     {v:"2.1",data:"13/11/2026",itens:["Instalar no notebook (Chrome, Edge e Safari do Mac) com passo a passo","QR code para instalar no celular a partir do notebook"]},
@@ -1299,7 +1313,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   const visto=()=>{ try{ return localStorage.getItem("peneira-versao-vista"); }catch(e){ return null; } };
   const HUB=[
     ["novidades","sparkle","Novidades"],["atualizacoes","refresh","Atualizações"],["avisos","megaphone","Avisos"],["agenda","calendar","Agenda"],
-    ["acoes","bolt","Ações"],["seguranca","shield","Segurança"],["instalar","phone","Instalar"],["compartilhar","share","Compartilhar"],
+    ["viplista","star","Lista VIP"],["acoes","bolt","Ações"],["seguranca","shield","Segurança"],["instalar","phone","Instalar"],["compartilhar","share","Compartilhar"],
     ["politica","doc","Política"],["perfil","user","Cadastro"],["ajustes","gear","Ajustes"],["sobre","help","Ajuda"]];
   function hubDet(k){
     const D=$("hub-det"); D.textContent="";
@@ -1328,6 +1342,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
         if(["novidades","atualizacoes","avisos"].includes(k)) return hubDet(k);
         $("hub").hidden=true;
         if(k==="instalar") return $("btn-ver-inst").click();
+        if(k==="viplista") return $("btn-viplista").click();
         if(k==="compartilhar") return $("btn-share-wa").click();
         if(k==="seguranca"){ go("sobre"); setTimeout(()=>{ const e=$("seguranca"); if(e) e.scrollIntoView({behavior:"smooth"}); },50); return; }
         go(k);
@@ -1669,6 +1684,27 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   $("bd-add").addEventListener("click",()=>{ const n=$("bd-novo").value.trim(); if(!n) return; if(!bdSel.includes(n)) bdSel.push(n); $("bd-novo").value=""; renderBD(); });
   $("bd-salvar").addEventListener("click",()=>{ if(!S.canWrite) return; salvaBD({hora:$("bd-hora").value||"05:00",grupos:bdSel||[],mensagem:$("bd-msg").value.trim()}); salvoOk($("bd-salvar")); });
   setInterval(()=>{ try{ renderBD(); }catch(e){} },60000);
+
+  /* ---------- lista VIP (ver quem está cadastrado) ---------- */
+  function renderVipLista(){
+    const q=norm($("vs-busca").value), L=$("vs-lista"); L.textContent="";
+    const lista=S.vips.filter(v=>!q||norm(v.nome).includes(q));
+    const G=[["trabalho","Trabalho · equipe e chefia"],["familia","Família"],["grupo","Grupos"],["outros","Outros"]];
+    const grupoDe=v=>v.tipo==="grupo"?"grupo":(v.relacao==="trabalho"?"trabalho":v.relacao==="familia"?"familia":"outros");
+    G.forEach(([k,nome])=>{ const a=lista.filter(v=>grupoDe(v)===k).sort((x,y)=>String(x.nome).localeCompare(String(y.nome))); if(!a.length) return;
+      L.appendChild(el("div","pn-ag-g",nome+" · "+a.length));
+      a.forEach(v=>{ const r=el("div","pn-vip"); r.dataset.id=v.id; r.dataset.nome=v.nome; r.style.cursor="pointer";
+        const av=el("span",null,(v.nome||"?").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase());
+        av.style.cssText="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:700;flex:none;background:var(--accent-soft);color:var(--accent)";
+        const t=el("div"); t.style.flex="1"; t.appendChild(el("b",null,v.nome)); t.appendChild(el("div","pn-meta",(v.som!==false?"Alerta sonoro ligado":"Som desligado")+(v.tel?" · "+v.tel:"")));
+        r.append(av,t); L.appendChild(r); }); });
+    if(!lista.length) L.appendChild(el("div","pn-empty",S.vips.length?"Nenhum nome encontrado.":"Nenhum VIP cadastrado ainda."));
+  }
+  $("btn-viplista").addEventListener("click",()=>{ $("vs-busca").value=""; renderVipLista(); $("vip-sheet").hidden=false; });
+  $("vs-busca").addEventListener("input",renderVipLista);
+  $("vs-x").addEventListener("click",()=>{ $("vip-sheet").hidden=true; });
+  $("vip-sheet").addEventListener("click",e=>{ if(e.target.id==="vip-sheet") $("vip-sheet").hidden=true; });
+  $("vs-editar").addEventListener("click",()=>{ $("vip-sheet").hidden=true; go("ajustes"); setTimeout(()=>{ const e=$("vip-h"); if(e) e.scrollIntoView({behavior:"smooth"}); },80); });
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
