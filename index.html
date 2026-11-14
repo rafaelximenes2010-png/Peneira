@@ -1430,8 +1430,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.6";
+  const VERSAO="3.7";
   const VERSOES=[
+    {v:"3.7",data:"13/11/2026",itens:["Ao conectar a ponte, o app restaura VIPs, critérios, perfil, grupos, contatos, importantes, agenda e relatórios"]},
     {v:"3.6",data:"13/11/2026",itens:["App do celular recebe também os grupos: a varredura manda os relatórios para a ponte e o app puxa a cada minuto"]},
     {v:"3.5",data:"13/11/2026",itens:["Radar azul volta ao verde assim que a atualização termina"]},
     {v:"3.4",data:"13/11/2026",itens:["Radar com feixe girando bem visível (verde ao vivo, azul rápido ao tocar Varrer agora)","App busca sempre a versão mais nova ao abrir"]},
@@ -1883,6 +1884,14 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   function juntaDados(dd){
     const junta=(chave,lista,manter)=>{ if(!Array.isArray(lista)) return; const m=new Map((S[chave]||[]).map(x=>[x.id,x]));
       lista.forEach(x=>{ if(!x||!x.id) return; const a=m.get(x.id); m.set(x.id, a&&manter? {...x,...Object.fromEntries(manter.filter(k=>a[k]!==undefined).map(k=>[k,a[k]]))} : (a&&!manter?a:x)); }); S[chave]=[...m.values()]; };
+    if(Array.isArray(dd.vips)){ const nomes=new Set((S.vips||[]).map(v=>norm(v.nome))); dd.vips.forEach(v=>{ if(v&&v.nome&&!nomes.has(norm(v.nome))){ S.vips.push(v); nomes.add(norm(v.nome)); } }); }
+    if(Array.isArray(dd.criterios)) junta("criterios",dd.criterios,["status"]);
+    if(Array.isArray(dd.acoes)) junta("acoes",dd.acoes,["status"]);
+    if(dd.varredura && !(S.varredura&&S.varredura.ativa)) S.varredura={...dd.varredura};
+    if(dd.bomdia && !S.bomdia) S.bomdia=dd.bomdia;
+    if(dd.notificacoes && !S.notif) S.notif=dd.notificacoes;
+    if(dd.ausencia && !S.ausencia) S.ausencia=dd.ausencia;
+    if(dd.perfil){ const loc=S.perfil||{}; S.perfil={...dd.perfil,...Object.fromEntries(Object.entries(loc).filter(([k,v])=>v))}; try{ localStorage.setItem("peneira-perfil",JSON.stringify(S.perfil)); }catch(e){} }
     junta("relGrupos",dd.relGrupos,[]); junta("relatorios",dd.relatorios,[]); junta("contatos",dd.contatos,[]);
     junta("grupos",dd.grupos,["silenciar"]); junta("itens",dd.itens,["status","favoritado"]); junta("agenda",dd.agenda,["feito"]);
     if(dd.gestao){ const metasLocais=S.gestao&&S.gestao.metas; S.gestao={...dd.gestao}; if(metasLocais) S.gestao.metas=metasLocais; }

@@ -271,7 +271,8 @@ async function salvaConfig(req, env) {
 }
 
 // ---------- espelho dos dados da varredura de grupos (para o app fora do Claude) ----------
-const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 1500, relatorios: 120 };
+const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 1500, relatorios: 120, vips: 300, criterios: 100, acoes: 200 };
+const DOCS = ["status", "gestao", "perfil", "varredura", "bomdia", "notificacoes", "ausencia", "regrasLeitura", "regrasGrupos", "seguranca"];
 async function recebeSync(req, env) {
   const b = await req.json().catch(() => ({}));
   const feito = {};
@@ -284,13 +285,13 @@ async function recebeSync(req, env) {
     await env.KV.put("d:" + col, JSON.stringify(lista));
     feito[col] = lista.length;
   }
-  for (const doc of ["status", "gestao"]) if (b[doc] && typeof b[doc] === "object") { await env.KV.put("d:" + doc, JSON.stringify(b[doc])); feito[doc] = true; }
+  for (const doc of DOCS) if (b[doc] && typeof b[doc] === "object") { await env.KV.put("d:" + doc, JSON.stringify(b[doc])); feito[doc] = true; }
   await env.KV.put("d:em", new Date().toISOString());
   return { ok: true, feito };
 }
 async function dados(env) {
   const o = { em: await env.KV.get("d:em") };
-  for (const col of [...Object.keys(COLS), "status", "gestao"]) o[col] = await env.KV.get("d:" + col, "json");
+  for (const col of [...Object.keys(COLS), ...DOCS]) o[col] = await env.KV.get("d:" + col, "json");
   return o;
 }
 
