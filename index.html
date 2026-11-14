@@ -68,6 +68,12 @@
 .pn-nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px}
 .pn-nav-btn{border:0;background:none;color:var(--ink-3);padding:7px 12px;border-radius:9px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px}
 .pn-nav-btn[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.pn-ult{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 14px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:13.5px;cursor:pointer;width:fit-content;max-width:100%}
+.pn-ult i{width:10px;height:10px;border-radius:50%;background:#2ecc71;flex:none;box-shadow:0 0 0 3px rgba(46,204,113,.2)}
+.pn-ult.am i{background:#f1c40f;box-shadow:0 0 0 3px rgba(241,196,15,.2)} .pn-ult.ve i{background:#e74c3c;box-shadow:0 0 0 3px rgba(231,76,60,.2)}
+.pn-ult b{font-weight:700}
+.pn-upd{display:none;position:sticky;top:0;z-index:40;margin:0 0 12px;padding:10px 14px;border-radius:14px;background:#1f6feb;color:#fff;font-size:14px;align-items:center;gap:10px}
+.pn-upd.on{display:flex} .pn-upd button{margin-left:auto;background:#fff;color:#1f6feb;border:0;border-radius:10px;padding:7px 12px;font-weight:700}
 .pn-badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--coral);color:#fff;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center}
 .pn-badge.on{display:inline-flex}
 .pn-bottom{display:none}
@@ -491,6 +497,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   <!-- ========== INÍCIO ========== -->
   <main>
   <section class="pn-view" id="inicio">
+    <div class="pn-upd" id="upd-banner"><span id="upd-banner-t">Nova versão disponível</span><button type="button" id="upd-banner-b">Atualizar</button></div>
     <div class="pn-hero" id="hero">
       <div>
         <h1 id="hero-tit">Olá</h1>
@@ -501,7 +508,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     </div>
 
     <button class="pn-btn pri" type="button" id="varr-agora" style="width:100%;padding:14px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px"><span data-ico="refresh"></span>Varrer agora</button>
-    <div class="pn-meta" id="varr-agora-st" style="margin:6px 0 14px;text-align:center">Além da varredura automática de hora em hora.</div>
+    <div class="pn-meta" id="varr-agora-st" style="margin:6px 0 8px;text-align:center">Além da varredura automática de hora em hora.</div>
+    <button type="button" class="pn-ult" id="ult-ind"><i></i><span id="ult-txt">Buscando a última varredura…</span></button>
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
       <div class="pn-scan" id="scan">
         <div class="pn-scan-ring" id="scan-ring">
@@ -686,6 +694,21 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 
   <!-- ========== AJUSTES ========== -->
   <section class="pn-view" id="ajustes">
+    <div class="pn-h2" style="margin-top:4px">Central de atualização</div>
+    <div class="pn-card" id="upd-card">
+      <div class="pn-q"><span>Versão instalada</span><b id="upd-inst">—</b></div>
+      <div class="pn-q"><span>Versão disponível</span><b id="upd-disp">verificando…</b></div>
+      <div class="pn-q"><span>Última verificação</span><b id="upd-quando">—</b></div>
+      <div class="pn-q"><span>Dados do celular atualizados</span><b id="upd-dados">—</b></div>
+      <div class="pn-meta" id="upd-st" style="margin:8px 0">O app procura versão nova sozinho ao abrir e a cada 30 minutos.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="pn-btn pri" type="button" id="upd-agora" style="flex:1">Atualizar agora</button>
+        <button class="pn-btn" type="button" id="upd-checar" style="flex:1">Verificar</button>
+        <button class="pn-btn" type="button" id="upd-sync" style="flex:1 1 100%">Puxar dados do computador agora</button>
+      </div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">O que mudou</summary><div id="upd-log"></div></details>
+    </div>
+
     <div id="instalar-box" hidden>
       <div class="pn-h2" style="margin-top:4px">Instalar no celular</div>
       <div class="pn-card"><button class="pn-btn pri" type="button" id="btn-ver-inst" style="width:100%">Ver como instalar</button></div>
@@ -1148,7 +1171,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   const ordena = (a,b)=>((vipDe(a)?0:1)-(vipDe(b)?0:1)) || (PRI[a.prioridade]??3)-(PRI[b.prioridade]??3) || String(a.prazo||"9999").localeCompare(String(b.prazo||"9999"));
 
   function render(){
-    const m=S.meta;
+    const m=S.meta; try{ renderUlt(); }catch(e){}
     if(S.ponteSt && !(m && m.ultimaVarredura)) $("ultima").textContent="Ponte oficial ao vivo · "+S.ponteSt.mensagens+" mensagens hoje, "+S.ponteSt.importantes+" importantes.";
     else if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
       (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" favoritadas":"");
@@ -1465,8 +1488,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.2";
+  const VERSAO="4.3";
   const VERSOES=[
+    {v:"4.3",data:"14/11/2026",itens:["Indicador da última varredura no Início: há quanto tempo, horário e conversas (verde até 75 min, amarelo até 3h, vermelho depois); toque para puxar os dados do computador","Central de atualização em Ajustes: versão instalada e disponível, Atualizar agora, aviso azul quando sai versão nova","O celular puxa os dados do computador assim que o app é aberto"]},
     {v:"4.2",data:"14/11/2026",itens:["Importar agenda envia todos os contatos para a ponte (cópia de segurança completa)","Alertas na tela bloqueada e tempo de conversa individual ativos na ponte"]},
     {v:"4.1",data:"14/11/2026",itens:["Quem mais fala mostra horas e minutos de conversa de cada pessoa","Gráfico: tempo ativo de cada grupo e maior conversa sem parar","Detalhe do grupo com tempo ativo, maior sequência, conversas e horário de pico; tudo no Excel/PDF"]},
     {v:"4.0",data:"14/11/2026",itens:["Lista VIP: botão Escolher número, buscando nos contatos da agenda","Relatórios → Por grupo: lista de todos os grupos com busca; toque abre tudo do grupo (resumo, quem mais fala, assuntos, metas, compromissos, reclamações, histórico, importantes, PDF/Excel)","Drill-down nos contadores do radar, no Banco de dados (cada tabela abre com busca) e no cadastro dos grupos"]},
@@ -1645,6 +1669,41 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     H.appendChild(el("span",null,"v"+VERSAO));
   }
 
+
+  /* ---------- Indicador da última varredura + Central de atualização ---------- */
+  function haQuanto(iso){ const t=Date.parse(iso); if(isNaN(t)) return ""; const m=Math.max(0,Math.round((Date.now()-t)/60000));
+    if(m<1) return "agora"; if(m<60) return "há "+m+" min"; const h=Math.floor(m/60), r=m%60; if(h<24) return "há "+h+"h"+(r?String(r).padStart(2,"0"):""); const d=Math.floor(h/24); return "há "+d+(d>1?" dias":" dia"); }
+  function hhmm(iso){ const d=new Date(iso); return isNaN(d)?"":d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
+  function renderUlt(){ const b=$("ult-ind"); if(!b) return; const m=S.meta||{}; b.classList.remove("am","ve");
+    if(m.emAndamento){ $("ult-txt").innerHTML=""; $("ult-txt").append("Varrendo agora"+(m.progresso!=null?" · "+m.progresso+"%":"")+"…"); return; }
+    if(!m.ultimaVarredura){ $("ult-txt").textContent="Ainda sem varredura dos grupos"; b.classList.add("am"); return; }
+    const min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>180) b.classList.add("ve"); else if(min>75) b.classList.add("am");
+    const t=$("ult-txt"); t.textContent=""; t.append("Última varredura "); t.appendChild(el("b",null,haQuanto(m.ultimaVarredura)));
+    t.append(" · "+fmt(m.ultimaVarredura)+(m.conversasLidas!=null?" · "+m.conversasLidas+" conversas":""));
+    const ud=$("upd-dados"); if(ud) ud.textContent=(ponte&&ponte.vistoEm)?haQuanto(ponte.vistoEm)+" ("+hhmm(ponte.vistoEm)+")":(ponte&&ponte.url?"aguardando":"ponte não conectada"); }
+  $("ult-ind").addEventListener("click",async()=>{ $("ult-txt").textContent="Puxando dados do computador…"; try{ if(ponte){ ponte.dadosEm=""; } await ponteSync(); }catch(e){} renderUlt(); });
+  setInterval(renderUlt,30000);
+  const UPD={disp:null,em:null};
+  const cmpV=(a,b)=>{ const x=String(a).split(".").map(Number), y=String(b).split(".").map(Number); for(let i=0;i<Math.max(x.length,y.length);i++){ const d=(x[i]||0)-(y[i]||0); if(d) return d; } return 0; };
+  async function checaVersao(){ if(location.protocol!=="https:"||/claude/i.test(location.hostname)){ $("upd-disp").textContent="v"+VERSAO; return; }
+    try{ const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"index.html?v="+Date.now(),{cache:"no-store"}); const tx=await r.text(); const mm=tx.match(/const VERSAO="([\d.]+)"/);
+      UPD.disp=mm?mm[1]:null; UPD.em=new Date().toISOString(); }catch(e){ $("upd-st").textContent="Sem internet para verificar agora."; }
+    renderUpd(); }
+  function renderUpd(){ $("upd-inst").textContent="v"+VERSAO; $("upd-disp").textContent=UPD.disp?"v"+UPD.disp:"—"; $("upd-quando").textContent=UPD.em?hhmm(UPD.em):"—";
+    const nova=UPD.disp&&cmpV(UPD.disp,VERSAO)>0; $("upd-banner").classList.toggle("on",!!nova);
+    if(nova){ $("upd-banner-t").textContent="Nova versão v"+UPD.disp+" disponível"; $("upd-st").textContent="Tem versão nova. Toque em Atualizar agora: leva poucos segundos e seus dados ficam."; $("upd-agora").textContent="Atualizar para v"+UPD.disp; }
+    else if(UPD.disp){ $("upd-st").textContent="Você está na versão mais nova."; $("upd-agora").textContent="Recarregar o app"; }
+    const L=$("upd-log"); if(L && !L.childNodes.length) VERSOES.slice(0,6).forEach(v=>{ L.appendChild(el("div","pn-meta","v"+v.v+" · "+v.data)); const u=el("ul","pn-list"); v.itens.forEach(t=>u.appendChild(el("li",null,t))); L.appendChild(u); }); }
+  async function atualizaApp(){ $("upd-st").textContent="Atualizando…"; $("upd-banner-t").textContent="Atualizando…";
+    try{ if("serviceWorker" in navigator){ const rs=await navigator.serviceWorker.getRegistrations(); for(const r of rs){ try{ await r.update(); if(r.waiting) r.waiting.postMessage({tipo:"pular"}); }catch(e){} } }
+      if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.filter(k=>k!=="peneira-cfg").map(k=>caches.delete(k))); } }catch(e){}
+    location.replace(location.pathname+"?atualizado="+Date.now()); }
+  $("upd-agora").addEventListener("click",atualizaApp); $("upd-banner-b").addEventListener("click",atualizaApp);
+  $("upd-checar").addEventListener("click",()=>{ $("upd-disp").textContent="verificando…"; checaVersao(); });
+  $("upd-sync").addEventListener("click",async()=>{ $("upd-dados").textContent="puxando…"; if(ponte) ponte.dadosEm=""; await ponteSync(); renderUlt(); });
+  setTimeout(checaVersao,1500); setInterval(checaVersao,30*60000);
+  document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"){ try{ ponteSync(); }catch(e){} renderUlt(); if(!UPD.em||Date.now()-Date.parse(UPD.em)>5*60000) checaVersao(); } });
+  window.addEventListener("pageshow",()=>{ try{ ponteSync(); }catch(e){} });
 
   /* ---------- VIP direto da agenda do celular (Contact Picker) ---------- */
   const temAgenda = ("contacts" in navigator) && ("select" in navigator.contacts);
@@ -1954,8 +2013,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       }
       ponte.desde=r.agora||new Date().toISOString(); localStorage.setItem(PONTE_KEY,JSON.stringify(ponte));
       if(S.demo && novos){ demoSave(); checaVips(); render(); }
-      if(S.demo){ try{ const dd=await ponteReq("/dados"); if(dd && dd.em && dd.em!==ponte.dadosEm){ juntaDados(dd); ponte.dadosEm=dd.em; localStorage.setItem(PONTE_KEY,JSON.stringify(ponte)); } }catch(e){} }
-      let st=null; try{ st=await ponteReq("/status"); }catch(e){} S.ponteSt=st?{...st,em:new Date().toISOString()}:null; try{ render(); }catch(e){}
+      if(S.demo){ try{ const dd=await ponteReq("/dados"); ponte.vistoEm=new Date().toISOString(); if(dd && dd.em && dd.em!==ponte.dadosEm){ juntaDados(dd); ponte.dadosEm=dd.em; } localStorage.setItem(PONTE_KEY,JSON.stringify(ponte)); }catch(e){} }
+      let st=null; try{ st=await ponteReq("/status"); }catch(e){} S.ponteSt=st?{...st,em:new Date().toISOString()}:null; try{ render(); }catch(e){} try{ renderUlt(); }catch(e){}
       ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
     }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
   }
