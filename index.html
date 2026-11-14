@@ -1083,7 +1083,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 
   function render(){
     const m=S.meta;
-    if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
+    if(S.ponteSt && !(m && m.ultimaVarredura)) $("ultima").textContent="Ponte oficial ao vivo · "+S.ponteSt.mensagens+" mensagens hoje, "+S.ponteSt.importantes+" importantes.";
+    else if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
       (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" favoritadas":"");
     const pend = S.itens.filter(i=>(i.status||"pendente")==="pendente");
     const alta = pend.filter(i=>i.prioridade==="alta");
@@ -1377,8 +1378,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.9";
+  const VERSAO="2.10";
   const VERSOES=[
+    {v:"2.10",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
     {v:"2.9",data:"13/11/2026",itens:["Ponte oficial (API da Meta): conversas individuais em tempo real, 24h, sem Chrome","Modelo híbrido: grupos seguem na varredura de hora em hora","Dá baixa sozinho quando você responde pelo WhatsApp"]},
     {v:"2.8",data:"13/11/2026",itens:["Varredura automática de hora em hora, 24 horas por dia","De madrugada (23h–5h) só avisa VIP urgente ou golpe"]},
     {v:"2.7",data:"13/11/2026",itens:["Adicionar VIP buscando nos contatos e grupos do WhatsApp"]},
@@ -1667,12 +1669,16 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     sc.classList.toggle("ativo",on&&rodando); sc.classList.toggle("espera",on&&!rodando&&!m.ultimaVarredura); sc.classList.toggle("ok",on&&!rodando&&!!m.ultimaVarredura);
     const prg=$("scan-prg"); const C=326.7; prg.style.strokeDashoffset = String(C - C*((rodando?pct:(m.ultimaVarredura?100:0))/100));
     $("live-scan").hidden=!(on&&rodando);
-    if(!on){ $("scan-pct").textContent="—"; $("scan-lbl").textContent="desligado"; $("scan-tit").textContent="Varredura desligada"; $("scan-sub").textContent="Ative abaixo para começar"; }
-    else if(rodando){ $("scan-pct").textContent=pct+"%"; $("scan-lbl").textContent="varrendo"; $("scan-tit").textContent="Varrendo seu WhatsApp…";
+    if(!on && !S.ponteSt){ $("scan-pct").textContent="—"; $("scan-lbl").textContent="desligado"; $("scan-tit").textContent="Varredura desligada"; $("scan-sub").textContent="Ative abaixo para começar"; }
+    else if(rodando && on){ $("scan-pct").textContent=pct+"%"; $("scan-lbl").textContent="varrendo"; $("scan-tit").textContent="Varrendo seu WhatsApp…";
       $("scan-sub").textContent=(m.conversaAtual?"Agora: "+m.conversaAtual+" · ":"")+(m.feitas!=null&&m.total?m.feitas+" de "+m.total+" conversas":"analisando conversas"); }
-    else if(m.ultimaVarredura){ $("scan-pct").textContent="✓"; $("scan-lbl").textContent="protegido"; $("scan-tit").textContent="Tudo peneirado";
+    else if(m.ultimaVarredura && on){ $("scan-pct").textContent="✓"; $("scan-lbl").textContent="protegido"; $("scan-tit").textContent="Tudo peneirado";
       $("scan-sub").textContent="Última varredura "+fmt(m.ultimaVarredura)+(m.minutosEconomizados?" · "+m.minutosEconomizados+" min economizados":""); }
+    else if(S.ponteSt){ const ps=S.ponteSt; sc.classList.add("ok"); sc.classList.remove("espera"); prg.style.strokeDashoffset="0";
+      $("scan-pct").textContent="●"; $("scan-lbl").textContent="ao vivo"; $("scan-tit").textContent="Ponte oficial ao vivo";
+      $("scan-sub").textContent=ps.mensagens+" mensagens hoje · "+ps.importantes+" importantes"+(ps.ultimaMensagem?" · última "+fmt(ps.ultimaMensagem):""); }
     else { $("scan-pct").textContent="…"; $("scan-lbl").textContent="aguardando"; $("scan-tit").textContent="Pronto para varrer"; $("scan-sub").textContent="Aguardando a conexão com o WhatsApp Business"; }
+    if(S.ponteSt && !m.ultimaVarredura){ $("sc-lidas").textContent=S.ponteSt.descartadas||0; $("sc-mant").textContent=S.ponteSt.importantes||0; $("sc-imp").textContent=S.itens.filter(i=>(i.status||"pendente")==="pendente").length; return; }
     $("sc-lidas").textContent=m.marcadasLidas!=null?m.marcadasLidas:(m.conversasLidas||0);
     $("sc-mant").textContent=m.mantidasNaoLidas||0;
     $("sc-imp").textContent=S.itens.filter(i=>(i.status||"pendente")==="pendente").length;
@@ -1689,7 +1695,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const P=$("varr-proc"); P.style.display=on?"block":"none"; P.textContent=""; if(!on) return;
     const passo=(estado,tit,sub)=>{ const r=el("div","pn-proc "+estado); r.appendChild(el("i",null,estado==="ok"?"✓":estado==="wait"?"…":"")); const t=el("div"); t.appendChild(el("b",null,tit)); if(sub) t.appendChild(el("span",null,sub)); r.appendChild(t); P.appendChild(r); };
     passo("ok","Varredura ativada", v.ativadaEm?"desde "+fmt(v.ativadaEm):"");
-    passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":"Conectando ao WhatsApp Business",
+    if(S.ponteSt) passo("ok","Ponte oficial ao vivo (conversas individuais)", S.ponteSt.mensagens+" mensagens hoje · "+S.ponteSt.importantes+" importantes · 24h, sem notebook");
+    passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":(S.ponteSt?"Grupos: aguardando o WhatsApp Web":"Conectando ao WhatsApp Business"),
       conectado?(((m.numero||v.numero)?(m.numero||v.numero)+" · ":"")+"linkado pelo WhatsApp Web"):(v.numero?"Número "+v.numero+". ":"")+"No notebook, escaneie o QR do WhatsApp Web com o celular (WhatsApp Business → Dispositivos conectados → Conectar). Na primeira leitura a conexão aparece aqui.");
     passo(m.ultimaVarredura?"ok":(conectado?"wait":""), m.ultimaVarredura?"Última varredura "+fmt(m.ultimaVarredura):"Primeira varredura",
       m.ultimaVarredura?((m.conversasLidas!=null?m.conversasLidas+" conversas · ":"")+(m.mantidasNaoLidas!=null?m.mantidasNaoLidas+" mantidas como não lidas":"")):"Vai começar assim que a conexão estiver ok.");
@@ -1800,7 +1807,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       }
       ponte.desde=r.agora||new Date().toISOString(); localStorage.setItem(PONTE_KEY,JSON.stringify(ponte));
       if(S.demo && novos){ demoSave(); checaVips(); render(); }
-      let st=null; try{ st=await ponteReq("/status"); }catch(e){}
+      let st=null; try{ st=await ponteReq("/status"); }catch(e){} S.ponteSt=st?{...st,em:new Date().toISOString()}:null; try{ render(); }catch(e){}
       ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
     }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
   }
