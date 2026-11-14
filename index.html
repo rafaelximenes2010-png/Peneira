@@ -1575,8 +1575,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.7";
+  const VERSAO="4.8";
   const VERSOES=[
+    {v:"4.8",data:"14/11/2026",itens:["Novidades mostram só as 3 últimas versões; o histórico completo continua guardado"]},
     {v:"4.7",data:"14/11/2026",itens:["Início reorganizado abaixo do Varrer agora: lista agrupada no estilo do iPhone (Varredura e Conexões), número formatado com botão Alterar e status em selos (Ao vivo, Conectado)","Regra da varredura recolhida em \"Como a varredura decide\""]},
     {v:"4.6",data:"14/11/2026",itens:["Novo painel de varredura no padrão dos melhores apps de segurança: radar grande centralizado girando sempre (verde em dia, azul quando você pede, laranja se passar de 3h)","Números alinhados em 3 colunas iguais, Varrer agora dentro do painel e horário da próxima varredura automática","Barra do topo fixa e área da hora do iPhone protegida ao rolar"]},
     {v:"4.5",data:"14/11/2026",itens:["Zoom travado: sem zoom por duplo toque ou pinça, visual de app nativo"]},
@@ -1622,7 +1623,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   function hubDet(k){
     const D=$("hub-det"); D.textContent="";
     const box=el("div","pn-card"); box.style.marginTop="12px"; box.style.background="var(--surface-2)";
-    if(k==="novidades"){ VERSOES.forEach((v,ix)=>{
+    if(k==="novidades"){ VERSOES.slice(0,3).forEach((v,ix)=>{
         const d=document.createElement("details"); if(ix===0) d.open=true; d.style.marginBottom="8px";
         const sm=document.createElement("summary"); sm.style.cursor="pointer"; sm.style.fontWeight="700"; sm.textContent="Versão "+v.v+" · "+v.data+(ix===0?" · atual":""); d.appendChild(sm);
         const u=el("ul","pn-list"); u.style.margin="6px 0 4px"; v.itens.forEach(t=>u.appendChild(el("li",null,t))); d.appendChild(u); box.appendChild(d); });
@@ -1785,7 +1786,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const nova=UPD.disp&&cmpV(UPD.disp,VERSAO)>0; $("upd-banner").classList.toggle("on",!!nova);
     if(nova){ $("upd-banner-t").textContent="Nova versão v"+UPD.disp+" disponível"; $("upd-st").textContent="Tem versão nova. Toque em Atualizar agora: leva poucos segundos e seus dados ficam."; $("upd-agora").textContent="Atualizar para v"+UPD.disp; }
     else if(UPD.disp){ $("upd-st").textContent="Você está na versão mais nova."; $("upd-agora").textContent="Recarregar o app"; }
-    const L=$("upd-log"); if(L && !L.childNodes.length) VERSOES.slice(0,6).forEach(v=>{ L.appendChild(el("div","pn-meta","v"+v.v+" · "+v.data)); const u=el("ul","pn-list"); v.itens.forEach(t=>u.appendChild(el("li",null,t))); L.appendChild(u); }); }
+    const L=$("upd-log"); if(L && !L.childNodes.length) VERSOES.slice(0,3).forEach(v=>{ L.appendChild(el("div","pn-meta","v"+v.v+" · "+v.data)); const u=el("ul","pn-list"); v.itens.forEach(t=>u.appendChild(el("li",null,t))); L.appendChild(u); }); }
   async function atualizaApp(){ $("upd-st").textContent="Atualizando…"; $("upd-banner-t").textContent="Atualizando…";
     try{ if("serviceWorker" in navigator){ const rs=await navigator.serviceWorker.getRegistrations(); for(const r of rs){ try{ await r.update(); if(r.waiting) r.waiting.postMessage({tipo:"pular"}); }catch(e){} } }
       if(window.caches){ const ks=await caches.keys(); await Promise.all(ks.filter(k=>k!=="peneira-cfg").map(k=>caches.delete(k))); } }catch(e){}
