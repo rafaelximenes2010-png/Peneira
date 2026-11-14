@@ -285,12 +285,12 @@ async function salvaContatoAgenda(env, nome, tel) {
   const i = lista.findIndex(x => x.id === id);
   const novo = { ...(i >= 0 ? lista[i] : {}), id, nome, tipo: "pessoa", tel: "+" + d, origem: "agenda" };
   if (i >= 0) lista[i] = novo; else lista.push(novo);
-  await env.KV.put("d:contatos", JSON.stringify(lista.slice(-1500)));
+  await env.KV.put("d:contatos", JSON.stringify(lista.slice(-6000)));
   await env.KV.put("d:em", new Date().toISOString());
 }
 
 // ---------- espelho dos dados da varredura de grupos (para o app fora do Claude) ----------
-const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 1500, relatorios: 120, vips: 300, criterios: 100, acoes: 200 };
+const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 6000, relatorios: 120, vips: 300, criterios: 100, acoes: 200 };
 const DOCS = ["status", "gestao", "perfil", "varredura", "bomdia", "notificacoes", "ausencia", "regrasLeitura", "regrasGrupos", "seguranca"];
 async function recebeSync(req, env) {
   const b = await req.json().catch(() => ({}));
