@@ -36,6 +36,8 @@ export default {
       if (url.pathname === "/") return cors(json({ ok: true, app: "peneira-ponte", envia: false }));
       if (!autorizado(req, env)) return cors(json({ erro: "senha inválida" }, 401));
       if (url.pathname === "/status") return cors(json(await status(env)));
+      if (url.pathname === "/sync" && req.method === "POST") return cors(json(await recebeSync(req, env)));
+      if (url.pathname === "/dados") return cors(json(await dados(env)));
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
       if (url.pathname === "/itens") return cors(json(await itens(env, url.searchParams.get("desde"))));
       if (url.pathname === "/config" && req.method === "POST") return cors(json(await salvaConfig(req, env)));
@@ -266,6 +268,30 @@ async function salvaConfig(req, env) {
   };
   await env.KV.put("cfg", JSON.stringify(cfg));
   return { ok: true, vips: cfg.vips.length, criterios: cfg.criterios.length };
+}
+
+// ---------- espelho dos dados da varredura de grupos (para o app fora do Claude) ----------
+const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 1500, relatorios: 120 };
+async function recebeSync(req, env) {
+  const b = await req.json().catch(() => ({}));
+  const feito = {};
+  for (const [col, max] of Object.entries(COLS)) {
+    if (!Array.isArray(b[col])) continue;
+    const atual = (await env.KV.get("d:" + col, "json")) || [];
+    const m = new Map(atual.map(x => [x.id, x]));
+    for (const x of b[col]) if (x && x.id) m.set(String(x.id), x);
+    const lista = [...m.values()].sort((a, c) => String(c.geradoEm || c.recebidoEm || c.quando || "").localeCompare(String(a.geradoEm || a.recebidoEm || a.quando || ""))).slice(0, max);
+    await env.KV.put("d:" + col, JSON.stringify(lista));
+    feito[col] = lista.length;
+  }
+  for (const doc of ["status", "gestao"]) if (b[doc] && typeof b[doc] === "object") { await env.KV.put("d:" + doc, JSON.stringify(b[doc])); feito[doc] = true; }
+  await env.KV.put("d:em", new Date().toISOString());
+  return { ok: true, feito };
+}
+async function dados(env) {
+  const o = { em: await env.KV.get("d:em") };
+  for (const col of [...Object.keys(COLS), "status", "gestao"]) o[col] = await env.KV.get("d:" + col, "json");
+  return o;
 }
 
 // ---------- quem mais fala (conversas individuais) ----------

@@ -1088,7 +1088,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     ["ignorar","IGNORAR: correntes, bom dia, promoções","Só marco como lido, sem favoritar."]
   ].map((c,i)=>({id:c[0],nome:c[1],descricao:c[2],status:"sugerido",ordem:i+1}));
   function demoLoad(){ try{ const j=JSON.parse(localStorage.getItem(DEMO_KEY)); if(j&&j.itens) return j; }catch(e){} return {itens:[],criterios:DEMO_CRIT,acoes:[],ausencia:null,notif:null,relatorios:[],agenda:[],vips:[]}; }
-  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({gestao:S.gestao,relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios})); }catch(e){} }
+  function demoSave(){ try{ localStorage.setItem(DEMO_KEY, JSON.stringify({gestao:S.gestao,relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios,contatos:S.contatos,meta:S.meta})); }catch(e){} }
   function demoUpdate(path,data){
     const [col,id]=path.split("/"); const arr=col==="itens"?S.itens:S.criterios;
     const i=arr.findIndex(x=>x.id===id); if(i>=0) arr[i]={...arr[i],...data};
@@ -1430,8 +1430,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.5";
+  const VERSAO="3.6";
   const VERSOES=[
+    {v:"3.6",data:"13/11/2026",itens:["App do celular recebe também os grupos: a varredura manda os relatórios para a ponte e o app puxa a cada minuto"]},
     {v:"3.5",data:"13/11/2026",itens:["Radar azul volta ao verde assim que a atualização termina"]},
     {v:"3.4",data:"13/11/2026",itens:["Radar com feixe girando bem visível (verde ao vivo, azul rápido ao tocar Varrer agora)","App busca sempre a versão mais nova ao abrir"]},
     {v:"3.3",data:"13/11/2026",itens:["Radar gira sempre que a ponte está ao vivo","Varrer agora: o anel fica azul quando o pedido dá certo e atualiza as conversas na hora","Relatórios → Quem mais fala: ranking das conversas individuais e dos grupos + cadastro dos grupos","Relatórios → Banco de dados: tudo num Excel (uma aba por tabela) ou PDF","Botão Enviar do bom dia centralizado"]},
@@ -1879,6 +1880,15 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   let ponteCfgHash="", ponteTimer=null;
   function ponteMostra(t,ok){ const e=$("ponte-st"); if(!e) return; e.textContent=t; e.style.color=ok===true?"var(--ok,#1a8f5a)":ok===false?"#c0392b":""; }
   async function ponteReq(caminho,op){ const r=await fetch(ponte.url.replace(/\/+$/,"")+caminho,{...(op||{}),headers:{authorization:"Bearer "+ponte.tok,"content-type":"application/json"}}); if(!r.ok) throw new Error(r.status===401?"senha":"http "+r.status); return r.json(); }
+  function juntaDados(dd){
+    const junta=(chave,lista,manter)=>{ if(!Array.isArray(lista)) return; const m=new Map((S[chave]||[]).map(x=>[x.id,x]));
+      lista.forEach(x=>{ if(!x||!x.id) return; const a=m.get(x.id); m.set(x.id, a&&manter? {...x,...Object.fromEntries(manter.filter(k=>a[k]!==undefined).map(k=>[k,a[k]]))} : (a&&!manter?a:x)); }); S[chave]=[...m.values()]; };
+    junta("relGrupos",dd.relGrupos,[]); junta("relatorios",dd.relatorios,[]); junta("contatos",dd.contatos,[]);
+    junta("grupos",dd.grupos,["silenciar"]); junta("itens",dd.itens,["status","favoritado"]); junta("agenda",dd.agenda,["feito"]);
+    if(dd.gestao){ const metasLocais=S.gestao&&S.gestao.metas; S.gestao={...dd.gestao}; if(metasLocais) S.gestao.metas=metasLocais; }
+    if(dd.status && (!S.meta || String(dd.status.ultimaVarredura||"")>String(S.meta.ultimaVarredura||""))) S.meta={...(S.meta||{}),...dd.status};
+    demoSave(); checaVips(); render();
+  }
   async function ponteSync(){
     if(!ponte||!ponte.url||!ponte.tok) return;
     try{
@@ -1895,6 +1905,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       }
       ponte.desde=r.agora||new Date().toISOString(); localStorage.setItem(PONTE_KEY,JSON.stringify(ponte));
       if(S.demo && novos){ demoSave(); checaVips(); render(); }
+      if(S.demo){ try{ const dd=await ponteReq("/dados"); if(dd && dd.em && dd.em!==ponte.dadosEm){ juntaDados(dd); ponte.dadosEm=dd.em; localStorage.setItem(PONTE_KEY,JSON.stringify(ponte)); } }catch(e){} }
       let st=null; try{ st=await ponteReq("/status"); }catch(e){} S.ponteSt=st?{...st,em:new Date().toISOString()}:null; try{ render(); }catch(e){}
       ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
     }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
@@ -2411,7 +2422,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(!db){
       const d=demoLoad(); S.demo=true; S.gestao=d.gestao||null; S.relGrupos=d.relGrupos||[]; S.bomdia=d.bomdia||null; S.varredura=d.varredura||null; S.grupos=d.grupos||[]; S.agenda=d.agenda||[]; S.vips=d.vips||[];
       try{ S.perfil=JSON.parse(localStorage.getItem("peneira-perfil")); }catch(e){} S.perfilPronto=true; S.itens=d.itens; S.criterios=d.criterios; S.acoes=d.acoes||[]; S.ausencia=d.ausencia||null; S.notif=d.notif||null; S.relatorios=d.relatorios||[];
-      S.meta=d.meta||null;
+      S.meta=d.meta||null; S.contatos=d.contatos||S.contatos||[];
       render(); fluxo(); return;
     }
     S.db=db;
