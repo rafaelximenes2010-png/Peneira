@@ -479,6 +479,33 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-scan-cont span{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
 .pn-scan-btn{width:100%;padding:15px;font-size:17px;font-weight:700;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px}
 .pn-scan-nx{margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+/* ajustes da varredura · lista agrupada estilo iOS */
+.pn-set{margin-top:20px}
+.pn-set-t{font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 4px 8px}
+.pn-set-g{background:var(--surface-2);border-radius:14px;overflow:hidden}
+.pn-set-r{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:56px;position:relative}
+.pn-set-r+.pn-set-r::before,.pn-set-ed::before{content:"";position:absolute;top:0;left:58px;right:0;height:.5px;background:var(--border)}
+.pn-set-ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;background:#8e8e93}
+.pn-set-ic .pn-ico svg{width:18px;height:18px}
+.pn-set-ic.g{background:#30b566}.pn-set-ic.b{background:#2f7cf6}.pn-set-ic.o{background:#f29a2e}.pn-set-ic.v{background:#8a5cf6}
+.pn-set-x{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pn-set-x b{font-size:15.5px;font-weight:600;color:var(--ink);line-height:1.25}
+.pn-set-x span{font-size:13px;color:var(--ink-3);line-height:1.3;overflow-wrap:anywhere}
+.pn-set-lk{border:0;background:none;color:var(--accent);font-size:15px;font-weight:600;padding:8px 2px;cursor:pointer;flex:none}
+.pn-set-ed{display:flex;gap:8px;padding:10px 14px 14px 58px;position:relative}
+.pn-set-ed[hidden]{display:none}
+.pn-set-ed input{flex:1;min-width:0}
+.pn-set-st{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--surface);color:var(--ink-3)}
+.pn-set-st.ok{background:rgba(48,181,102,.16);color:#2fb36b}
+.pn-set-st.wait{background:rgba(242,154,46,.16);color:#e08a1e}
+.pn-set-rule{margin-top:14px;background:var(--surface-2);border-radius:14px;padding:0 14px}
+.pn-set-rule summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;min-height:48px;font-size:15px;font-weight:600;color:var(--ink)}
+.pn-set-rule summary::-webkit-details-marker{display:none}
+.pn-set-rule summary::after{content:"›";font-size:22px;color:var(--ink-3);transition:transform .15s}
+.pn-set-rule[open] summary::after{transform:rotate(90deg)}
+.pn-set-rule ul{margin:0 0 14px;padding-left:18px;font-size:14px;color:var(--ink-2);line-height:1.45}
+.pn-set-rule li{margin-bottom:6px}
+.pn-set-ft{margin:10px 4px 0;font-size:12.5px;color:var(--ink-3)}
 .pn-hero p#ultima{opacity:.85}
 </style>
 </head>
@@ -577,15 +604,26 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         <button class="pn-btn pri pn-scan-btn" type="button" id="varr-agora"><span data-ico="refresh"></span>Varrer agora</button>
         <div class="pn-scan-nx" id="varr-agora-st">Automática de hora em hora</div>
       </div>
-      <div class="pn-switch">
-        <div><b style="font-size:16px">Varrer meu WhatsApp</b><div class="pn-meta" id="varr-sub">Desativado</div></div>
-        <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
+      <div class="pn-set">
+        <div class="pn-set-t">Varredura</div>
+        <div class="pn-set-g">
+          <div class="pn-set-r">
+            <span class="pn-set-ic g"><span data-ico="shield"></span></span>
+            <div class="pn-set-x"><b>Varrer meu WhatsApp</b><span id="varr-sub">Desativado</span></div>
+            <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
+          </div>
+          <div class="pn-set-r">
+            <span class="pn-set-ic b"><span data-ico="phone"></span></span>
+            <div class="pn-set-x"><b>Número</b><span id="varr-num-show">Não informado</span></div>
+            <button class="pn-set-lk" type="button" id="varr-num-ed">Alterar</button>
+          </div>
+          <div class="pn-set-ed" id="varr-num-box" hidden>
+            <input id="varr-num" type="tel" inputmode="tel" placeholder="Ex.: 81 98299-1357" maxlength="20">
+            <button class="pn-btn pri" type="button" id="varr-num-ok">Salvar</button>
+          </div>
+        </div>
       </div>
-      <div style="display:flex;gap:6px;margin-top:12px;align-items:center">
-        <input id="varr-num" type="tel" inputmode="tel" placeholder="Número do WhatsApp (ex.: 81 98299-1357)" maxlength="20" style="flex:1">
-        <button class="pn-btn" type="button" id="varr-num-ok">Salvar</button>
-      </div>
-      <div id="varr-proc" style="display:none;margin-top:12px"></div>
+      <div id="varr-proc" style="display:none"></div>
     </div>
     <div class="pn-card" id="bd-hoje" hidden style="margin-bottom:14px;border-color:var(--gold)">
       <div class="pn-row" style="align-items:center"><b>Bom dia de hoje</b><span class="pn-meta" id="bd-hoje-st"></span></div>
@@ -1537,8 +1575,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.6";
+  const VERSAO="4.7";
   const VERSOES=[
+    {v:"4.7",data:"14/11/2026",itens:["Início reorganizado abaixo do Varrer agora: lista agrupada no estilo do iPhone (Varredura e Conexões), número formatado com botão Alterar e status em selos (Ao vivo, Conectado)","Regra da varredura recolhida em \"Como a varredura decide\""]},
     {v:"4.6",data:"14/11/2026",itens:["Novo painel de varredura no padrão dos melhores apps de segurança: radar grande centralizado girando sempre (verde em dia, azul quando você pede, laranja se passar de 3h)","Números alinhados em 3 colunas iguais, Varrer agora dentro do painel e horário da próxima varredura automática","Barra do topo fixa e área da hora do iPhone protegida ao rolar"]},
     {v:"4.5",data:"14/11/2026",itens:["Zoom travado: sem zoom por duplo toque ou pinça, visual de app nativo"]},
     {v:"4.4",data:"14/11/2026",itens:["Nome do grupo maior e em negrito em cada alerta de importância"]},
@@ -1900,7 +1939,11 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   let numPre=false;
-  $("varr-num-ok").addEventListener("click",()=>{ if(!S.canWrite) return; const n=$("varr-num").value.trim(); salvaVarr({numero:n}); salvoOk($("varr-num-ok")); });
+  function fmtTel(n){ let d=String(n||"").replace(/\D/g,""); if(d.length>11&&d.startsWith("55")) d=d.slice(2);
+    if(d.length===11) return "("+d.slice(0,2)+") "+d.slice(2,7)+"-"+d.slice(7); if(d.length===10) return "("+d.slice(0,2)+") "+d.slice(2,6)+"-"+d.slice(6); return n||""; }
+  $("varr-num-ed").addEventListener("click",()=>{ const b=$("varr-num-box"), ab=b.hidden; b.hidden=!ab; $("varr-num-ed").textContent=ab?"Fechar":"Alterar"; if(ab) $("varr-num").focus(); });
+  $("varr-num-ok").addEventListener("click",()=>{ if(!S.canWrite) return; const n=$("varr-num").value.trim(); salvaVarr({numero:n}); salvoOk($("varr-num-ok"));
+    $("varr-num-show").textContent=fmtTel(n)||"Não informado"; setTimeout(()=>{ $("varr-num-box").hidden=true; $("varr-num-ed").textContent="Alterar"; },700); });
 
   function renderScan(){
     const v=S.varredura||{}, m=S.meta||{}, sc=$("scan"); if(!sc) return;
@@ -1929,24 +1972,23 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const v=S.varredura||{}, on=!!v.ativa, m=S.meta||{};
     if(!numPre && (v.numero || S.dbPronto || S.demo)){ $("varr-num").value=v.numero||""; numPre=true; }
     $("varr-tg").setAttribute("aria-checked",on?"true":"false");
-    const conectado=!!m.conectado;
-    $("varr-sub").textContent="";
-    if(!on) $("varr-sub").textContent="Desativado · nada é lido";
-    else if(conectado){ const c=el("span","pn-conn","WhatsApp Business conectado"); $("varr-sub").appendChild(c); }
-    else $("varr-sub").textContent="Ativado · aguardando conexão";
+    const conectado=!!m.conectado, num=m.numero||v.numero;
+    $("varr-num-show").textContent=fmtTel(num)||"Não informado";
+    $("varr-sub").textContent=!on?"Desligado · nada é lido":"Ligado · de hora em hora";
     const P=$("varr-proc"); P.style.display=on?"block":"none"; P.textContent=""; if(!on) return;
-    const passo=(estado,tit,sub)=>{ const r=el("div","pn-proc "+estado); r.appendChild(el("i",null,estado==="ok"?"✓":estado==="wait"?"…":"")); const t=el("div"); t.appendChild(el("b",null,tit)); if(sub) t.appendChild(el("span",null,sub)); r.appendChild(t); P.appendChild(r); };
-    passo("ok","Varredura ativada", v.ativadaEm?"desde "+fmt(v.ativadaEm):"");
-    if(S.ponteSt) passo("ok","Ponte oficial ao vivo (conversas individuais)", S.ponteSt.mensagens+" mensagens hoje · "+S.ponteSt.importantes+" importantes · 24h, sem notebook");
-    passo(conectado?"ok":"wait", conectado?"WhatsApp Business conectado":(S.ponteSt?"Grupos: aguardando o WhatsApp Web":"Conectando ao WhatsApp Business"),
-      conectado?(((m.numero||v.numero)?(m.numero||v.numero)+" · ":"")+"linkado pelo WhatsApp Web"):(v.numero?"Número "+v.numero+". ":"")+"No notebook, escaneie o QR do WhatsApp Web com o celular (WhatsApp Business → Dispositivos conectados → Conectar). Na primeira leitura a conexão aparece aqui.");
-    passo(m.ultimaVarredura?"ok":(conectado?"wait":""), m.ultimaVarredura?"Última varredura "+fmt(m.ultimaVarredura):"Primeira varredura",
-      m.ultimaVarredura?((m.conversasLidas!=null?m.conversasLidas+" conversas · ":"")+(m.mantidasNaoLidas!=null?m.mantidasNaoLidas+" mantidas como não lidas":"")):"Vai começar assim que a conexão estiver ok.");
-    const box=el("div","pn-drill-box");
-    box.appendChild(el("b",null,"Regra da varredura")); 
-    const u=el("ul","pn-list"); u.style.margin="6px 0 0";
-    ["Marco como lido tudo o que não importa.","Ficam NÃO LIDAS: mensagens de VIP, as que batem com critérios aprovados e toda menção a você (@).","Essas vão para Importantes e, se pedirem resposta, para a Agenda.","Nunca respondo, nunca abro links nem anexos."].forEach(t=>u.appendChild(el("li",null,t)));
-    box.appendChild(u); P.appendChild(box);
+    const sec=el("div","pn-set"); sec.appendChild(el("div","pn-set-t","Conexões")); const g=el("div","pn-set-g"); sec.appendChild(g); P.appendChild(sec);
+    const linha=(cor,icone,tit,sub,st,stCls)=>{ const r=el("div","pn-set-r"); const ic=el("span","pn-set-ic "+cor); ic.appendChild(ico(icone)); r.appendChild(ic);
+      const x=el("div","pn-set-x"); x.appendChild(el("b",null,tit)); if(sub) x.appendChild(el("span",null,sub)); r.appendChild(x);
+      if(st) r.appendChild(el("span","pn-set-st "+(stCls||""),st)); g.appendChild(r); };
+    if(S.ponteSt) linha("g","bolt","Conversas individuais", S.ponteSt.mensagens+" mensagens hoje · "+S.ponteSt.importantes+" importantes","Ao vivo","ok");
+    linha("b","chat","Grupos", conectado?"Pelo WhatsApp Web":(S.ponteSt?"Aguardando o WhatsApp Web":"Escaneie o QR em WhatsApp Business → Dispositivos conectados"), conectado?"Conectado":"Aguardando", conectado?"ok":"wait");
+    linha("o","clock","Última varredura", m.ultimaVarredura?fmt(m.ultimaVarredura)+(m.conversasLidas!=null?" · "+m.conversasLidas+(m.conversasLidas===1?" conversa":" conversas"):"")+(m.mantidasNaoLidas?" · "+m.mantidasNaoLidas+" não lidas":""):"Começa assim que a conexão estiver ok",
+      m.ultimaVarredura?haQuanto(m.ultimaVarredura):"", m.ultimaVarredura?"":"wait");
+    const d=el("details","pn-set-rule"); d.appendChild(el("summary",null,"Como a varredura decide"));
+    const u=el("ul");
+    ["Marco como lido tudo o que não importa.","Ficam não lidas: VIPs, critérios aprovados e menções a você (@).","Essas vão para Importantes e, se pedirem resposta, para a Agenda.","Nunca respondo, nunca abro links nem anexos."].forEach(t=>u.appendChild(el("li",null,t)));
+    d.appendChild(u); P.appendChild(d);
+    if(v.ativadaEm) P.appendChild(el("p","pn-set-ft","Varredura ativada desde "+fmt(v.ativadaEm)+"."));
   }
 
   /* ---------- calendário (modelo Outlook) ---------- */
