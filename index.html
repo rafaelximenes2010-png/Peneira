@@ -1465,8 +1465,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.1";
+  const VERSAO="4.2";
   const VERSOES=[
+    {v:"4.2",data:"14/11/2026",itens:["Importar agenda envia todos os contatos para a ponte (cópia de segurança completa)","Alertas na tela bloqueada e tempo de conversa individual ativos na ponte"]},
     {v:"4.1",data:"14/11/2026",itens:["Quem mais fala mostra horas e minutos de conversa de cada pessoa","Gráfico: tempo ativo de cada grupo e maior conversa sem parar","Detalhe do grupo com tempo ativo, maior sequência, conversas e horário de pico; tudo no Excel/PDF"]},
     {v:"4.0",data:"14/11/2026",itens:["Lista VIP: botão Escolher número, buscando nos contatos da agenda","Relatórios → Por grupo: lista de todos os grupos com busca; toque abre tudo do grupo (resumo, quem mais fala, assuntos, metas, compromissos, reclamações, histórico, importantes, PDF/Excel)","Drill-down nos contadores do radar, no Banco de dados (cada tabela abre com busca) e no cadastro dos grupos"]},
     {v:"3.9",data:"13/11/2026",itens:["Importar agenda (.vcf/.csv): telefone dos contatos salvos e dos VIPs no cadastro","A ponte mantém os telefones atualizados pela sincronização oficial da Meta","Política de privacidade 1.1: telefones só de contatos salvos"]},
@@ -1998,7 +1999,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const vipsMud=[]; (S.vips||[]).forEach(v=>{ if(v.tipo==="grupo") return; const c=porNome.get(norm(v.nome)) || [...porNome.values()].find(c=>c.tel && norm(c.nome).startsWith(norm(v.nome)+" ")); if(c&&c.tel&&v.tel!==c.tel){ v.tel=c.tel; vipsTel++; vipsMud.push(v); } });
     if(S.demo) demoSave();
     else if(S.db && S.canWrite!==false){ st.textContent="Salvando…"; for(const c of mudados){ const {id,...d}=c; try{ await S.db.doc("contatos/"+id).set(d); }catch(e){} } for(const v of vipsMud){ try{ await S.db.doc("vips/"+v.id).update({tel:v.tel}); }catch(e){} } }
-    if(ponte&&ponte.url){ try{ await ponteReq("/sync",{method:"POST",body:JSON.stringify({contatos:mudados,vips:vipsMud})}); }catch(e){} }
+    if(ponte&&ponte.url){ st.textContent="Enviando para a ponte…"; const todos=(S.contatos||[]).filter(c=>c.tel); try{ for(let i=0;i<todos.length;i+=1500) await ponteReq("/sync",{method:"POST",body:JSON.stringify({contatos:todos.slice(i,i+1500)})}); if(vipsMud.length) await ponteReq("/sync",{method:"POST",body:JSON.stringify({vips:vipsMud})}); }catch(e){} }
     render();
     st.textContent="✓ "+lista.length+" contatos com telefone lidos · "+novos+" novos · "+atual+" atualizados · "+vipsTel+" VIPs com número.";
   }
