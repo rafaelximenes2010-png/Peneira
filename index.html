@@ -439,6 +439,47 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-sug button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--border);background:none;color:var(--ink);font:inherit;padding:10px 12px;cursor:pointer}
 .pn-sug button:last-child{border-bottom:0}
 .pn-sug button .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:700;background:var(--accent-soft);color:var(--accent);flex:none}
+/* ===== v4.6 · scanner no padrão dos apps de segurança (Norton, Bitdefender, Malwarebytes, Avast, Kaspersky) ===== */
+.pn{overflow-x:clip}
+.pn::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:var(--bg);z-index:60;pointer-events:none}
+#varr-card{padding:22px 18px 18px}
+.pn-scan{display:flex;flex-direction:column;align-items:center;gap:0;margin:0 0 18px;text-align:center}
+.pn-scan-ring{width:176px;height:176px;margin:2px auto 16px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--rd,#34c759) 10%,transparent) 0,transparent 70%)}
+.pn-scan-ring .grd{fill:none;stroke:color-mix(in srgb,var(--rd,#34c759) 22%,transparent);stroke-width:.6}
+.pn-scan-ring .trk{stroke:color-mix(in srgb,var(--rd,#34c759) 14%,var(--surface-2));stroke-width:5}
+.pn-scan-ring .prg{stroke:var(--rd,#34c759);stroke-width:5}
+.pn-scan .pn-scan-radar,.pn-scan.ok .pn-scan-radar,.pn-scan.espera .pn-scan-radar,.pn-scan.aovivo .pn-scan-radar,.pn-scan.ativo .pn-scan-radar,.pn-scan.pedida .pn-scan-radar{
+  inset:12px;opacity:1;color:var(--rd,#34c759);animation:pnRadar 3s linear infinite;
+  background:conic-gradient(from 0deg,transparent 0 260deg,color-mix(in srgb,var(--rd,#34c759) 10%,transparent) 300deg,color-mix(in srgb,var(--rd,#34c759) 55%,transparent) 360deg)}
+.pn-scan .pn-scan-radar::after{opacity:.95;width:2px;box-shadow:0 0 10px currentColor}
+.pn-scan.ativo{--rd:#34c759} .pn-scan.ativo .pn-scan-radar{animation-duration:1.2s}
+.pn-scan.pedida{--rd:#0a84ff} .pn-scan.pedida .pn-scan-radar{animation-duration:.9s}
+.pn-scan.velho{--rd:#ff9f0a}
+.pn-scan:not(.ok):not(.aovivo):not(.ativo):not(.pedida):not(.espera){--rd:#8e8e93}
+.pn-scan .pn-scan-ring,.pn-scan.aovivo .pn-scan-ring,.pn-scan.pedida .pn-scan-ring,.pn-scan.ativo .pn-scan-ring{filter:drop-shadow(0 0 18px color-mix(in srgb,var(--rd,#34c759) 30%,transparent))}
+.pn-scan-c{gap:8px;padding-top:4px}
+.pn-scan-c b,.pn-scan.aovivo .pn-scan-c b{width:auto;height:auto;background:none;box-shadow:none;animation:none;font-size:30px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center}
+.pn-scan-c b svg{transform:none;width:38px;height:38px;color:var(--rd,#34c759);stroke-width:2.6}
+.pn-scan-c span,.pn-scan.pedida #scan-lbl{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--rd,#34c759)}
+.pn-scan-info{align-items:center;gap:6px;width:100%}
+.pn-scan-info>b{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.pn-scan-info>span{font-size:13px;color:var(--ink-3)}
+.pn-scan-ult{display:inline-flex;align-items:center;gap:7px;border:0;background:color-mix(in srgb,var(--rd,#34c759) 12%,transparent);color:var(--ink-2);
+  border-radius:999px;padding:6px 12px;font:500 13.5px var(--font-ui);font-variant-numeric:tabular-nums;cursor:pointer;box-shadow:none;margin:0}
+.pn-scan-ult i{width:8px;height:8px;border-radius:50%;background:#34c759;animation:pnPing 1.8s ease-out infinite}
+.pn-scan-ult.am i{background:#ff9f0a} .pn-scan-ult.ve i{background:#ff453a}
+.pn-scan-ult b{color:var(--ink);font-weight:700}
+.pn-scan-cont{display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:100%;margin:18px 0 16px;padding:14px 0;
+  border-top:.5px solid var(--border);border-bottom:.5px solid var(--border)}
+.pn-scan-cont button{all:unset;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pn-scan-cont button+button{border-left:.5px solid var(--border)}
+.pn-scan-cont b{font-size:28px;font-weight:700;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pn-scan-cont button:last-child b{color:var(--rd,#34c759)}
+.pn-scan-cont span{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.pn-scan-btn{width:100%;padding:15px;font-size:17px;font-weight:700;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.pn-scan-nx{margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+.pn-hero p#ultima{opacity:.85}
 </style>
 </head>
 <body>
@@ -505,19 +546,18 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     <div class="pn-hero" id="hero">
       <div>
         <h1 id="hero-tit">Olá</h1>
-        <p id="ultima">Aguardando a primeira varredura do seu WhatsApp.</p>
+        <p id="ultima"></p>
         <div class="pn-hero-l" id="hero-l"></div>
       </div>
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
     </div>
 
-    <button class="pn-btn pri" type="button" id="varr-agora" style="width:100%;padding:14px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px"><span data-ico="refresh"></span>Varrer agora</button>
-    <div class="pn-meta" id="varr-agora-st" style="margin:6px 0 8px;text-align:center">Além da varredura automática de hora em hora.</div>
-    <button type="button" class="pn-ult" id="ult-ind"><i></i><span id="ult-txt">Buscando a última varredura…</span></button>
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
       <div class="pn-scan" id="scan">
         <div class="pn-scan-ring" id="scan-ring">
           <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="38" class="grd"/><circle cx="60" cy="60" r="22" class="grd"/>
+            <line x1="60" y1="14" x2="60" y2="106" class="grd"/><line x1="14" y1="60" x2="106" y2="60" class="grd"/>
             <circle cx="60" cy="60" r="52" class="trk"/>
             <circle cx="60" cy="60" r="52" class="prg" id="scan-prg"/>
           </svg>
@@ -526,9 +566,16 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         </div>
         <div class="pn-scan-info">
           <b id="scan-tit">Varredura pronta</b>
+          <button type="button" class="pn-scan-ult" id="ult-ind"><i></i><span id="ult-txt">Buscando a última varredura…</span></button>
           <span id="scan-sub">Ative para começar</span>
-          <div class="pn-scan-cont"><div><b id="sc-lidas">0</b><span>lidas</span></div><div><b id="sc-mant">0</b><span>não lidas</span></div><div><b id="sc-imp">0</b><span>importantes</span></div></div>
         </div>
+        <div class="pn-scan-cont">
+          <button type="button" data-k="sc-lidas"><b id="sc-lidas">0</b><span>Lidas</span></button>
+          <button type="button" data-k="sc-mant"><b id="sc-mant">0</b><span>Não lidas</span></button>
+          <button type="button" data-k="sc-imp"><b id="sc-imp">0</b><span>Importantes</span></button>
+        </div>
+        <button class="pn-btn pri pn-scan-btn" type="button" id="varr-agora"><span data-ico="refresh"></span>Varrer agora</button>
+        <div class="pn-scan-nx" id="varr-agora-st">Automática de hora em hora</div>
       </div>
       <div class="pn-switch">
         <div><b style="font-size:16px">Varrer meu WhatsApp</b><div class="pn-meta" id="varr-sub">Desativado</div></div>
@@ -1176,9 +1223,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 
   function render(){
     const m=S.meta; try{ renderUlt(); }catch(e){}
-    if(S.ponteSt && !(m && m.ultimaVarredura)) $("ultima").textContent="Ponte oficial ao vivo · "+S.ponteSt.mensagens+" mensagens hoje, "+S.ponteSt.importantes+" importantes.";
-    else if(m && m.ultimaVarredura) $("ultima").textContent = "Última varredura: "+fmt(m.ultimaVarredura)+
-      (m.conversasLidas!=null?" · "+m.conversasLidas+" conversas lidas":"")+(m.favoritadas!=null?" · "+m.favoritadas+" favoritadas":"");
+    $("ultima").textContent=new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}).replace(/^./,c=>c.toUpperCase());
     const pend = S.itens.filter(i=>(i.status||"pendente")==="pendente");
     const alta = pend.filter(i=>i.prioridade==="alta");
     $("k-pend").textContent=pend.length; $("k-alta").textContent=alta.length;
@@ -1492,8 +1537,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.5";
+  const VERSAO="4.6";
   const VERSOES=[
+    {v:"4.6",data:"14/11/2026",itens:["Novo painel de varredura no padrão dos melhores apps de segurança: radar grande centralizado girando sempre (verde em dia, azul quando você pede, laranja se passar de 3h)","Números alinhados em 3 colunas iguais, Varrer agora dentro do painel e horário da próxima varredura automática","Barra do topo fixa e área da hora do iPhone protegida ao rolar"]},
     {v:"4.5",data:"14/11/2026",itens:["Zoom travado: sem zoom por duplo toque ou pinça, visual de app nativo"]},
     {v:"4.4",data:"14/11/2026",itens:["Nome do grupo maior e em negrito em cada alerta de importância"]},
     {v:"4.3",data:"14/11/2026",itens:["Indicador da última varredura no Início: há quanto tempo, horário e conversas (verde até 75 min, amarelo até 3h, vermelho depois); toque para puxar os dados do computador","Central de atualização em Ajustes: versão instalada e disponível, Atualizar agora, aviso azul quando sai versão nova","O celular puxa os dados do computador assim que o app é aberto"]},
@@ -1683,9 +1729,10 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   function renderUlt(){ const b=$("ult-ind"); if(!b) return; const m=S.meta||{}; b.classList.remove("am","ve");
     if(m.emAndamento){ $("ult-txt").innerHTML=""; $("ult-txt").append("Varrendo agora"+(m.progresso!=null?" · "+m.progresso+"%":"")+"…"); return; }
     if(!m.ultimaVarredura){ $("ult-txt").textContent="Ainda sem varredura dos grupos"; b.classList.add("am"); return; }
-    const min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>180) b.classList.add("ve"); else if(min>75) b.classList.add("am");
+    const min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>180) b.classList.add("ve"); else if(min>75) b.classList.add("am"); const sc=$("scan"); if(sc) sc.classList.toggle("velho",min>180);
+    const nx=$("varr-agora-st"); if(nx && !(S.pedidaAte&&Date.now()<S.pedidaAte) && !nx.dataset.fixo){ const d=new Date(); if(d.getMinutes()>=19) d.setHours(d.getHours()+1); d.setMinutes(19,0,0); nx.textContent="Automática de hora em hora · próxima às "+pad2(d.getHours())+":19"; }
     const t=$("ult-txt"); t.textContent=""; t.append("Última varredura "); t.appendChild(el("b",null,haQuanto(m.ultimaVarredura)));
-    t.append(" · "+fmt(m.ultimaVarredura)+(m.conversasLidas!=null?" · "+m.conversasLidas+" conversas":""));
+    const dU=new Date(m.ultimaVarredura), hoje=dU.toDateString()===new Date().toDateString(); t.append(" · "+(hoje?"às "+hhmm(m.ultimaVarredura):fmt(m.ultimaVarredura)));
     const ud=$("upd-dados"); if(ud) ud.textContent=(ponte&&ponte.vistoEm)?haQuanto(ponte.vistoEm)+" ("+hhmm(ponte.vistoEm)+")":(ponte&&ponte.url?"aguardando":"ponte não conectada"); }
   $("ult-ind").addEventListener("click",async()=>{ $("ult-txt").textContent="Puxando dados do computador…"; try{ if(ponte){ ponte.dadosEm=""; } await ponteSync(); }catch(e){} renderUlt(); });
   setInterval(renderUlt,30000);
@@ -1827,7 +1874,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   /* ---------- Varrer agora: dispara a tarefa agendada na hora ---------- */
   const TRIG_VARR="trig_01CEV7D2jx9WN6Mmwf6WKzUW";
   $("varr-agora").addEventListener("click",async()=>{
-    const b=$("varr-agora"), st=$("varr-agora-st");
+    const b=$("varr-agora"), st=$("varr-agora-st"); st.dataset.fixo="1"; setTimeout(()=>{ delete st.dataset.fixo; },120000);
     if(!S.canWrite) return;
     if(S.meta&&S.meta.emAndamento){ st.textContent="Já tem uma varredura em andamento."; return; }
     const marca=(msg,ms)=>{ ms=ms||90000; S.pedidaAte=Date.now()+ms; S.pedidaMsg=msg; render(); setTimeout(()=>{ try{ render(); }catch(e){} },ms+300); };
@@ -1866,8 +1913,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     if(!on && !S.ponteSt){ $("scan-pct").textContent="—"; $("scan-lbl").textContent="desligado"; $("scan-tit").textContent="Varredura desligada"; $("scan-sub").textContent="Ative abaixo para começar"; }
     else if(rodando && on){ $("scan-pct").textContent=pct+"%"; $("scan-lbl").textContent="varrendo"; $("scan-tit").textContent="Varrendo seu WhatsApp…";
       $("scan-sub").textContent=(m.conversaAtual?"Agora: "+m.conversaAtual+" · ":"")+(m.feitas!=null&&m.total?m.feitas+" de "+m.total+" conversas":"analisando conversas"); }
-    else if(m.ultimaVarredura && on){ $("scan-pct").textContent="✓"; $("scan-lbl").textContent="protegido"; $("scan-tit").textContent="Tudo peneirado";
-      $("scan-sub").textContent="Última varredura "+fmt(m.ultimaVarredura)+(m.minutosEconomizados?" · "+m.minutosEconomizados+" min economizados":""); }
+    else if(m.ultimaVarredura && on){ $("scan-pct").textContent=""; $("scan-pct").appendChild(ico("check")); $("scan-lbl").textContent="Protegido"; $("scan-tit").textContent="Tudo peneirado";
+      $("scan-sub").textContent=m.minutosEconomizados?"≈ "+m.minutosEconomizados+" min economizados na última varredura":"Grupos e conversas em dia"; }
     else if(S.ponteSt){ const ps=S.ponteSt; sc.classList.add("ok","aovivo"); sc.classList.remove("espera"); prg.style.strokeDashoffset="0";
       $("scan-pct").textContent="●"; $("scan-lbl").textContent="ao vivo"; $("scan-tit").textContent="Ponte oficial ao vivo";
       $("scan-sub").textContent=ps.mensagens+" mensagens hoje · "+ps.importantes+" importantes"+(ps.ultimaMensagem?" · última "+fmt(ps.ultimaMensagem):""); }
