@@ -473,6 +473,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
     </div>
 
+    <button class="pn-btn pri" type="button" id="varr-agora" style="width:100%;padding:14px;font-size:17px;display:flex;align-items:center;justify-content:center;gap:8px"><span data-ico="refresh"></span>Varrer agora</button>
+    <div class="pn-meta" id="varr-agora-st" style="margin:6px 0 14px;text-align:center">Além da varredura automática de hora em hora.</div>
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
       <div class="pn-scan" id="scan">
         <div class="pn-scan-ring" id="scan-ring">
@@ -647,7 +649,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <p class="pn-meta" style="margin:0 0 10px">Mensagem dessas pessoas ou grupos vira prioridade alta, fica no topo e toca um alerta.</p>
       <button class="pn-btn pri" type="button" id="vip-agenda" style="width:100%;padding:11px;margin-bottom:10px">Escolher na agenda do celular</button>
       <p class="pn-meta" id="vip-agenda-aviso" style="display:none;margin:-4px 0 10px"></p>
-      <div id="vip-lista"></div>
+      <button class="pn-btn" type="button" id="vip-abrir" aria-expanded="false" style="width:100%;margin-bottom:10px">Ver lista VIP</button>
+      <div id="vip-lista" hidden style="max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;border:1px solid var(--border);border-radius:12px;padding:0 10px;margin-bottom:10px"></div>
       <form class="pn-form" id="vip-form" style="margin-top:12px">
         <div style="display:flex;gap:6px">
           <input id="vip-nome" placeholder="Buscar nos contatos do WhatsApp" maxlength="60" required style="flex:1" autocomplete="off">
@@ -1240,8 +1243,10 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   $("vip-form").addEventListener("submit",e=>{ e.preventDefault(); const nome=$("vip-nome").value.trim(); if(!nome||!S.canWrite) return;
     if(S.vips.some(v=>norm(v.nome)===norm(nome))){ aviso("Esse nome já está na lista VIP."); return; }
     salvaVip("add",{nome,tipo:$("vip-tipo").value,som:true,ordem:S.vips.length+1}); $("vip-nome").value=""; });
+  $("vip-abrir").addEventListener("click",()=>{ const L=$("vip-lista"); L.hidden=!L.hidden; if(!L.hidden) L.scrollTop=0; renderVips(); });
   function renderVips(){
     const L=$("vip-lista"); L.textContent="";
+    { const ab=!L.hidden, bt=$("vip-abrir"); bt.textContent=ab?"Fechar lista ▴":"Ver lista VIP ("+S.vips.length+") ▾"; bt.setAttribute("aria-expanded",ab?"true":"false"); }
     if(!S.vips.length){ L.appendChild(el("div","pn-meta","Nenhum VIP ainda.")); return; }
     S.vips.slice().sort((a,b)=>(a.ordem??99)-(b.ordem??99)).forEach(v=>{
       const r=el("div","pn-vip"); r.dataset.id=v.id; r.dataset.nome=v.nome; r.style.cursor="pointer"; const n=el("b",null,v.nome); r.appendChild(n);
@@ -1378,9 +1383,11 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="2.10";
+  const VERSAO="3.2";
   const VERSOES=[
-    {v:"2.10",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
+    {v:"3.2",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
+    {v:"3.1",data:"13/11/2026",itens:["Varrer agora logo no topo do Início","Lista VIP em Ajustes abre num botão, com barra de rolagem"]},
+    {v:"3.0",data:"13/11/2026",itens:["Botão Varrer agora no Início: pede uma varredura na hora, além da automática de hora em hora"]},
     {v:"2.9",data:"13/11/2026",itens:["Ponte oficial (API da Meta): conversas individuais em tempo real, 24h, sem Chrome","Modelo híbrido: grupos seguem na varredura de hora em hora","Dá baixa sozinho quando você responde pelo WhatsApp"]},
     {v:"2.8",data:"13/11/2026",itens:["Varredura automática de hora em hora, 24 horas por dia","De madrugada (23h–5h) só avisa VIP urgente ou golpe"]},
     {v:"2.7",data:"13/11/2026",itens:["Adicionar VIP buscando nos contatos e grupos do WhatsApp"]},
@@ -1659,6 +1666,28 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     try{ await S.db.doc("config/varredura").set(novo); }catch(e){ aviso("Não consegui salvar agora."); }
   }
   $("varr-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.varredura&&S.varredura.ativa); salvaVarr({ativa:on, [on?"ativadaEm":"desativadaEm"]:new Date().toISOString()}); });
+
+  /* ---------- Varrer agora: dispara a tarefa agendada na hora ---------- */
+  const TRIG_VARR="trig_01CEV7D2jx9WN6Mmwf6WKzUW";
+  $("varr-agora").addEventListener("click",async()=>{
+    const b=$("varr-agora"), st=$("varr-agora-st");
+    if(!S.canWrite) return;
+    if(S.meta&&S.meta.emAndamento){ st.textContent="Já tem uma varredura em andamento."; return; }
+    let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
+    if(!mcp){ st.textContent="Disponível abrindo o Peneira logado no Claude."; return; }
+    b.disabled=true; st.textContent="Pedindo a varredura…";
+    try{
+      await mcp.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIG_VARR,text:"Disparo manual pelo botão Varrer agora do app Peneira."});
+      const h=new Date(); st.textContent="Varredura pedida às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+". O anel acima mostra o progresso em instantes."; salvoOk(b,"✓ Pedida");
+    }catch(e){
+      const c=e&&e.code;
+      st.textContent = (c==="server_not_connected"||c==="selection_required") ? "Ative o conector Claude Code Remote no claude.ai (Configurações → Conectores) e toque de novo."
+        : (c==="not_in_manifest"||c==="consent_required"||c==="approval_required") ? "Permita o acesso ao Claude Code Remote quando o app pedir e toque de novo."
+        : c==="blocked_by_policy" ? "Sua organização bloqueia esse disparo."
+        : "Não consegui pedir agora. Tente de novo em instantes.";
+    }
+    setTimeout(()=>{ b.disabled=false; },30000);
+  });
 
   let numPre=false;
   $("varr-num-ok").addEventListener("click",()=>{ if(!S.canWrite) return; const n=$("varr-num").value.trim(); salvaVarr({numero:n}); salvoOk($("varr-num-ok")); });
