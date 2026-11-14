@@ -515,15 +515,15 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-scan-ring .web .blip{fill:var(--rd,#34c759);opacity:0;animation:pnBlip 3s ease-out infinite}
 @keyframes pnBlip{0%,60%{opacity:0}66%{opacity:.95}100%{opacity:0}}
 .pn-scan-ring{background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--rd,#34c759) 14%,transparent) 0,color-mix(in srgb,var(--rd,#34c759) 4%,transparent) 62%,transparent 72%)}
-.pn .pn-scan-btn,.pn .pn-scan-btn.pri{background:linear-gradient(180deg,#3d95ff 0%,#0a6cf0 100%);border:0;color:#fff;letter-spacing:-.01em;
-  box-shadow:0 10px 24px -10px rgba(10,108,240,.75),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.18);min-height:54px}
+.pn .pn-scan-btn,.pn .pn-scan-btn.pri{background:linear-gradient(180deg,#3fd47a 0%,#1fa85a 100%);border:0;color:#fff;letter-spacing:-.01em;
+  box-shadow:0 10px 24px -10px rgba(31,168,90,.75),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.18);min-height:54px}
 .pn .pn-scan-btn .pn-ico svg{width:20px;height:20px;stroke-width:2.4}
-.pn .pn-scan-btn:active,.pn .pn-scan-btn.pn-press{filter:brightness(.9);box-shadow:0 4px 12px -6px rgba(10,108,240,.7),inset 0 1px 0 rgba(255,255,255,.2)}
+.pn .pn-scan-btn:active,.pn .pn-scan-btn.pn-press{filter:brightness(.9);box-shadow:0 4px 12px -6px rgba(31,168,90,.7),inset 0 1px 0 rgba(255,255,255,.2)}
 .pn .pn-scan-btn:disabled{opacity:.75}
 .pn .pn-scan-btn.gira .pn-ico svg{animation:pnRadar 1s linear infinite}
 .pn-seg{display:flex;flex:1;background:var(--surface);border-radius:10px;padding:3px;gap:2px}
 .pn-seg button{flex:1;border:0;background:none;min-height:34px;border-radius:8px;font:600 14px var(--font-ui);color:var(--ink-2,var(--ink-3));cursor:pointer;font-variant-numeric:tabular-nums}
-.pn-seg button.on{background:#0a84ff;color:#fff;box-shadow:0 2px 6px -2px rgba(10,132,255,.6)}
+.pn-seg button.on{background:#30b566;color:#fff;box-shadow:0 2px 6px -2px rgba(48,181,102,.6)}
 .pn-seg button:disabled{opacity:.5}
 </style>
 </head>
@@ -1435,7 +1435,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   $("vip-testar").addEventListener("click",toca);
   /* pingo d'água (sintetizado, sem arquivo) */
   function pingo(vol){
-    try{ destrava(); if(!ac) return; vol=vol||.5; const t=ac.currentTime+.01, out=ac.createGain(); out.gain.value=1; out.connect(ac.destination);
+    try{ destrava(); if(!ac||ac.state!=="running") return false; vol=vol||.5; const t=ac.currentTime+.01, out=ac.createGain(); out.gain.value=1; out.connect(ac.destination);
       const gota=(t0,f0,f1,dur,v)=>{ const o=ac.createOscillator(), g=ac.createGain(); o.type="sine";
         o.frequency.setValueAtTime(f0,t0); o.frequency.exponentialRampToValueAtTime(f1,t0+dur*.4);
         g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(v,t0+.005); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
@@ -1444,9 +1444,17 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       gota(t+.004,480,1450,.17,vol);       // o "plic"
       gota(t+.12,640,1800,.11,vol*.3);     // respingo
       gota(t+.22,820,2200,.07,vol*.1);     // eco
-    }catch(e){}
+      return true;
+    }catch(e){ return false; }
   }
   window.pnPingo=pingo;
+  /* abertura: o iPhone só libera som depois do 1º toque. Se o pingo da abertura ficou mudo,
+     ele toca no primeiro toque na tela (até 20 s depois de abrir). */
+  window.pnPingoAbertura=function(){ if(window.pnPingou) return; if(pingo(.45)){ window.pnPingou=true; return; }
+    const aoTocar=()=>{ if(window.pnPingou) return; destrava(); const vai=()=>{ if(!window.pnPingou && pingo(.45)) window.pnPingou=true; };
+      try{ ac&&ac.resume?ac.resume().then(vai,vai):vai(); }catch(e){ vai(); } };
+    document.addEventListener("pointerdown",aoTocar,{passive:true,capture:true}); document.addEventListener("touchend",aoTocar,{passive:true,capture:true});
+    setTimeout(()=>{ document.removeEventListener("pointerdown",aoTocar,true); document.removeEventListener("touchend",aoTocar,true); },20000); };
   async function salvaVip(op,v){
     if(S.demo){ if(op==="add") S.vips.push({id:"v"+Date.now(),...v}); else if(op==="del") S.vips=S.vips.filter(x=>x.id!==v.id); else { const i=S.vips.findIndex(x=>x.id===v.id); if(i>=0) S.vips[i]={...S.vips[i],...v.patch}; } demoSave(); render(); return; }
     if(!S.db) return;
@@ -1615,8 +1623,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.9";
+  const VERSAO="4.9.1";
   const VERSOES=[
+    {v:"4.9.1",data:"14/11/2026",itens:["Varrer agora volta ao verde","Pingo d'água na abertura: se o iPhone segurar o som, ele toca no primeiro toque na tela"]},
     {v:"4.9",data:"14/11/2026",itens:["Som de pingo d'água na abertura e ao tocar Varrer agora","Radar com teia completa: anéis, raios, marcações e pontos detectados","Botão Varrer agora azul, com ícone girando ao pedir","Frequência da varredura ajustável: 1h, 2h, 3h, 4h ou 6h (padrão: a cada 2 horas)"]},
     {v:"4.8",data:"14/11/2026",itens:["Novidades mostram só as 3 últimas versões; o histórico completo continua guardado"]},
     {v:"4.7",data:"14/11/2026",itens:["Início reorganizado abaixo do Varrer agora: lista agrupada no estilo do iPhone (Varredura e Conexões), número formatado com botão Alterar e status em selos (Ao vivo, Conectado)","Regra da varredura recolhida em \"Como a varredura decide\""]},
@@ -2748,10 +2757,11 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   /* ---------- tela de entrada: letras caem na peneira, ela sacode e o nome passa ---------- */
   (function(){
     const sp=$("splash"), st=$("sp-stage");
-    let visto=false, pingou=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
+    let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
     const calmo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>{ sp.remove(); window.dispatchEvent(new Event("pn-splash-fim")); },600); }
-    $("sp-pular").addEventListener("click",()=>{ if(!pingou){ pingou=true; window.pnPingo&&window.pnPingo(.45); } fecha(); }); sp.addEventListener("click",fecha);
+    const pinga=()=>{ window.pnPingoAbertura&&window.pnPingoAbertura(); };
+    $("sp-pular").addEventListener("click",()=>{ pinga(); fecha(); }); sp.addEventListener("click",()=>{ pinga(); fecha(); });
     if(visto || !st.animate){ sp.remove(); setTimeout(()=>window.dispatchEvent(new Event("pn-splash-fim")),0); return; }
     const W=st.clientWidth, H=st.clientHeight, k=calmo?.35:1;
     const rs=st.getBoundingClientRect(), rv=st.querySelector(".pn-sp-sieve").getBoundingClientRect();
@@ -2796,7 +2806,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         {transform:`translate(${tx}px,${ty-fs*.06}px) scale(.98)`,opacity:1,offset:.9},
         {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],{duration:1050*k,fill:"forwards",easing:"cubic-bezier(.35,.05,.4,1)"}), T_PASSA+i*150*k);
     });
-    setTimeout(()=>{ if(!pingou){ pingou=true; window.pnPingo&&window.pnPingo(.45); } }, T_PASSA+(nome.length*150+850)*k);
+    setTimeout(pinga, T_PASSA+(nome.length*150+850)*k);
     setTimeout(()=>$("sp-tag").classList.add("on"), T_PASSA+1900*k);
     setTimeout(fecha, T_PASSA+3200*k);
   })();
