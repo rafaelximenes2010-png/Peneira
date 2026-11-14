@@ -64,8 +64,29 @@ async function recebe(req, env, ctx) {
   return new Response("ok"); // responde rápido; a Meta reenvia se demorar
 }
 
+// Formato da Kapso (webhooks "kapso", v2): { message, conversation } ou lote { batch:true, data:[...] }
+async function processaKapso(dados, env, cfg) {
+  const lista = Array.isArray(dados.data) ? dados.data : [dados];
+  for (const ev of lista) {
+    const m = ev && ev.message; if (!m || !m.id) continue;
+    const conv = ev.conversation || {};
+    const k = m.kapso || {};
+    const tel = soDig(m.from || conv.phone_number || "");
+    if (k.direction === "outbound") {
+      // eco do que o Rafael mandou pelo app: mede tempo de resposta
+      if (tel) await registraResposta({ to: tel, timestamp: m.timestamp }, env);
+      continue;
+    }
+    if (!tel) continue;
+    const meta = { id: m.id, from: tel, timestamp: m.timestamp, type: m.type || "text", text: m.text || { body: k.content || "" } };
+    if (m[m.type] && m.type !== "text") meta[m.type] = { caption: (m[m.type] || {}).caption || "" };
+    await guardaRecebida(meta, { [tel]: conv.contact_name || "" }, cfg, env);
+  }
+}
+
 async function processa(dados, env) {
   const cfg = (await env.KV.get("cfg", "json")) || { vips: [], criterios: [] };
+  if (!dados.entry && (dados.message || Array.isArray(dados.data))) return processaKapso(dados, env, cfg);
   for (const entry of dados.entry || []) {
     for (const ch of entry.changes || []) {
       const v = ch.value || {};
