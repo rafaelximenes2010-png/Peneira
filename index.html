@@ -620,6 +620,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <div class="pn-h2" style="margin-top:4px">Conversas individuais · quem mais escreve</div>
       <p class="pn-meta" style="margin:-4px 0 10px" id="fal-meta">Dados da ponte oficial, mês atual.</p>
       <div class="pn-card" id="fal-ind"></div>
+      <div class="pn-h2">Tempo de conversa por grupo</div>
+      <p class="pn-meta" style="margin:-4px 0 10px">Quanto tempo cada grupo ficou ativo e a maior conversa sem parar (mensagens com menos de 15 min entre si).</p>
+      <div class="pn-card" id="fal-tempo"></div>
       <div class="pn-h2">Grupos · mais falantes</div>
       <p class="pn-meta" style="margin:-4px 0 10px">Somando todos os grupos analisados pela varredura.</p>
       <div class="pn-card" id="fal-gr"></div>
@@ -1462,8 +1465,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.0";
+  const VERSAO="4.1";
   const VERSOES=[
+    {v:"4.1",data:"14/11/2026",itens:["Quem mais fala mostra horas e minutos de conversa de cada pessoa","Gráfico: tempo ativo de cada grupo e maior conversa sem parar","Detalhe do grupo com tempo ativo, maior sequência, conversas e horário de pico; tudo no Excel/PDF"]},
     {v:"4.0",data:"14/11/2026",itens:["Lista VIP: botão Escolher número, buscando nos contatos da agenda","Relatórios → Por grupo: lista de todos os grupos com busca; toque abre tudo do grupo (resumo, quem mais fala, assuntos, metas, compromissos, reclamações, histórico, importantes, PDF/Excel)","Drill-down nos contadores do radar, no Banco de dados (cada tabela abre com busca) e no cadastro dos grupos"]},
     {v:"3.9",data:"13/11/2026",itens:["Importar agenda (.vcf/.csv): telefone dos contatos salvos e dos VIPs no cadastro","A ponte mantém os telefones atualizados pela sincronização oficial da Meta","Política de privacidade 1.1: telefones só de contatos salvos"]},
     {v:"3.8",data:"13/11/2026",itens:["Alertas na tela bloqueada (Web Push): VIP, golpe e menções a qualquer hora; o resto das 5h às 23h"]},
@@ -2075,11 +2079,12 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const B=$("drill-b"); B.textContent="";
     const num=(n,l)=>{ const d=el("div","pn-drill-n"); d.appendChild(el("b",null,String(n))); d.appendChild(el("span","pn-meta",l)); B.appendChild(d); };
     num(hist.reduce((a,x)=>a+(x.mensagens||0),0),"mensagens analisadas em "+hist.length+" leitura(s)");
+    const tg=tempoGrupos().find(x=>norm(x.nome)===norm(nome)); if(tg){ const k=el("div","pn-bd"); [[fmtHM(tg.ativo),"tempo ativo"],[fmtHM(tg.maior),"maior conversa sem parar"],[String(tg.sessoes),"conversas"],[r&&r.pico?r.pico:"—","horário de pico"]].forEach(([a,b])=>{ const d=el("div"); d.append(el("b",null,a),el("span",null,b)); k.appendChild(d); }); k.style.margin="8px 0"; B.appendChild(k); }
     B.appendChild(el("div","pn-meta",(g.silenciar?"🔕 Silenciado · ":"")+((S.vips||[]).some(v=>norm(v.nome)===norm(nome))?"⭐ VIP · ":"")+(r?"Última análise "+fmt(r.geradoEm):"Ainda sem análise")));
     if(r&&r.resumo) B.appendChild(el("p","pn-drill-box",r.resumo));
-    const ps={}; hist.forEach(h=>(h.participantes||[]).forEach(p=>{ const k=norm(p.nome); ps[k]=ps[k]||{nome:p.nome,msgs:0,lider:false}; ps[k].msgs+=p.msgs||0; if(p.papel) ps[k].lider=true; }));
+    const ps={}; hist.forEach(h=>(h.participantes||[]).forEach(p=>{ const k=norm(p.nome); ps[k]=ps[k]||{nome:p.nome,msgs:0,min:null,lider:false}; ps[k].msgs+=p.msgs||0; if(p.min!=null) ps[k].min=(ps[k].min||0)+p.min; if(p.papel) ps[k].lider=true; }));
     const pl=Object.values(ps).sort((a,b)=>b.msgs-a.msgs);
-    if(pl.length){ B.appendChild(el("div","pn-ag-g","Quem mais fala")); const bx=el("div"); barras(bx,pl.map(p=>({nome:p.nome+(p.lider?" · Líder":""),msgs:p.msgs})),"",x=>{ const c=(S.contatos||[]).find(c=>norm(c.nome)===norm(x.nome.replace(" · Líder",""))); abreInfo(x.nome, x.msgs+" mensagens neste grupo."+(c&&c.tel?"\nTelefone na agenda: "+c.tel:"")); }); B.appendChild(bx); }
+    if(pl.length){ B.appendChild(el("div","pn-ag-g","Quem mais fala")); const bx=el("div"); barras(bx,pl.map(p=>({nome:p.nome+(p.lider?" · Líder":""),msgs:p.msgs,min:p.min})),"",x=>{ const c=(S.contatos||[]).find(c=>norm(c.nome)===norm(x.nome.replace(" · Líder",""))); abreInfo(x.nome, x.msgs+" mensagens neste grupo."+(c&&c.tel?"\nTelefone na agenda: "+c.tel:"")); }); B.appendChild(bx); }
     TEMAS_G.forEach(([k,t])=>{ const arr=[]; hist.forEach(h=>(h[k]||[]).forEach(x=>arr.push(x))); if(!arr.length) return; B.appendChild(el("div","pn-ag-g",t+" ("+arr.length+")")); const u=el("ul"); arr.slice(0,15).forEach(x=>u.appendChild(el("li",null,typeof x==="string"?x:(x.texto||"")+(x.quem?" — "+x.quem:"")+(x.prazo?" (prazo "+x.prazo+")":"")))); B.appendChild(u); });
     if(pend.length){ B.appendChild(el("div","pn-ag-g","Importantes deste grupo")); pend.slice(0,12).forEach(i=>B.appendChild(itemLinha(i,"importantes"))); }
     if(hist.length>1){ B.appendChild(el("div","pn-ag-g","Histórico de leituras")); hist.forEach(h=>{ const b=el("button","pn-fal"); b.type="button"; b.style.cssText="width:100%;background:none;border:0;border-bottom:1px solid var(--border);color:inherit;text-align:left;cursor:pointer;font:inherit"; b.append(el("span","nm",fmt(h.geradoEm)),el("span","pn-meta",(h.mensagens||0)+" msgs ›")); b.onclick=()=>abreInfo(nome+" · "+fmt(h.geradoEm),h.resumo||"Sem resumo."); B.appendChild(b); }); }
@@ -2161,20 +2166,33 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   /* ---------- quem mais fala + banco de dados ---------- */
   S.falantes=null;
   async function carregaFalantes(){ if(!ponte||!ponte.url) return; try{ S.falantes=await ponteReq("/falantes"); renderFal(); }catch(e){} }
-  function falGrupos(){ const m={}; ultimosPorGrupo().forEach(r=>(r.participantes||[]).forEach(p=>{ const k=norm(p.nome); if(!m[k]) m[k]={nome:p.nome,msgs:0,grupos:new Set(),lider:false}; m[k].msgs+=p.msgs||0; m[k].grupos.add(r.grupo); if(p.papel) m[k].lider=true; }));
+  function falGrupos(){ const m={}; (S.relGrupos||[]).forEach(r=>(r.participantes||[]).forEach(p=>{ const k=norm(p.nome); if(!m[k]) m[k]={nome:p.nome,msgs:0,min:null,grupos:new Set(),lider:false}; m[k].msgs+=p.msgs||0; if(p.min!=null) m[k].min=(m[k].min||0)+p.min; m[k].grupos.add(r.grupo); if(p.papel) m[k].lider=true; }));
     return Object.values(m).map(x=>({...x,grupos:[...x.grupos]})).sort((a,b)=>b.msgs-a.msgs); }
   function barras(box,lista,vazio,extra){ box.textContent=""; if(!lista.length){ box.appendChild(el("div","pn-empty",vazio)); return; }
     const max=Math.max(1,...lista.map(x=>x.msgs)); lista.slice(0,15).forEach((x,i)=>{ const r=el("div","pn-fal"); r.appendChild(el("span","n",String(i+1)));
       const n=el("span","nm",x.nome); n.title=x.nome; r.appendChild(n); const b=el("div","bar"); const ii=el("i"); ii.style.width=Math.max(4,Math.round(100*x.msgs/max))+"%"; b.appendChild(ii); r.appendChild(b);
-      r.appendChild(el("span","q",String(x.msgs))); if(extra) r.onclick=()=>extra(x); box.appendChild(r); }); }
+      const q=el("span","q",String(x.msgs)); if(x.min!=null){ q.textContent=x.msgs+" msgs · "+fmtHM(x.min); q.style.minWidth="104px"; } r.appendChild(q); if(extra){ r.style.cursor="pointer"; r.onclick=()=>extra(x); } box.appendChild(r); }); }
+  function fmtHM(m){ m=Math.round(m||0); if(m<60) return m+" min"; const h=Math.floor(m/60), r=m%60; return h+"h"+(r?" "+String(r).padStart(2,"0")+"min":""); }
+  function tempoGrupos(){ const m={}; (S.relGrupos||[]).forEach(r=>{ const k=norm(r.grupo); if(r.tempoAtivoMin==null) return; m[k]=m[k]||{nome:r.grupo,ativo:0,maior:0,sessoes:0,msgs:0}; m[k].ativo+=r.tempoAtivoMin||0; m[k].maior=Math.max(m[k].maior,r.maiorSequenciaMin||0); m[k].sessoes+=r.sessoes||0; m[k].msgs+=r.mensagens||0; });
+    return Object.values(m).sort((a,b)=>b.ativo-a.ativo); }
+  function graficoTempo(box,lista){ box.textContent=""; if(!lista.length){ box.appendChild(el("div","pn-empty","O tempo de conversa por grupo aparece a partir da próxima varredura (ela passa a medir os horários das mensagens).")); return; }
+    const lg=el("div","pn-meta"); lg.innerHTML='<span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);opacity:.35;margin-right:4px"></span>tempo ativo total &nbsp; <span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:4px"></span>maior conversa sem parar'; lg.style.marginBottom="8px"; box.appendChild(lg);
+    const max=Math.max(1,...lista.map(x=>x.ativo));
+    lista.slice(0,15).forEach(x=>{ const r=el("div"); r.style.cssText="padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer";
+      const t=el("div"); t.style.cssText="display:flex;justify-content:space-between;gap:8px;font-size:13px"; const n=el("b",null,x.nome); n.style.cssText="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"; t.append(n,el("span","pn-meta",fmtHM(x.ativo)+" · maior "+fmtHM(x.maior)));
+      const bar=el("div"); bar.style.cssText="position:relative;height:12px;border-radius:99px;background:var(--surface-2);margin-top:5px;overflow:hidden";
+      const a=el("i"); a.style.cssText="position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent);opacity:.35;width:"+Math.max(3,100*x.ativo/max)+"%";
+      const b=el("i"); b.style.cssText="position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--accent);width:"+Math.max(2,100*x.maior/max)+"%";
+      bar.append(a,b); r.append(t,bar); r.onclick=()=>abreGrupo(x.nome); box.appendChild(r); }); }
   function linhasCadastroGrupos(){ const rs=ultimosPorGrupo(); const nomes=new Map(); (S.grupos||[]).forEach(g=>nomes.set(norm(g.nome),g.nome)); rs.forEach(r=>nomes.set(norm(r.grupo),r.grupo));
     return [...nomes.values()].sort((a,b)=>a.localeCompare(b,"pt")).map(nome=>{ const g=(S.grupos||[]).find(x=>norm(x.nome)===norm(nome))||{}; const r=rs.find(x=>norm(x.grupo)===norm(nome))||{};
       const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0)); const vip=(S.vips||[]).some(v=>norm(v.nome)===norm(nome));
       return {"Grupo":nome,"Participantes":(r.participantes||[]).length||"","Mensagens (última análise)":r.mensagens||0,"Mais falante":ps[0]?ps[0].nome:"","Líder":(ps.find(p=>p.papel)||{}).nome||"","Silenciado":g.silenciar?"Sim":"Não","VIP":vip?"Sim":"Não","Última análise":r.geradoEm?fmt(r.geradoEm):"—"}; }); }
   function renderFal(){ if(!$("fal-ind")) return;
     const f=S.falantes; $("fal-meta").textContent = ponte&&ponte.url ? (f?"Mês "+f.mes.split("-").reverse().join("/")+" · "+f.total+" mensagens de "+f.falantes.length+" contatos":"Carregando…") : "Conecte a ponte oficial em Ajustes para ver este ranking.";
-    barras($("fal-ind"), f?f.falantes:[], "Ainda sem mensagens contadas neste mês.", x=>abreInfo(x.nome, x.msgs+" mensagens recebidas neste mês pelas conversas individuais."));
-    barras($("fal-gr"), falGrupos(), "Os mais falantes dos grupos aparecem depois da primeira varredura dos grupos.", x=>abreInfo(x.nome, x.msgs+" mensagens\nGrupos: "+x.grupos.join(", ")+(x.lider?"\nLidera ao menos um grupo.":"")));
+    barras($("fal-ind"), f?f.falantes:[], "Ainda sem mensagens contadas neste mês.", x=>abreInfo(x.nome, x.msgs+" mensagens recebidas neste mês pelas conversas individuais."+(x.min!=null?"\nTempo de conversa: "+fmtHM(x.min)+(x.sessoes?" em "+x.sessoes+" conversa(s)":"")+(x.maiorSeqMin?"\nMaior conversa sem parar: "+fmtHM(x.maiorSeqMin):""):"")));
+    graficoTempo($("fal-tempo"), tempoGrupos());
+    barras($("fal-gr"), falGrupos(), "Os mais falantes dos grupos aparecem depois da primeira varredura dos grupos.", x=>abreInfo(x.nome, x.msgs+" mensagens"+(x.min!=null?" · "+fmtHM(x.min)+" de conversa":"")+"\nGrupos: "+x.grupos.join(", ")+(x.lider?"\nLidera ao menos um grupo.":"")));
     const cad=$("fal-cad"); cad.textContent=""; const ls=linhasCadastroGrupos();
     if(!ls.length){ cad.appendChild(el("div","pn-empty","Nenhum grupo cadastrado ainda. Eles entram sozinhos na primeira varredura dos grupos.")); }
     ls.forEach(x=>{ const r=el("div","pn-fal"); const n=el("span","nm",x["Grupo"]); n.style.maxWidth="60%"; r.appendChild(n); r.appendChild(el("span","pn-meta",(x["Participantes"]?x["Participantes"]+" pessoas · ":"")+(x["Mais falante"]?"↑ "+x["Mais falante"]:"sem análise")+(x["Silenciado"]==="Sim"?" · silenciado":"")+" ›")); r.style.cursor="pointer"; r.onclick=()=>abreGrupo(x["Grupo"]); cad.appendChild(r); });
@@ -2187,8 +2205,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       ["VIPs",(S.vips||[]).map(v=>({"Nome":v.nome,"Tipo":v.tipo||"pessoa","Relação":v.relacao||"","Telefone":v.tel||"","Alerta sonoro":v.som===false?"Não":"Sim"}))],
       ["Contatos",(S.contatos||[]).map(c=>({"Nome":c.nome,"Tipo":c.tipo||"","Telefone":c.tel||""}))],
       ["Grupos",linhasCadastroGrupos()],
-      ["Falantes individuais",f.falantes.map((x,i)=>({"#":i+1,"Contato":x.nome,"Mensagens no mês":x.msgs}))],
-      ["Falantes em grupos",falGrupos().map((x,i)=>({"#":i+1,"Pessoa":x.nome,"Mensagens":x.msgs,"Grupos":x.grupos.join(", "),"Líder":x.lider?"Sim":"Não"}))],
+      ["Falantes individuais",f.falantes.map((x,i)=>({"#":i+1,"Contato":x.nome,"Mensagens no mês":x.msgs,"Tempo de conversa":x.min!=null?fmtHM(x.min):"","Maior conversa sem parar":x.maiorSeqMin?fmtHM(x.maiorSeqMin):""}))],
+      ["Tempo por grupo",tempoGrupos().map((x,i)=>({"#":i+1,"Grupo":x.nome,"Tempo ativo":fmtHM(x.ativo),"Maior conversa sem parar":fmtHM(x.maior),"Conversas":x.sessoes,"Mensagens":x.msgs}))],
+      ["Falantes em grupos",falGrupos().map((x,i)=>({"#":i+1,"Pessoa":x.nome,"Mensagens":x.msgs,"Tempo de conversa":x.min!=null?fmtHM(x.min):"","Grupos":x.grupos.join(", "),"Líder":x.lider?"Sim":"Não"}))],
       ["Relatórios",(S.relatorios||[]).map(r=>({"Título":r.titulo||"","Gerado em":r.geradoEm?fmt(r.geradoEm):"","Resumo":r.resumo||"","Mensagens":(r.numeros||{}).mensagens||"","Importantes":(r.numeros||{}).importantes||"","Minutos economizados":(r.numeros||{}).minutosEconomizados||""}))],
       ["Prevenção",((S.gestao||{}).problemas||[]).map(p=>({"Tema":p.tema,"Ocorrências":p.ocorrencias||"","Tendência":p.tendencia||"","Causa provável":p.causa||"","Ação preventiva":p.acaoPreventiva||"","Responsável":p.responsavel||""}))]
     ];
@@ -2227,7 +2246,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   }
   $("bd-xlsx").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoXLSX(tabelasBanco(),"Peneira - banco de dados"); salvoOk(b,"✓ Excel"); });
   $("bd-pdf").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoPDF(tabelasBanco(),"Peneira - banco de dados","Banco de dados"); salvoOk(b,"✓ PDF"); });
-  const tabsFal=()=>tabelasBanco().filter(([n])=>["Grupos","Falantes individuais","Falantes em grupos"].includes(n));
+  const tabsFal=()=>tabelasBanco().filter(([n])=>["Grupos","Falantes individuais","Tempo por grupo","Falantes em grupos"].includes(n));
   $("fal-xlsx").addEventListener("click",()=>bancoXLSX(tabsFal(),"Peneira - cadastro e mais falantes"));
   $("fal-pdf").addEventListener("click",()=>bancoPDF(tabsFal(),"Peneira - cadastro e mais falantes","Cadastro dos grupos e mais falantes"));
   $("rg-busca").addEventListener("input",renderTodosGrupos);

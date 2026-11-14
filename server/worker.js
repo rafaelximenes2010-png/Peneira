@@ -140,7 +140,7 @@ async function guardaRecebida(m, perfis, cfg, env) {
   const quando = new Date((Number(m.timestamp) || Date.now() / 1000) * 1000).toISOString();
   await env.KV.put("ult:" + de, quando, { expirationTtl: RETEM });
   await contaDia(env, "mensagens");
-  await contaFalante(env, nome);
+  await contaFalante(env, nome, quando);
 
   const c = await classifica({ nome, salvo: !!nomeAgenda, texto, tipo: m.type }, cfg, env);
   if (!c.importante) {
@@ -359,16 +359,24 @@ async function empurra(env, teste) {
 }
 
 // ---------- quem mais fala (conversas individuais) ----------
-async function contaFalante(env, nome) {
+// Tempo de conversa: mensagens com menos de 15 min entre si formam uma sessão contínua.
+async function contaFalante(env, nome, quando) {
   const k = "fal:" + hoje().slice(0, 7);
   const d = (await env.KV.get(k, "json")) || {};
-  d[nome] = (d[nome] || 0) + 1;
+  const t = Date.parse(quando) || Date.now();
+  let x = d[nome]; if (typeof x === "number") x = { msgs: x, min: 0 };
+  x = x || { msgs: 0, min: 0, maiorSeq: 0 };
+  x.msgs++;
+  if (x.ult && t - x.ult > 0 && t - x.ult < 15 * 60000) { const add = (t - x.ult) / 60000; x.min += add; x.seq = (x.seq || 1) + add; }
+  else { x.min += 1; x.seq = 1; x.sessoes = (x.sessoes || 0) + 1; }
+  x.maiorSeq = Math.max(x.maiorSeq || 0, x.seq); x.ult = Math.max(x.ult || 0, t);
+  d[nome] = x;
   await env.KV.put(k, JSON.stringify(d), { expirationTtl: 400 * DIA });
 }
 async function falantes(env, mes) {
   const m = /^\d{4}-\d{2}$/.test(mes || "") ? mes : hoje().slice(0, 7);
   const d = (await env.KV.get("fal:" + m, "json")) || {};
-  const lista = Object.entries(d).map(([nome, msgs]) => ({ nome, msgs })).sort((a, b) => b.msgs - a.msgs).slice(0, 100);
+  const lista = Object.entries(d).map(([nome, x]) => typeof x === "number" ? { nome, msgs: x, min: null } : { nome, msgs: x.msgs, min: Math.round(x.min), maiorSeqMin: Math.round(x.maiorSeq || 0), sessoes: x.sessoes || 0 }).sort((a, b) => b.msgs - a.msgs).slice(0, 100);
   return { mes: m, total: lista.reduce((a, x) => a + x.msgs, 0), falantes: lista };
 }
 
