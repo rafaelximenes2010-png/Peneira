@@ -1430,8 +1430,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.4";
+  const VERSAO="3.5";
   const VERSOES=[
+    {v:"3.5",data:"13/11/2026",itens:["Radar azul volta ao verde assim que a atualização termina"]},
     {v:"3.4",data:"13/11/2026",itens:["Radar com feixe girando bem visível (verde ao vivo, azul rápido ao tocar Varrer agora)","App busca sempre a versão mais nova ao abrir"]},
     {v:"3.3",data:"13/11/2026",itens:["Radar gira sempre que a ponte está ao vivo","Varrer agora: o anel fica azul quando o pedido dá certo e atualiza as conversas na hora","Relatórios → Quem mais fala: ranking das conversas individuais e dos grupos + cadastro dos grupos","Relatórios → Banco de dados: tudo num Excel (uma aba por tabela) ou PDF","Botão Enviar do bom dia centralizado"]},
     {v:"3.2",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
@@ -1722,12 +1723,12 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const b=$("varr-agora"), st=$("varr-agora-st");
     if(!S.canWrite) return;
     if(S.meta&&S.meta.emAndamento){ st.textContent="Já tem uma varredura em andamento."; return; }
-    const marca=(msg)=>{ S.pedidaAte=Date.now()+90000; S.pedidaMsg=msg; render(); setTimeout(()=>{ try{ render(); }catch(e){} },90500); };
+    const marca=(msg,ms)=>{ ms=ms||90000; S.pedidaAte=Date.now()+ms; S.pedidaMsg=msg; render(); setTimeout(()=>{ try{ render(); }catch(e){} },ms+300); };
     b.disabled=true; setTimeout(()=>{ b.disabled=false; },30000);
     let fezPonte=false; if(ponte&&ponte.url){ st.textContent="Atualizando as conversas individuais…"; await ponteSync(); fezPonte=!!S.ponteSt; }
     let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
     const gruposMsg="Grupos: entram quando o WhatsApp Web estiver aberto no Chrome do notebook (com a extensão do Claude).";
-    if(!mcp){ const h=new Date(); marca(fezPonte?"Conversas individuais atualizadas às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+".":"Pedido registrado.");
+    if(!mcp){ const h=new Date(); marca(fezPonte?"Conversas individuais atualizadas às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+".":"Pedido registrado.",4000);
       st.textContent=(fezPonte?"✓ Conversas individuais atualizadas agora. ":"")+gruposMsg; salvoOk(b,"✓ Feito"); return; }
     st.textContent="Pedindo a varredura dos grupos…";
     try{
@@ -1740,7 +1741,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
         : (c==="not_in_manifest"||c==="consent_required"||c==="approval_required") ? "Permita o acesso ao Claude Code Remote quando o app pedir e toque de novo."
         : c==="blocked_by_policy" ? "Sua organização bloqueia esse disparo."
         : "Não consegui pedir agora. Tente de novo em instantes.";
-      if(fezPonte) marca("Conversas individuais atualizadas.");
+      if(fezPonte) marca("Conversas individuais atualizadas.",4000);
     }
   });
 
@@ -1750,6 +1751,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   function renderScan(){
     const v=S.varredura||{}, m=S.meta||{}, sc=$("scan"); if(!sc) return;
     const on=!!v.ativa, rodando=!!m.emAndamento, pct=Math.max(0,Math.min(100,Number(m.progresso)||0));
+    if(S.pedidaAte && S.meta && (S.meta.emAndamento || (S.meta.ultimaVarredura && Date.parse(S.meta.ultimaVarredura)>S.pedidaAte-90000))) S.pedidaAte=0;
     sc.classList.remove("aovivo"); sc.classList.toggle("pedida", !!(S.pedidaAte && Date.now()<S.pedidaAte));
     sc.classList.toggle("ativo",on&&rodando); sc.classList.toggle("espera",on&&!rodando&&!m.ultimaVarredura); sc.classList.toggle("ok",on&&!rodando&&!!m.ultimaVarredura);
     const prg=$("scan-prg"); const C=326.7; prg.style.strokeDashoffset = String(C - C*((rodando?pct:(m.ultimaVarredura?100:0))/100));
