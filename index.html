@@ -525,6 +525,12 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-seg button{flex:1;border:0;background:none;min-height:34px;border-radius:8px;font:600 14px var(--font-ui);color:var(--ink-2,var(--ink-3));cursor:pointer;font-variant-numeric:tabular-nums}
 .pn-seg button.on{background:#30b566;color:#fff;box-shadow:0 2px 6px -2px rgba(48,181,102,.6)}
 .pn-seg button:disabled{opacity:.5}
+.pn-web{margin:8px 0 4px;padding:10px 12px;border-radius:12px;font-size:13.5px;line-height:1.4;background:var(--surface-2);border-left:3px solid #8e8e93}
+.pn-web.ruim{border-left-color:#ff453a;background:color-mix(in srgb,#ff453a 10%,var(--surface))}
+.pn-web.ok{border-left-color:#34c759;background:color-mix(in srgb,#34c759 10%,var(--surface))}
+.pn-web-h{display:flex;align-items:center;gap:6px;margin-bottom:3px} .pn-web-h svg{width:15px;height:15px}
+.pn-web.ruim .pn-web-h{color:#ff453a} .pn-web.ok .pn-web-h{color:#34c759}
+.pn-web-f{margin-top:4px;color:var(--ink-3);font-size:12.5px} .pn-web-f a{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -1273,6 +1279,12 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     c.appendChild(el("div","pn-who", i.contato||"Contato"));
     c.appendChild(el("p","pn-sum", i.resumo||""));
     if(i.acao) c.appendChild(rotulo("arrow",i.acao,"pn-meta"));
+    if(i.verificacao && i.verificacao.veredito){ const v=i.verificacao, vd=String(v.veredito).toLowerCase();
+      const cls=/golpe|falso/.test(vd)?"ruim":vd==="confirmado"?"ok":"neutro";
+      const bx=el("div","pn-web "+cls); const h=el("div","pn-web-h"); h.appendChild(ico("shield")); h.appendChild(el("b",null,"Checado na web · "+v.veredito)); bx.appendChild(h);
+      if(v.resumo) bx.appendChild(el("div",null,v.resumo));
+      if(v.fonte||v.url){ const f=el("div","pn-web-f","Fonte: "); if(v.url&&/^https:\/\//.test(v.url)){ const a=document.createElement("a"); a.href=v.url; a.target="_blank"; a.rel="noopener noreferrer"; a.textContent=v.fonte||"abrir"; f.appendChild(a); } else f.append(v.fonte); bx.appendChild(f); }
+      c.appendChild(bx); }
     if(i.recebidoEm) c.appendChild(el("div","pn-meta","Recebida "+fmt(i.recebidoEm)));
     const a = el("div","pn-acts");
     if(pend){
@@ -1620,8 +1632,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.9.2";
+  const VERSAO="4.9.3";
   const VERSOES=[
+    {v:"4.9.3",data:"14/11/2026",itens:["Checagem na web: a varredura confere golpes, correntes, bloqueios de estrada e notícias de clientes, e mostra o veredito com a fonte em cada alerta","Relatórios por grupo ganham o tema Checado na web"]},
     {v:"4.9.2",data:"14/11/2026",itens:["Som mais simples: uma gota só caindo no copo d'água"]},
     {v:"4.9.1",data:"14/11/2026",itens:["Varrer agora volta ao verde","Pingo d'água na abertura: se o iPhone segurar o som, ele toca no primeiro toque na tela"]},
     {v:"4.9",data:"14/11/2026",itens:["Som de pingo d'água na abertura e ao tocar Varrer agora","Radar com teia completa: anéis, raios, marcações e pontos detectados","Botão Varrer agora azul, com ícone girando ao pedir","Frequência da varredura ajustável: 1h, 2h, 3h, 4h ou 6h (padrão: a cada 2 horas)"]},
@@ -2279,7 +2292,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   $("vs-editar").addEventListener("click",()=>{ $("vip-sheet").hidden=true; go("ajustes"); setTimeout(()=>{ const e=$("vip-h"); if(e) e.scrollIntoView({behavior:"smooth"}); },80); });
 
   /* ---------- relatórios por grupo + exportação PDF / Excel ---------- */
-  const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"]];
+  const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"],["contextoWeb","Checado na web"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
     $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-bd").hidden=b.dataset.aba!=="bd";
