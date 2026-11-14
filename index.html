@@ -372,11 +372,15 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-scan.ok .prg{stroke:#34c759}
 .pn-scan.espera .pn-scan-radar{opacity:.6;animation:pnRadar 3.2s linear infinite}
 @keyframes pnRadar{to{transform:rotate(360deg)}}
-.pn-scan.aovivo .pn-scan-radar{opacity:1;animation:pnRadar 2.6s linear infinite}
+.pn-scan.aovivo .pn-scan-radar{opacity:1;animation:pnRadar 2.4s linear infinite}
+.pn-scan-radar::after{content:"";position:absolute;left:50%;top:0;width:2px;height:50%;transform:translateX(-50%);background:currentColor;opacity:.0;border-radius:2px}
+.pn-scan.aovivo .pn-scan-radar,.pn-scan.pedida .pn-scan-radar{color:#34c759}
+.pn-scan.aovivo .pn-scan-radar::after,.pn-scan.pedida .pn-scan-radar::after{opacity:.9;box-shadow:0 0 8px currentColor}
+.pn-scan.pedida .pn-scan-radar{color:#0a84ff}
 .pn-scan.aovivo .pn-scan-ring{filter:drop-shadow(0 0 12px rgba(52,199,89,.35))}
-.pn-scan.aovivo .pn-scan-radar{background:conic-gradient(from 0deg,transparent 0 270deg,rgba(52,199,89,.55) 360deg)}
+.pn-scan.aovivo .pn-scan-radar{background:conic-gradient(from 0deg,transparent 0 250deg,rgba(52,199,89,.15) 300deg,rgba(52,199,89,.75) 360deg)}
 .pn-scan.pedida .prg{stroke:#0a84ff}
-.pn-scan.pedida .pn-scan-radar{opacity:1;animation:pnRadar .9s linear infinite;background:conic-gradient(from 0deg,transparent 0 250deg,rgba(10,132,255,.65) 360deg)}
+.pn-scan.pedida .pn-scan-radar{opacity:1;animation:pnRadar .8s linear infinite;background:conic-gradient(from 0deg,transparent 0 220deg,rgba(10,132,255,.2) 290deg,rgba(10,132,255,.85) 360deg)}
 .pn-scan.pedida .pn-scan-ring{filter:drop-shadow(0 0 14px rgba(10,132,255,.5))}
 .pn-scan.pedida #scan-lbl{color:#0a84ff}
 .pn-scan.aovivo .pn-scan-c b{width:12px;height:12px;border-radius:50%;background:#34c759;font-size:0;box-shadow:0 0 0 0 rgba(52,199,89,.6);animation:pnPing 1.8s ease-out infinite}
@@ -1426,8 +1430,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.3";
+  const VERSAO="3.4";
   const VERSOES=[
+    {v:"3.4",data:"13/11/2026",itens:["Radar com feixe girando bem visível (verde ao vivo, azul rápido ao tocar Varrer agora)","App busca sempre a versão mais nova ao abrir"]},
     {v:"3.3",data:"13/11/2026",itens:["Radar gira sempre que a ponte está ao vivo","Varrer agora: o anel fica azul quando o pedido dá certo e atualiza as conversas na hora","Relatórios → Quem mais fala: ranking das conversas individuais e dos grupos + cadastro dos grupos","Relatórios → Banco de dados: tudo num Excel (uma aba por tabela) ou PDF","Botão Enviar do bom dia centralizado"]},
     {v:"3.2",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
     {v:"3.1",data:"13/11/2026",itens:["Varrer agora logo no topo do Início","Lista VIP em Ajustes abre num botão, com barra de rolagem"]},
@@ -2393,7 +2398,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     setTimeout(fecha, T_PASSA+3200*k);
   })();
 
-  if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }catch(e){} }
+  if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").then(r=>{ try{ r.update(); }catch(e){} }).catch(()=>{}); let recarregou=false; navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(recarregou) return; recarregou=true; location.reload(); }); }catch(e){} }
   go(location.hash.slice(1)||"inicio", false);
   render();
 

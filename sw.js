@@ -1,6 +1,6 @@
 /* Service worker do Peneira: guarda o app para abrir offline.
    Ao publicar uma nova versão, altere CACHE (ex.: peneira-v28) para forçar a atualização. */
-const CACHE = "peneira-v28";
+const CACHE = "peneira-v29";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./politica.html", "./icons/icon.svg", "./icons/favicon-32.png",
   "./icons/apple-touch-180.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
@@ -12,7 +12,7 @@ self.addEventListener("activate", e => {
 // Rede primeiro (recebe atualizações); cópia guardada se estiver offline
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET" || new URL(e.request.url).origin !== location.origin) return;
-  e.respondWith(fetch(e.request).then(res => {
+  e.respondWith(fetch(new Request(e.request.url, { cache: "no-cache", credentials: "same-origin" })).then(res => {
     if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); }
     return res;
   }).catch(() => caches.match(e.request, { ignoreSearch: true }).then(r => r || caches.match("./index.html"))));
