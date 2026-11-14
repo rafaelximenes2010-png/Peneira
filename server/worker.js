@@ -36,6 +36,7 @@ export default {
       if (url.pathname === "/") return cors(json({ ok: true, app: "peneira-ponte", envia: false }));
       if (!autorizado(req, env)) return cors(json({ erro: "senha inválida" }, 401));
       if (url.pathname === "/status") return cors(json(await status(env)));
+      if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
       if (url.pathname === "/itens") return cors(json(await itens(env, url.searchParams.get("desde"))));
       if (url.pathname === "/config" && req.method === "POST") return cors(json(await salvaConfig(req, env)));
       return cors(json({ erro: "não encontrado" }, 404));
@@ -131,6 +132,7 @@ async function guardaRecebida(m, perfis, cfg, env) {
   const quando = new Date((Number(m.timestamp) || Date.now() / 1000) * 1000).toISOString();
   await env.KV.put("ult:" + de, quando, { expirationTtl: RETEM });
   await contaDia(env, "mensagens");
+  await contaFalante(env, nome);
 
   const c = await classifica({ nome, salvo: !!nomeAgenda, texto, tipo: m.type }, cfg, env);
   if (!c.importante) {
@@ -264,6 +266,20 @@ async function salvaConfig(req, env) {
   };
   await env.KV.put("cfg", JSON.stringify(cfg));
   return { ok: true, vips: cfg.vips.length, criterios: cfg.criterios.length };
+}
+
+// ---------- quem mais fala (conversas individuais) ----------
+async function contaFalante(env, nome) {
+  const k = "fal:" + hoje().slice(0, 7);
+  const d = (await env.KV.get(k, "json")) || {};
+  d[nome] = (d[nome] || 0) + 1;
+  await env.KV.put(k, JSON.stringify(d), { expirationTtl: 400 * DIA });
+}
+async function falantes(env, mes) {
+  const m = /^\d{4}-\d{2}$/.test(mes || "") ? mes : hoje().slice(0, 7);
+  const d = (await env.KV.get("fal:" + m, "json")) || {};
+  const lista = Object.entries(d).map(([nome, msgs]) => ({ nome, msgs })).sort((a, b) => b.msgs - a.msgs).slice(0, 100);
+  return { mes: m, total: lista.reduce((a, x) => a + x.msgs, 0), falantes: lista };
 }
 
 // ---------- utilidades ----------

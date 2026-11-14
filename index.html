@@ -372,6 +372,29 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 .pn-scan.ok .prg{stroke:#34c759}
 .pn-scan.espera .pn-scan-radar{opacity:.6;animation:pnRadar 3.2s linear infinite}
 @keyframes pnRadar{to{transform:rotate(360deg)}}
+.pn-scan.aovivo .pn-scan-radar{opacity:1;animation:pnRadar 2.6s linear infinite}
+.pn-scan.aovivo .pn-scan-ring{filter:drop-shadow(0 0 12px rgba(52,199,89,.35))}
+.pn-scan.aovivo .pn-scan-radar{background:conic-gradient(from 0deg,transparent 0 270deg,rgba(52,199,89,.55) 360deg)}
+.pn-scan.pedida .prg{stroke:#0a84ff}
+.pn-scan.pedida .pn-scan-radar{opacity:1;animation:pnRadar .9s linear infinite;background:conic-gradient(from 0deg,transparent 0 250deg,rgba(10,132,255,.65) 360deg)}
+.pn-scan.pedida .pn-scan-ring{filter:drop-shadow(0 0 14px rgba(10,132,255,.5))}
+.pn-scan.pedida #scan-lbl{color:#0a84ff}
+.pn-scan.aovivo .pn-scan-c b{width:12px;height:12px;border-radius:50%;background:#34c759;font-size:0;box-shadow:0 0 0 0 rgba(52,199,89,.6);animation:pnPing 1.8s ease-out infinite}
+@keyframes pnPing{0%{box-shadow:0 0 0 0 rgba(52,199,89,.55)}80%,100%{box-shadow:0 0 0 12px rgba(52,199,89,0)}}
+.pn-fal{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.pn-fal:last-child{border-bottom:0}
+.pn-fal .n{width:22px;text-align:right;color:var(--ink-3);font-variant-numeric:tabular-nums;font-size:12px}
+.pn-fal .nm{min-width:34%;max-width:44%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.pn-fal .bar{flex:1;height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.pn-fal .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#34c759)}
+.pn-fal .q{min-width:28px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,var(--ink-3));font-size:13px}
+.pn-bd{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.pn-bd div{background:var(--surface-2);border-radius:12px;padding:10px 12px}
+.pn-bd b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.pn-bd span{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3)}
+#rel-abas{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#rel-abas::-webkit-scrollbar{display:none}
+#rel-abas .pn-chip{flex:none}
 .pn-live-scan{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:5px 10px}
 .pn-live-scan[hidden]{display:none}
 .pn-live-scan i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pnBlink 1s ease-in-out infinite}
@@ -585,7 +608,27 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     <div class="pn-chips" id="rel-abas" style="margin:4px 0 12px">
       <button class="pn-chip" type="button" data-aba="dia" aria-pressed="true">Do dia</button>
       <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
+      <button class="pn-chip" type="button" data-aba="fal" aria-pressed="false">Quem mais fala</button>
       <button class="pn-chip" type="button" data-aba="prev" aria-pressed="false">Prevenção</button>
+      <button class="pn-chip" type="button" data-aba="bd" aria-pressed="false">Banco de dados</button>
+    </div>
+    <div id="rel-fal" hidden>
+      <div class="pn-h2" style="margin-top:4px">Conversas individuais · quem mais escreve</div>
+      <p class="pn-meta" style="margin:-4px 0 10px" id="fal-meta">Dados da ponte oficial, mês atual.</p>
+      <div class="pn-card" id="fal-ind"></div>
+      <div class="pn-h2">Grupos · mais falantes</div>
+      <p class="pn-meta" style="margin:-4px 0 10px">Somando todos os grupos analisados pela varredura.</p>
+      <div class="pn-card" id="fal-gr"></div>
+      <div class="pn-h2">Cadastro dos grupos</div>
+      <div class="pn-card" id="fal-cad"></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="fal-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="fal-xlsx" style="flex:1">Excel</button></div>
+    </div>
+    <div id="rel-bd" hidden>
+      <div class="pn-h2" style="margin-top:4px">Banco de dados do Peneira</div>
+      <p class="pn-meta" style="margin:-4px 0 10px">Tudo o que o app guarda, num arquivo só: importantes, agenda, VIPs, contatos, grupos, falantes, relatórios e prevenção.</p>
+      <div class="pn-card"><div class="pn-bd" id="bd-cont"></div></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="bd-pdf" style="flex:1">PDF completo</button><button class="pn-btn pri" type="button" id="bd-xlsx" style="flex:1">Excel completo</button></div>
+      <p class="pn-meta" style="margin:8px 4px">O Excel sai com uma aba por tabela. Números de telefone de quem não está salvo nunca são guardados.</p>
     </div>
     <div id="rel-dia">
       <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
@@ -1383,8 +1426,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.2";
+  const VERSAO="3.3";
   const VERSOES=[
+    {v:"3.3",data:"13/11/2026",itens:["Radar gira sempre que a ponte está ao vivo","Varrer agora: o anel fica azul quando o pedido dá certo e atualiza as conversas na hora","Relatórios → Quem mais fala: ranking das conversas individuais e dos grupos + cadastro dos grupos","Relatórios → Banco de dados: tudo num Excel (uma aba por tabela) ou PDF","Botão Enviar do bom dia centralizado"]},
     {v:"3.2",data:"13/11/2026",itens:["Início mostra a ponte oficial ao vivo (mensagens de hoje e importantes)"]},
     {v:"3.1",data:"13/11/2026",itens:["Varrer agora logo no topo do Início","Lista VIP em Ajustes abre num botão, com barra de rolagem"]},
     {v:"3.0",data:"13/11/2026",itens:["Botão Varrer agora no Início: pede uma varredura na hora, além da automática de hora em hora"]},
@@ -1673,20 +1717,26 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const b=$("varr-agora"), st=$("varr-agora-st");
     if(!S.canWrite) return;
     if(S.meta&&S.meta.emAndamento){ st.textContent="Já tem uma varredura em andamento."; return; }
+    const marca=(msg)=>{ S.pedidaAte=Date.now()+90000; S.pedidaMsg=msg; render(); setTimeout(()=>{ try{ render(); }catch(e){} },90500); };
+    b.disabled=true; setTimeout(()=>{ b.disabled=false; },30000);
+    let fezPonte=false; if(ponte&&ponte.url){ st.textContent="Atualizando as conversas individuais…"; await ponteSync(); fezPonte=!!S.ponteSt; }
     let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
-    if(!mcp){ st.textContent="Disponível abrindo o Peneira logado no Claude."; return; }
-    b.disabled=true; st.textContent="Pedindo a varredura…";
+    const gruposMsg="Grupos: entram quando o WhatsApp Web estiver aberto no Chrome do notebook (com a extensão do Claude).";
+    if(!mcp){ const h=new Date(); marca(fezPonte?"Conversas individuais atualizadas às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+".":"Pedido registrado.");
+      st.textContent=(fezPonte?"✓ Conversas individuais atualizadas agora. ":"")+gruposMsg; salvoOk(b,"✓ Feito"); return; }
+    st.textContent="Pedindo a varredura dos grupos…";
     try{
       await mcp.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIG_VARR,text:"Disparo manual pelo botão Varrer agora do app Peneira."});
-      const h=new Date(); st.textContent="Varredura pedida às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+". O anel acima mostra o progresso em instantes."; salvoOk(b,"✓ Pedida");
+      const h=new Date(); marca("Pedida às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+" · o anel fica azul até começar.");
+      st.textContent="✓ Varredura pedida às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+(fezPonte?" · conversas individuais já atualizadas":"")+". "+gruposMsg; salvoOk(b,"✓ Pedida");
     }catch(e){
       const c=e&&e.code;
       st.textContent = (c==="server_not_connected"||c==="selection_required") ? "Ative o conector Claude Code Remote no claude.ai (Configurações → Conectores) e toque de novo."
         : (c==="not_in_manifest"||c==="consent_required"||c==="approval_required") ? "Permita o acesso ao Claude Code Remote quando o app pedir e toque de novo."
         : c==="blocked_by_policy" ? "Sua organização bloqueia esse disparo."
         : "Não consegui pedir agora. Tente de novo em instantes.";
+      if(fezPonte) marca("Conversas individuais atualizadas.");
     }
-    setTimeout(()=>{ b.disabled=false; },30000);
   });
 
   let numPre=false;
@@ -1695,6 +1745,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   function renderScan(){
     const v=S.varredura||{}, m=S.meta||{}, sc=$("scan"); if(!sc) return;
     const on=!!v.ativa, rodando=!!m.emAndamento, pct=Math.max(0,Math.min(100,Number(m.progresso)||0));
+    sc.classList.remove("aovivo"); sc.classList.toggle("pedida", !!(S.pedidaAte && Date.now()<S.pedidaAte));
     sc.classList.toggle("ativo",on&&rodando); sc.classList.toggle("espera",on&&!rodando&&!m.ultimaVarredura); sc.classList.toggle("ok",on&&!rodando&&!!m.ultimaVarredura);
     const prg=$("scan-prg"); const C=326.7; prg.style.strokeDashoffset = String(C - C*((rodando?pct:(m.ultimaVarredura?100:0))/100));
     $("live-scan").hidden=!(on&&rodando);
@@ -1703,10 +1754,11 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       $("scan-sub").textContent=(m.conversaAtual?"Agora: "+m.conversaAtual+" · ":"")+(m.feitas!=null&&m.total?m.feitas+" de "+m.total+" conversas":"analisando conversas"); }
     else if(m.ultimaVarredura && on){ $("scan-pct").textContent="✓"; $("scan-lbl").textContent="protegido"; $("scan-tit").textContent="Tudo peneirado";
       $("scan-sub").textContent="Última varredura "+fmt(m.ultimaVarredura)+(m.minutosEconomizados?" · "+m.minutosEconomizados+" min economizados":""); }
-    else if(S.ponteSt){ const ps=S.ponteSt; sc.classList.add("ok"); sc.classList.remove("espera"); prg.style.strokeDashoffset="0";
+    else if(S.ponteSt){ const ps=S.ponteSt; sc.classList.add("ok","aovivo"); sc.classList.remove("espera"); prg.style.strokeDashoffset="0";
       $("scan-pct").textContent="●"; $("scan-lbl").textContent="ao vivo"; $("scan-tit").textContent="Ponte oficial ao vivo";
       $("scan-sub").textContent=ps.mensagens+" mensagens hoje · "+ps.importantes+" importantes"+(ps.ultimaMensagem?" · última "+fmt(ps.ultimaMensagem):""); }
     else { $("scan-pct").textContent="…"; $("scan-lbl").textContent="aguardando"; $("scan-tit").textContent="Pronto para varrer"; $("scan-sub").textContent="Aguardando a conexão com o WhatsApp Business"; }
+    if(S.pedidaAte && Date.now()<S.pedidaAte && !rodando){ $("scan-lbl").textContent="pedida"; $("scan-tit").textContent="Varredura pedida ✓"; $("scan-sub").textContent=S.pedidaMsg||"Atualizando agora…"; }
     if(S.ponteSt && !m.ultimaVarredura){ $("sc-lidas").textContent=S.ponteSt.descartadas||0; $("sc-mant").textContent=S.ponteSt.importantes||0; $("sc-imp").textContent=S.itens.filter(i=>(i.status||"pendente")==="pendente").length; return; }
     $("sc-lidas").textContent=m.marcadasLidas!=null?m.marcadasLidas:(m.conversasLidas||0);
     $("sc-mant").textContent=m.mantidasNaoLidas||0;
@@ -1805,7 +1857,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     const L=$("bd-hoje-lista"); L.textContent="";
     b.grupos.forEach(g=>{ const r=el("div","pn-q"); r.appendChild(el("span",null,g));
       if(env.includes(g)){ r.appendChild(el("b",null,"✓ enviado")); }
-      else { const a=el("a","pn-btn pri","Enviar"); a.href=waLink(b.mensagem); a.target="_blank"; a.rel="noopener"; a.style.cssText="text-decoration:none;padding:6px 14px;background:#25a35a;border-color:#25a35a";
+      else { const a=el("a","pn-btn pri","Enviar"); a.href=waLink(b.mensagem); a.target="_blank"; a.rel="noopener"; a.style.cssText="text-decoration:none;padding:0 18px;min-height:40px;min-width:92px;display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1;background:#25a35a;border-color:#25a35a;color:#fff;font-weight:600";
         a.addEventListener("click",()=>{ const e2={...(b.enviados||{})}; e2[hojeKey()]=env.concat([g]); salvaBD({enviados:e2}); }); r.appendChild(a); }
       L.appendChild(r); });
   }
@@ -1875,7 +1927,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; }));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-bd").hidden=b.dataset.aba!=="bd";
+    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="bd") renderBDados(); }));
   function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
   function renderRelGrupos(){
     const L=$("rg-lista"); if(!L) return; L.textContent="";
@@ -1947,6 +2000,68 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     });
     await salvarArquivo(base+".pdf", doc.output("blob"));
   }
+
+  /* ---------- quem mais fala + banco de dados ---------- */
+  S.falantes=null;
+  async function carregaFalantes(){ if(!ponte||!ponte.url) return; try{ S.falantes=await ponteReq("/falantes"); renderFal(); }catch(e){} }
+  function falGrupos(){ const m={}; ultimosPorGrupo().forEach(r=>(r.participantes||[]).forEach(p=>{ const k=norm(p.nome); if(!m[k]) m[k]={nome:p.nome,msgs:0,grupos:new Set(),lider:false}; m[k].msgs+=p.msgs||0; m[k].grupos.add(r.grupo); if(p.papel) m[k].lider=true; }));
+    return Object.values(m).map(x=>({...x,grupos:[...x.grupos]})).sort((a,b)=>b.msgs-a.msgs); }
+  function barras(box,lista,vazio,extra){ box.textContent=""; if(!lista.length){ box.appendChild(el("div","pn-empty",vazio)); return; }
+    const max=Math.max(1,...lista.map(x=>x.msgs)); lista.slice(0,15).forEach((x,i)=>{ const r=el("div","pn-fal"); r.appendChild(el("span","n",String(i+1)));
+      const n=el("span","nm",x.nome); n.title=x.nome; r.appendChild(n); const b=el("div","bar"); const ii=el("i"); ii.style.width=Math.max(4,Math.round(100*x.msgs/max))+"%"; b.appendChild(ii); r.appendChild(b);
+      r.appendChild(el("span","q",String(x.msgs))); if(extra) r.onclick=()=>extra(x); box.appendChild(r); }); }
+  function linhasCadastroGrupos(){ const rs=ultimosPorGrupo(); const nomes=new Map(); (S.grupos||[]).forEach(g=>nomes.set(norm(g.nome),g.nome)); rs.forEach(r=>nomes.set(norm(r.grupo),r.grupo));
+    return [...nomes.values()].sort((a,b)=>a.localeCompare(b,"pt")).map(nome=>{ const g=(S.grupos||[]).find(x=>norm(x.nome)===norm(nome))||{}; const r=rs.find(x=>norm(x.grupo)===norm(nome))||{};
+      const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0)); const vip=(S.vips||[]).some(v=>norm(v.nome)===norm(nome));
+      return {"Grupo":nome,"Participantes":(r.participantes||[]).length||"","Mensagens (última análise)":r.mensagens||0,"Mais falante":ps[0]?ps[0].nome:"","Líder":(ps.find(p=>p.papel)||{}).nome||"","Silenciado":g.silenciar?"Sim":"Não","VIP":vip?"Sim":"Não","Última análise":r.geradoEm?fmt(r.geradoEm):"—"}; }); }
+  function renderFal(){ if(!$("fal-ind")) return;
+    const f=S.falantes; $("fal-meta").textContent = ponte&&ponte.url ? (f?"Mês "+f.mes.split("-").reverse().join("/")+" · "+f.total+" mensagens de "+f.falantes.length+" contatos":"Carregando…") : "Conecte a ponte oficial em Ajustes para ver este ranking.";
+    barras($("fal-ind"), f?f.falantes:[], "Ainda sem mensagens contadas neste mês.", x=>abreInfo(x.nome, x.msgs+" mensagens recebidas neste mês pelas conversas individuais."));
+    barras($("fal-gr"), falGrupos(), "Os mais falantes dos grupos aparecem depois da primeira varredura dos grupos.", x=>abreInfo(x.nome, x.msgs+" mensagens\nGrupos: "+x.grupos.join(", ")+(x.lider?"\nLidera ao menos um grupo.":"")));
+    const cad=$("fal-cad"); cad.textContent=""; const ls=linhasCadastroGrupos();
+    if(!ls.length){ cad.appendChild(el("div","pn-empty","Nenhum grupo cadastrado ainda. Eles entram sozinhos na primeira varredura dos grupos.")); }
+    ls.forEach(x=>{ const r=el("div","pn-fal"); const n=el("span","nm",x["Grupo"]); n.style.maxWidth="60%"; r.appendChild(n); r.appendChild(el("span","pn-meta",(x["Participantes"]?x["Participantes"]+" pessoas · ":"")+(x["Mais falante"]?"↑ "+x["Mais falante"]:"sem análise")+(x["Silenciado"]==="Sim"?" · silenciado":""))); cad.appendChild(r); });
+  }
+  function tabelasBanco(){
+    const f=S.falantes||{falantes:[]};
+    return [
+      ["Importantes",(S.itens||[]).map(i=>({"Contato":i.contato||"","Grupo":i.grupo||"","Categoria":i.categoria||"","Prioridade":i.prioridade||"","Resumo":i.resumo||"","Ação":i.acao||"","Prazo":i.prazo||"","Status":i.status||"pendente","Recebido em":i.recebidoEm?fmt(i.recebidoEm):"","Origem":i.origem==="api"?"Ponte oficial":"Varredura"}))],
+      ["Agenda",(S.agenda||[]).map(a=>({"Título":a.titulo||"","Tipo":a.tipo||"","Quando":a.quando||"","Contato":a.contato||"","Feito":a.feito?"Sim":"Não","Origem":a.origem||""}))],
+      ["VIPs",(S.vips||[]).map(v=>({"Nome":v.nome,"Tipo":v.tipo||"pessoa","Relação":v.relacao||"","Alerta sonoro":v.som===false?"Não":"Sim"}))],
+      ["Contatos",(S.contatos||[]).map(c=>({"Nome":c.nome,"Tipo":c.tipo||""}))],
+      ["Grupos",linhasCadastroGrupos()],
+      ["Falantes individuais",f.falantes.map((x,i)=>({"#":i+1,"Contato":x.nome,"Mensagens no mês":x.msgs}))],
+      ["Falantes em grupos",falGrupos().map((x,i)=>({"#":i+1,"Pessoa":x.nome,"Mensagens":x.msgs,"Grupos":x.grupos.join(", "),"Líder":x.lider?"Sim":"Não"}))],
+      ["Relatórios",(S.relatorios||[]).map(r=>({"Título":r.titulo||"","Gerado em":r.geradoEm?fmt(r.geradoEm):"","Resumo":r.resumo||"","Mensagens":(r.numeros||{}).mensagens||"","Importantes":(r.numeros||{}).importantes||"","Minutos economizados":(r.numeros||{}).minutosEconomizados||""}))],
+      ["Prevenção",((S.gestao||{}).problemas||[]).map(p=>({"Tema":p.tema,"Ocorrências":p.ocorrencias||"","Tendência":p.tendencia||"","Causa provável":p.causa||"","Ação preventiva":p.acaoPreventiva||"","Responsável":p.responsavel||""}))]
+    ];
+  }
+  function renderBDados(){ const b=$("bd-cont"); if(!b) return; b.textContent=""; if(ponte&&ponte.url&&!S.falantes) carregaFalantes();
+    tabelasBanco().forEach(([n,l])=>{ const d=el("div"); d.appendChild(el("b",null,String(l.length))); d.appendChild(el("span",null,n)); b.appendChild(d); }); }
+  async function bancoXLSX(tabs,base){
+    try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de Excel."); return; }
+    const X=window.XLSX, wb=X.utils.book_new();
+    const resumo=[{"Peneira · Central do WhatsApp":"Banco de dados exportado em "+new Date().toLocaleString("pt-BR")}].concat(tabs.map(([n,l])=>({"Peneira · Central do WhatsApp":n+": "+l.length+" registros"})));
+    X.utils.book_append_sheet(wb,X.utils.json_to_sheet(resumo),"Resumo");
+    tabs.forEach(([n,l])=>{ const ws=X.utils.json_to_sheet(l.length?l:[{"(vazio)":""}]); const cols=Object.keys(l[0]||{"(vazio)":""}); ws["!cols"]=cols.map(c=>({wch:Math.min(60,Math.max(c.length+2,...l.map(r=>String(r[c]??"").length).slice(0,200)))})); X.utils.book_append_sheet(wb,ws,n.slice(0,31)); });
+    await salvarArquivo(base+".xlsx",new Blob([X.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  }
+  async function bancoPDF(tabs,base,titulo){
+    try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de PDF."); return; }
+    const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4",orientation:"landscape"}); const W=doc.internal.pageSize.getWidth(); const verde=[15,95,88];
+    doc.setFillColor(...verde); doc.rect(0,0,W,64,"F"); doc.setTextColor(255); doc.setFontSize(18); doc.text("Peneira · "+titulo,36,38); doc.setFontSize(10); doc.text("Gerado em "+new Date().toLocaleString("pt-BR"),36,54);
+    let y=84; doc.setTextColor(30);
+    tabs.forEach(([n,l],i)=>{ if(!l.length) return; if(y>doc.internal.pageSize.getHeight()-120){ doc.addPage(); y=48; }
+      doc.setFontSize(13); doc.setTextColor(...verde); doc.text(n+" ("+l.length+")",36,y); y+=8; const cols=Object.keys(l[0]);
+      doc.autoTable({startY:y,head:[cols],body:l.map(r=>cols.map(c=>String(r[c]??""))),headStyles:{fillColor:verde},styles:{fontSize:8,cellPadding:3},margin:{left:36,right:36}}); y=doc.lastAutoTable.finalY+24; });
+    if(y===84){ doc.setFontSize(11); doc.text("Ainda não há dados para exportar.",36,y); }
+    await salvarArquivo(base+".pdf",doc.output("blob"));
+  }
+  $("bd-xlsx").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoXLSX(tabelasBanco(),"Peneira - banco de dados"); salvoOk(b,"✓ Excel"); });
+  $("bd-pdf").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoPDF(tabelasBanco(),"Peneira - banco de dados","Banco de dados"); salvoOk(b,"✓ PDF"); });
+  const tabsFal=()=>tabelasBanco().filter(([n])=>["Grupos","Falantes individuais","Falantes em grupos"].includes(n));
+  $("fal-xlsx").addEventListener("click",()=>bancoXLSX(tabsFal(),"Peneira - cadastro e mais falantes"));
+  $("fal-pdf").addEventListener("click",()=>bancoPDF(tabsFal(),"Peneira - cadastro e mais falantes","Cadastro dos grupos e mais falantes"));
   $("rg-pdf").addEventListener("click",()=>exportPDF(ultimosPorGrupo(),"Peneira - relatorio por grupo"));
   $("rg-xlsx").addEventListener("click",()=>exportXLSX(ultimosPorGrupo(),"Peneira - cadastro dos grupos"));
 
