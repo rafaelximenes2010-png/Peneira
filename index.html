@@ -507,6 +507,24 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-set-rule li{margin-bottom:6px}
 .pn-set-ft{margin:10px 4px 0;font-size:12.5px;color:var(--ink-3)}
 .pn-hero p#ultima{opacity:.85}
+/* ===== v4.9 · teia do radar, botão azul e frequência ===== */
+.pn-scan-ring .web .grd{fill:none;stroke:color-mix(in srgb,var(--rd,#34c759) 34%,transparent);stroke-width:.5}
+.pn-scan-ring .web .grd2{fill:none;stroke:color-mix(in srgb,var(--rd,#34c759) 18%,transparent);stroke-width:.4;stroke-dasharray:1.2 1.6}
+.pn-scan-ring .web .tick{stroke:color-mix(in srgb,var(--rd,#34c759) 45%,transparent);stroke-width:.45}
+.pn-scan-ring .web .ctr{fill:var(--rd,#34c759)}
+.pn-scan-ring .web .blip{fill:var(--rd,#34c759);opacity:0;animation:pnBlip 3s ease-out infinite}
+@keyframes pnBlip{0%,60%{opacity:0}66%{opacity:.95}100%{opacity:0}}
+.pn-scan-ring{background:radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--rd,#34c759) 14%,transparent) 0,color-mix(in srgb,var(--rd,#34c759) 4%,transparent) 62%,transparent 72%)}
+.pn .pn-scan-btn,.pn .pn-scan-btn.pri{background:linear-gradient(180deg,#3d95ff 0%,#0a6cf0 100%);border:0;color:#fff;letter-spacing:-.01em;
+  box-shadow:0 10px 24px -10px rgba(10,108,240,.75),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.18);min-height:54px}
+.pn .pn-scan-btn .pn-ico svg{width:20px;height:20px;stroke-width:2.4}
+.pn .pn-scan-btn:active,.pn .pn-scan-btn.pn-press{filter:brightness(.9);box-shadow:0 4px 12px -6px rgba(10,108,240,.7),inset 0 1px 0 rgba(255,255,255,.2)}
+.pn .pn-scan-btn:disabled{opacity:.75}
+.pn .pn-scan-btn.gira .pn-ico svg{animation:pnRadar 1s linear infinite}
+.pn-seg{display:flex;flex:1;background:var(--surface);border-radius:10px;padding:3px;gap:2px}
+.pn-seg button{flex:1;border:0;background:none;min-height:34px;border-radius:8px;font:600 14px var(--font-ui);color:var(--ink-2,var(--ink-3));cursor:pointer;font-variant-numeric:tabular-nums}
+.pn-seg button.on{background:#0a84ff;color:#fff;box-shadow:0 2px 6px -2px rgba(10,132,255,.6)}
+.pn-seg button:disabled{opacity:.5}
 </style>
 </head>
 <body>
@@ -583,8 +601,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       <div class="pn-scan" id="scan">
         <div class="pn-scan-ring" id="scan-ring">
           <svg viewBox="0 0 120 120" aria-hidden="true">
-            <circle cx="60" cy="60" r="38" class="grd"/><circle cx="60" cy="60" r="22" class="grd"/>
-            <line x1="60" y1="14" x2="60" y2="106" class="grd"/><line x1="14" y1="60" x2="106" y2="60" class="grd"/>
+            <g class="web"><circle cx="60" cy="60" r="12" class="grd"/><circle cx="60" cy="60" r="24" class="grd"/><circle cx="60" cy="60" r="36" class="grd"/><circle cx="60" cy="60" r="18" class="grd2"/><circle cx="60" cy="60" r="30" class="grd2"/><circle cx="60" cy="60" r="42" class="grd2"/><circle cx="60" cy="60" r="46" class="grd"/><line x1="60" y1="60" x2="106.00" y2="60.00" class="grd"/><line x1="60" y1="60" x2="99.84" y2="83.00" class="grd2"/><line x1="60" y1="60" x2="83.00" y2="99.84" class="grd2"/><line x1="60" y1="60" x2="60.00" y2="106.00" class="grd"/><line x1="60" y1="60" x2="37.00" y2="99.84" class="grd2"/><line x1="60" y1="60" x2="20.16" y2="83.00" class="grd2"/><line x1="60" y1="60" x2="14.00" y2="60.00" class="grd"/><line x1="60" y1="60" x2="20.16" y2="37.00" class="grd2"/><line x1="60" y1="60" x2="37.00" y2="20.16" class="grd2"/><line x1="60" y1="60" x2="60.00" y2="14.00" class="grd"/><line x1="60" y1="60" x2="83.00" y2="20.16" class="grd2"/><line x1="60" y1="60" x2="99.84" y2="37.00" class="grd2"/><line x1="106.00" y1="60.00" x2="109.00" y2="60.00" class="tick"/><line x1="107.42" y1="64.15" x2="108.81" y2="64.27" class="tick"/><line x1="106.29" y1="68.16" x2="108.26" y2="68.51" class="tick"/><line x1="105.98" y1="72.32" x2="107.33" y2="72.68" class="tick"/><line x1="104.17" y1="76.07" x2="106.04" y2="76.76" class="tick"/><line x1="103.14" y1="80.12" x2="104.41" y2="80.71" class="tick"/><line x1="99.84" y1="83.00" x2="102.44" y2="84.50" class="tick"/><line x1="98.99" y1="87.30" x2="100.14" y2="88.11" class="tick"/><line x1="96.00" y1="90.21" x2="97.54" y2="91.50" class="tick"/><line x1="93.66" y1="93.66" x2="94.65" y2="94.65" class="tick"/><line x1="90.21" y1="96.00" x2="91.50" y2="97.54" class="tick"/><line x1="87.30" y1="98.99" x2="88.11" y2="100.14" class="tick"/><line x1="83.00" y1="99.84" x2="84.50" y2="102.44" class="tick"/><line x1="80.12" y1="103.14" x2="80.71" y2="104.41" class="tick"/><line x1="76.07" y1="104.17" x2="76.76" y2="106.04" class="tick"/><line x1="72.32" y1="105.98" x2="72.68" y2="107.33" class="tick"/><line x1="68.16" y1="106.29" x2="68.51" y2="108.26" class="tick"/><line x1="64.15" y1="107.42" x2="64.27" y2="108.81" class="tick"/><line x1="60.00" y1="106.00" x2="60.00" y2="109.00" class="tick"/><line x1="55.85" y1="107.42" x2="55.73" y2="108.81" class="tick"/><line x1="51.84" y1="106.29" x2="51.49" y2="108.26" class="tick"/><line x1="47.68" y1="105.98" x2="47.32" y2="107.33" class="tick"/><line x1="43.93" y1="104.17" x2="43.24" y2="106.04" class="tick"/><line x1="39.88" y1="103.14" x2="39.29" y2="104.41" class="tick"/><line x1="37.00" y1="99.84" x2="35.50" y2="102.44" class="tick"/><line x1="32.70" y1="98.99" x2="31.89" y2="100.14" class="tick"/><line x1="29.79" y1="96.00" x2="28.50" y2="97.54" class="tick"/><line x1="26.34" y1="93.66" x2="25.35" y2="94.65" class="tick"/><line x1="24.00" y1="90.21" x2="22.46" y2="91.50" class="tick"/><line x1="21.01" y1="87.30" x2="19.86" y2="88.11" class="tick"/><line x1="20.16" y1="83.00" x2="17.56" y2="84.50" class="tick"/><line x1="16.86" y1="80.12" x2="15.59" y2="80.71" class="tick"/><line x1="15.83" y1="76.07" x2="13.96" y2="76.76" class="tick"/><line x1="14.02" y1="72.32" x2="12.67" y2="72.68" class="tick"/><line x1="13.71" y1="68.16" x2="11.74" y2="68.51" class="tick"/><line x1="12.58" y1="64.15" x2="11.19" y2="64.27" class="tick"/><line x1="14.00" y1="60.00" x2="11.00" y2="60.00" class="tick"/><line x1="12.58" y1="55.85" x2="11.19" y2="55.73" class="tick"/><line x1="13.71" y1="51.84" x2="11.74" y2="51.49" class="tick"/><line x1="14.02" y1="47.68" x2="12.67" y2="47.32" class="tick"/><line x1="15.83" y1="43.93" x2="13.96" y2="43.24" class="tick"/><line x1="16.86" y1="39.88" x2="15.59" y2="39.29" class="tick"/><line x1="20.16" y1="37.00" x2="17.56" y2="35.50" class="tick"/><line x1="21.01" y1="32.70" x2="19.86" y2="31.89" class="tick"/><line x1="24.00" y1="29.79" x2="22.46" y2="28.50" class="tick"/><line x1="26.34" y1="26.34" x2="25.35" y2="25.35" class="tick"/><line x1="29.79" y1="24.00" x2="28.50" y2="22.46" class="tick"/><line x1="32.70" y1="21.01" x2="31.89" y2="19.86" class="tick"/><line x1="37.00" y1="20.16" x2="35.50" y2="17.56" class="tick"/><line x1="39.88" y1="16.86" x2="39.29" y2="15.59" class="tick"/><line x1="43.93" y1="15.83" x2="43.24" y2="13.96" class="tick"/><line x1="47.68" y1="14.02" x2="47.32" y2="12.67" class="tick"/><line x1="51.84" y1="13.71" x2="51.49" y2="11.74" class="tick"/><line x1="55.85" y1="12.58" x2="55.73" y2="11.19" class="tick"/><line x1="60.00" y1="14.00" x2="60.00" y2="11.00" class="tick"/><line x1="64.15" y1="12.58" x2="64.27" y2="11.19" class="tick"/><line x1="68.16" y1="13.71" x2="68.51" y2="11.74" class="tick"/><line x1="72.32" y1="14.02" x2="72.68" y2="12.67" class="tick"/><line x1="76.07" y1="15.83" x2="76.76" y2="13.96" class="tick"/><line x1="80.12" y1="16.86" x2="80.71" y2="15.59" class="tick"/><line x1="83.00" y1="20.16" x2="84.50" y2="17.56" class="tick"/><line x1="87.30" y1="21.01" x2="88.11" y2="19.86" class="tick"/><line x1="90.21" y1="24.00" x2="91.50" y2="22.46" class="tick"/><line x1="93.66" y1="26.34" x2="94.65" y2="25.35" class="tick"/><line x1="96.00" y1="29.79" x2="97.54" y2="28.50" class="tick"/><line x1="98.99" y1="32.70" x2="100.14" y2="31.89" class="tick"/><line x1="99.84" y1="37.00" x2="102.44" y2="35.50" class="tick"/><line x1="103.14" y1="39.88" x2="104.41" y2="39.29" class="tick"/><line x1="104.17" y1="43.93" x2="106.04" y2="43.24" class="tick"/><line x1="105.98" y1="47.68" x2="107.33" y2="47.32" class="tick"/><line x1="106.29" y1="51.84" x2="108.26" y2="51.49" class="tick"/><line x1="107.42" y1="55.85" x2="108.81" y2="55.73" class="tick"/><circle cx="60" cy="60" r="1.6" class="ctr"/><circle cx="78" cy="44" r="1.7" class="blip" style="animation-delay:0s"/><circle cx="41" cy="72" r="1.7" class="blip" style="animation-delay:1.1s"/><circle cx="70" cy="83" r="1.7" class="blip" style="animation-delay:2.2s"/></g>
             <circle cx="60" cy="60" r="52" class="trk"/>
             <circle cx="60" cy="60" r="52" class="prg" id="scan-prg"/>
           </svg>
@@ -602,7 +619,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
           <button type="button" data-k="sc-imp"><b id="sc-imp">0</b><span>Importantes</span></button>
         </div>
         <button class="pn-btn pri pn-scan-btn" type="button" id="varr-agora"><span data-ico="refresh"></span>Varrer agora</button>
-        <div class="pn-scan-nx" id="varr-agora-st">Automática de hora em hora</div>
+        <div class="pn-scan-nx" id="varr-agora-st">Varredura automática</div>
       </div>
       <div class="pn-set">
         <div class="pn-set-t">Varredura</div>
@@ -611,6 +628,15 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
             <span class="pn-set-ic g"><span data-ico="shield"></span></span>
             <div class="pn-set-x"><b>Varrer meu WhatsApp</b><span id="varr-sub">Desativado</span></div>
             <button class="pn-tg" type="button" role="switch" aria-checked="false" id="varr-tg" aria-label="Varrer meu WhatsApp"></button>
+          </div>
+          <div class="pn-set-r">
+            <span class="pn-set-ic o"><span data-ico="clock"></span></span>
+            <div class="pn-set-x"><b>Frequência</b><span id="varr-int-sub">A cada 2 horas</span></div>
+          </div>
+          <div class="pn-set-ed">
+            <div class="pn-seg" id="varr-int" role="radiogroup" aria-label="Frequência da varredura">
+              <button type="button" data-h="1">1h</button><button type="button" data-h="2">2h</button><button type="button" data-h="3">3h</button><button type="button" data-h="4">4h</button><button type="button" data-h="6">6h</button>
+            </div>
           </div>
           <div class="pn-set-r">
             <span class="pn-set-ic b"><span data-ico="phone"></span></span>
@@ -772,7 +798,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         <button class="pn-btn" type="button" id="rg-pdf">PDF</button>
         <button class="pn-btn pri" type="button" id="rg-xlsx">Excel</button>
       </div>
-      <div class="pn-meta" style="margin:8px 4px 0" id="rg-auto">Varredura automática de hora em hora, 24h por dia.</div>
+      <div class="pn-meta" style="margin:8px 4px 0" id="rg-auto">Varredura automática, 24h por dia.</div>
       <div class="pn-h2" style="margin-top:14px">Todos os grupos</div>
       <input type="search" id="rg-busca" placeholder="Buscar grupo" style="width:100%;margin:0 0 8px;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit">
       <div class="pn-card" id="rg-todos"></div>
@@ -838,7 +864,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 
     <div class="pn-h2" id="ponte-h">Ponte oficial · conversas individuais 24h</div>
     <div class="pn-card pn-form" id="ponte-card">
-      <p class="pn-meta" style="margin:0 0 10px">Recebe as conversas individuais do WhatsApp Business em tempo real pela API oficial da Meta, sem Chrome e sem notebook. Grupos continuam na varredura de hora em hora.</p>
+      <p class="pn-meta" style="margin:0 0 10px">Recebe as conversas individuais do WhatsApp Business em tempo real pela API oficial da Meta, sem Chrome e sem notebook. Grupos continuam na varredura automática.</p>
       <div id="ponte-st" class="pn-meta" style="margin:0 0 10px;font-weight:600">Não conectada.</div>
       <label for="ponte-url">Endereço da ponte</label><input id="ponte-url" placeholder="https://peneira-ponte.SEU-NOME.workers.dev" autocomplete="off" inputmode="url">
       <label for="ponte-tok">Senha da ponte</label><input id="ponte-tok" type="password" placeholder="a mesma do PENEIRA_TOKEN" autocomplete="off">
@@ -1407,6 +1433,20 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     }catch(e){}
   }
   $("vip-testar").addEventListener("click",toca);
+  /* pingo d'água (sintetizado, sem arquivo) */
+  function pingo(vol){
+    try{ destrava(); if(!ac) return; vol=vol||.5; const t=ac.currentTime+.01, out=ac.createGain(); out.gain.value=1; out.connect(ac.destination);
+      const gota=(t0,f0,f1,dur,v)=>{ const o=ac.createOscillator(), g=ac.createGain(); o.type="sine";
+        o.frequency.setValueAtTime(f0,t0); o.frequency.exponentialRampToValueAtTime(f1,t0+dur*.4);
+        g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(v,t0+.005); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
+        o.connect(g).connect(out); o.start(t0); o.stop(t0+dur+.03); };
+      gota(t,170,90,.07,vol*.35);          // toque na água
+      gota(t+.004,480,1450,.17,vol);       // o "plic"
+      gota(t+.12,640,1800,.11,vol*.3);     // respingo
+      gota(t+.22,820,2200,.07,vol*.1);     // eco
+    }catch(e){}
+  }
+  window.pnPingo=pingo;
   async function salvaVip(op,v){
     if(S.demo){ if(op==="add") S.vips.push({id:"v"+Date.now(),...v}); else if(op==="del") S.vips=S.vips.filter(x=>x.id!==v.id); else { const i=S.vips.findIndex(x=>x.id===v.id); if(i>=0) S.vips[i]={...S.vips[i],...v.patch}; } demoSave(); render(); return; }
     if(!S.db) return;
@@ -1575,8 +1615,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.8";
+  const VERSAO="4.9";
   const VERSOES=[
+    {v:"4.9",data:"14/11/2026",itens:["Som de pingo d'água na abertura e ao tocar Varrer agora","Radar com teia completa: anéis, raios, marcações e pontos detectados","Botão Varrer agora azul, com ícone girando ao pedir","Frequência da varredura ajustável: 1h, 2h, 3h, 4h ou 6h (padrão: a cada 2 horas)"]},
     {v:"4.8",data:"14/11/2026",itens:["Novidades mostram só as 3 últimas versões; o histórico completo continua guardado"]},
     {v:"4.7",data:"14/11/2026",itens:["Início reorganizado abaixo do Varrer agora: lista agrupada no estilo do iPhone (Varredura e Conexões), número formatado com botão Alterar e status em selos (Ao vivo, Conectado)","Regra da varredura recolhida em \"Como a varredura decide\""]},
     {v:"4.6",data:"14/11/2026",itens:["Novo painel de varredura no padrão dos melhores apps de segurança: radar grande centralizado girando sempre (verde em dia, azul quando você pede, laranja se passar de 3h)","Números alinhados em 3 colunas iguais, Varrer agora dentro do painel e horário da próxima varredura automática","Barra do topo fixa e área da hora do iPhone protegida ao rolar"]},
@@ -1769,8 +1810,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   function renderUlt(){ const b=$("ult-ind"); if(!b) return; const m=S.meta||{}; b.classList.remove("am","ve");
     if(m.emAndamento){ $("ult-txt").innerHTML=""; $("ult-txt").append("Varrendo agora"+(m.progresso!=null?" · "+m.progresso+"%":"")+"…"); return; }
     if(!m.ultimaVarredura){ $("ult-txt").textContent="Ainda sem varredura dos grupos"; b.classList.add("am"); return; }
-    const min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>180) b.classList.add("ve"); else if(min>75) b.classList.add("am"); const sc=$("scan"); if(sc) sc.classList.toggle("velho",min>180);
-    const nx=$("varr-agora-st"); if(nx && !(S.pedidaAte&&Date.now()<S.pedidaAte) && !nx.dataset.fixo){ const d=new Date(); if(d.getMinutes()>=19) d.setHours(d.getHours()+1); d.setMinutes(19,0,0); nx.textContent="Automática de hora em hora · próxima às "+pad2(d.getHours())+":19"; }
+    const ih=intervaloH()*60, min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>ih+120) b.classList.add("ve"); else if(min>ih+15) b.classList.add("am"); const sc=$("scan"); if(sc) sc.classList.toggle("velho",min>ih+120);
+    const nx=$("varr-agora-st"); if(nx && !(S.pedidaAte&&Date.now()<S.pedidaAte) && !nx.dataset.fixo){ const d=proxVarr(); nx.textContent="Automática "+txtInt(intervaloH())+" · próxima às "+pad2(d.getHours())+":"+pad2(d.getMinutes()); }
     const t=$("ult-txt"); t.textContent=""; t.append("Última varredura "); t.appendChild(el("b",null,haQuanto(m.ultimaVarredura)));
     const dU=new Date(m.ultimaVarredura), hoje=dU.toDateString()===new Date().toDateString(); t.append(" · "+(hoje?"às "+hhmm(m.ultimaVarredura):fmt(m.ultimaVarredura)));
     const ud=$("upd-dados"); if(ud) ud.textContent=(ponte&&ponte.vistoEm)?haQuanto(ponte.vistoEm)+" ("+hhmm(ponte.vistoEm)+")":(ponte&&ponte.url?"aguardando":"ponte não conectada"); }
@@ -1918,6 +1959,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     if(!S.canWrite) return;
     if(S.meta&&S.meta.emAndamento){ st.textContent="Já tem uma varredura em andamento."; return; }
     const marca=(msg,ms)=>{ ms=ms||90000; S.pedidaAte=Date.now()+ms; S.pedidaMsg=msg; render(); setTimeout(()=>{ try{ render(); }catch(e){} },ms+300); };
+    pingo(); b.classList.add("gira"); setTimeout(()=>b.classList.remove("gira"),3000);
     b.disabled=true; setTimeout(()=>{ b.disabled=false; },30000);
     let fezPonte=false; if(ponte&&ponte.url){ st.textContent="Atualizando as conversas individuais…"; await ponteSync(); fezPonte=!!S.ponteSt; }
     let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
@@ -1938,6 +1980,22 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       if(fezPonte) marca("Conversas individuais atualizadas.",4000);
     }
   });
+
+  /* ---------- frequência da varredura automática ---------- */
+  const INTS=[1,2,3,4,6];
+  function intervaloH(){ const n=Number(S.varredura&&S.varredura.intervaloH); return INTS.includes(n)?n:2; }
+  function txtInt(n){ return n===1?"de hora em hora":"a cada "+n+" horas"; }
+  function proxVarr(){ const n=intervaloH(), pv=S.meta&&S.meta.proximaVarredura, agora=Date.now();
+    const d=new Date(agora); d.setUTCSeconds(0,0); d.setUTCMinutes(19); if(d.getTime()<=agora) d.setUTCHours(d.getUTCHours()+1);
+    while(d.getUTCHours()%n) d.setUTCHours(d.getUTCHours()+1);
+    const t=pv?Date.parse(pv):NaN; return (!isNaN(t)&&t>agora&&t<d.getTime()+3600000)?new Date(t):d; }
+  $("varr-int").addEventListener("click",async e=>{ const b=e.target.closest("button[data-h]"); if(!b||!S.canWrite) return; const n=Number(b.dataset.h); if(n===intervaloH()) return;
+    pingo(.35); await salvaVarr({intervaloH:n});
+    if(ponte&&ponte.url){ try{ await ponteReq("/sync",{method:"POST",body:JSON.stringify({varredura:S.varredura})}); }catch(e){} }
+    let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
+    if(mcp){ try{ await mcp.callTool("Claude Code Remote","update_trigger",{trigger_id:TRIG_VARR,cron_expression:n===1?"19 * * * *":"19 */"+n+" * * *"}); }catch(e){} }
+    const st=$("varr-agora-st"); st.dataset.fixo="1"; setTimeout(()=>{ delete st.dataset.fixo; renderUlt(); },8000);
+    st.textContent="✓ Frequência: "+txtInt(n)+". Vale a partir da próxima varredura."; render(); });
 
   let numPre=false;
   function fmtTel(n){ let d=String(n||"").replace(/\D/g,""); if(d.length>11&&d.startsWith("55")) d=d.slice(2);
@@ -1975,7 +2033,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     $("varr-tg").setAttribute("aria-checked",on?"true":"false");
     const conectado=!!m.conectado, num=m.numero||v.numero;
     $("varr-num-show").textContent=fmtTel(num)||"Não informado";
-    $("varr-sub").textContent=!on?"Desligado · nada é lido":"Ligado · de hora em hora";
+    $("varr-sub").textContent=!on?"Desligado · nada é lido":"Ligado · "+txtInt(intervaloH());
+    { const n=intervaloH(); $("varr-int-sub").textContent=n===1?"De hora em hora":"A cada "+n+" horas"; $("varr-int").querySelectorAll("button").forEach(b=>{ const s=Number(b.dataset.h)===n; b.classList.toggle("on",s); b.setAttribute("aria-checked",s?"true":"false"); b.setAttribute("role","radio"); b.disabled=!on||S.canWrite===false; }); }
     const P=$("varr-proc"); P.style.display=on?"block":"none"; P.textContent=""; if(!on) return;
     const sec=el("div","pn-set"); sec.appendChild(el("div","pn-set-t","Conexões")); const g=el("div","pn-set-g"); sec.appendChild(g); P.appendChild(sec);
     const linha=(cor,icone,tit,sub,st,stCls)=>{ const r=el("div","pn-set-r"); const ic=el("span","pn-set-ic "+cor); ic.appendChild(ico(icone)); r.appendChild(ic);
@@ -2083,6 +2142,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     if(Array.isArray(dd.criterios)) junta("criterios",dd.criterios,["status"]);
     if(Array.isArray(dd.acoes)) junta("acoes",dd.acoes,["status"]);
     if(dd.varredura && !(S.varredura&&S.varredura.ativa)) S.varredura={...dd.varredura};
+    else if(dd.varredura && String(dd.varredura.atualizadoEm||"")>String((S.varredura&&S.varredura.atualizadoEm)||"")) S.varredura={...S.varredura,...dd.varredura};
     if(dd.bomdia && !S.bomdia) S.bomdia=dd.bomdia;
     if(dd.notificacoes && !S.notif) S.notif=dd.notificacoes;
     if(dd.ausencia && !S.ausencia) S.ausencia=dd.ausencia;
@@ -2252,7 +2312,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const L=$("rg-lista"); if(!L) return; L.textContent="";
     const rs=ultimosPorGrupo();
     $("rg-resumo").textContent = rs.length ? rs.length+" grupos · "+rs.reduce((a,r)=>a+(r.mensagens||0),0)+" mensagens analisadas" : "Nenhum grupo analisado ainda";
-    const prox=S.meta&&S.meta.proximaVarredura; $("rg-auto").textContent="Varredura automática de hora em hora, 24h por dia"+(prox?" · próxima "+fmt(prox):"")+".";
+    const prox=S.meta&&S.meta.proximaVarredura; $("rg-auto").textContent="Varredura automática "+txtInt(intervaloH())+", 24h por dia"+(prox?" · próxima "+fmt(prox):"")+".";
     if(!rs.length){ L.appendChild(el("div","pn-empty","Os relatórios por grupo aparecem aqui depois da primeira varredura: assuntos, preocupações, metas, compromissos, reclamações e quem lidera cada conversa.")); return; }
     rs.forEach(r=>{
       const c=el("article","pn-card pn-rg"); c.style.marginTop="12px";
@@ -2688,10 +2748,10 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   /* ---------- tela de entrada: letras caem na peneira, ela sacode e o nome passa ---------- */
   (function(){
     const sp=$("splash"), st=$("sp-stage");
-    let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
+    let visto=false, pingou=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
     const calmo = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
     function fecha(){ if(sp.classList.contains("sai")) return; sp.classList.add("sai"); try{sessionStorage.setItem("peneira-splash","1");}catch(e){} setTimeout(()=>{ sp.remove(); window.dispatchEvent(new Event("pn-splash-fim")); },600); }
-    $("sp-pular").addEventListener("click",fecha); sp.addEventListener("click",fecha);
+    $("sp-pular").addEventListener("click",()=>{ if(!pingou){ pingou=true; window.pnPingo&&window.pnPingo(.45); } fecha(); }); sp.addEventListener("click",fecha);
     if(visto || !st.animate){ sp.remove(); setTimeout(()=>window.dispatchEvent(new Event("pn-splash-fim")),0); return; }
     const W=st.clientWidth, H=st.clientHeight, k=calmo?.35:1;
     const rs=st.getBoundingClientRect(), rv=st.querySelector(".pn-sp-sieve").getBoundingClientRect();
@@ -2736,6 +2796,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         {transform:`translate(${tx}px,${ty-fs*.06}px) scale(.98)`,opacity:1,offset:.9},
         {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],{duration:1050*k,fill:"forwards",easing:"cubic-bezier(.35,.05,.4,1)"}), T_PASSA+i*150*k);
     });
+    setTimeout(()=>{ if(!pingou){ pingou=true; window.pnPingo&&window.pnPingo(.45); } }, T_PASSA+(nome.length*150+850)*k);
     setTimeout(()=>$("sp-tag").classList.add("on"), T_PASSA+1900*k);
     setTimeout(fecha, T_PASSA+3200*k);
   })();
