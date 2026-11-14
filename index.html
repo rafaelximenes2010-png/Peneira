@@ -68,6 +68,8 @@
 .pn-nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px}
 .pn-nav-btn{border:0;background:none;color:var(--ink-3);padding:7px 12px;border-radius:9px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px}
 .pn-nav-btn[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.pn-tag.pn-tag-grupo{font-size:14.5px;font-weight:700;padding:5px 11px}
+.pn-tag.pn-tag-grupo svg{width:16px;height:16px}
 .pn-ult{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 14px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:13.5px;cursor:pointer;width:fit-content;max-width:100%}
 .pn-ult i{width:10px;height:10px;border-radius:50%;background:#2ecc71;flex:none;box-shadow:0 0 0 3px rgba(46,204,113,.2)}
 .pn-ult.am i{background:#f1c40f;box-shadow:0 0 0 3px rgba(241,196,15,.2)} .pn-ult.ve i{background:#e74c3c;box-shadow:0 0 0 3px rgba(231,76,60,.2)}
@@ -1149,7 +1151,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     if(vp){ const t=rotulo("bell","VIP","pn-tag t-vip"); t.dataset.tip="vip"; t.dataset.nome=vp.nome; tags.appendChild(t); }
     if(i.prioridade){ const t=el("span","pn-tag t-"+i.prioridade, PRI_TXT[i.prioridade]||i.prioridade); t.dataset.tip="pri"; tags.appendChild(t); }
     if(i.mencao){ const t=el("span","pn-tag t-alta","@ você"); t.dataset.tip="mencao"; t.dataset.nome=i.grupo||""; tags.appendChild(t); }
-    if(i.grupo){ const t=rotulo("meeting","Grupo · "+i.grupo,"pn-tag t-baixa"); t.dataset.tip="grupo"; t.dataset.nome=i.grupo; tags.appendChild(t); }
+    if(i.grupo){ const t=rotulo("meeting","Grupo · "+i.grupo,"pn-tag t-baixa pn-tag-grupo"); t.dataset.tip="grupo"; t.dataset.nome=i.grupo; tags.appendChild(t); }
     if(i.categoria){ const t=el("span","pn-tag t-cat", i.categoria); t.dataset.tip="cat"; t.dataset.nome=i.categoria; tags.appendChild(t); }
     if(i.favoritado){ const t=rotulo("star","Favoritado","pn-tag t-fav"); t.dataset.tip="fav"; tags.appendChild(t); }
     top.appendChild(tags);
@@ -1488,8 +1490,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.3";
+  const VERSAO="4.4";
   const VERSOES=[
+    {v:"4.4",data:"14/11/2026",itens:["Nome do grupo maior e em negrito em cada alerta de importância"]},
     {v:"4.3",data:"14/11/2026",itens:["Indicador da última varredura no Início: há quanto tempo, horário e conversas (verde até 75 min, amarelo até 3h, vermelho depois); toque para puxar os dados do computador","Central de atualização em Ajustes: versão instalada e disponível, Atualizar agora, aviso azul quando sai versão nova","O celular puxa os dados do computador assim que o app é aberto"]},
     {v:"4.2",data:"14/11/2026",itens:["Importar agenda envia todos os contatos para a ponte (cópia de segurança completa)","Alertas na tela bloqueada e tempo de conversa individual ativos na ponte"]},
     {v:"4.1",data:"14/11/2026",itens:["Quem mais fala mostra horas e minutos de conversa de cada pessoa","Gráfico: tempo ativo de cada grupo e maior conversa sem parar","Detalhe do grupo com tempo ativo, maior sequência, conversas e horário de pico; tudo no Excel/PDF"]},
