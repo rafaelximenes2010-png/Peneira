@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f5f58">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -296,7 +296,9 @@
 /* =========================================================
    6. CAMADA PROFISSIONAL (estilo iOS / apps de mercado)
    ========================================================= */
-html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
+html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%;touch-action:pan-x pan-y;overscroll-behavior:none}
+*{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .pn [hidden]{display:none!important}
 .pn{--font-text:var(--font-ui);overflow-x:hidden;max-width:100vw;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
   padding-top:0;padding-left:calc(16px + env(safe-area-inset-left));padding-right:calc(16px + env(safe-area-inset-right))}
@@ -1490,8 +1492,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.4";
+  const VERSAO="4.5";
   const VERSOES=[
+    {v:"4.5",data:"14/11/2026",itens:["Zoom travado: sem zoom por duplo toque ou pinça, visual de app nativo"]},
     {v:"4.4",data:"14/11/2026",itens:["Nome do grupo maior e em negrito em cada alerta de importância"]},
     {v:"4.3",data:"14/11/2026",itens:["Indicador da última varredura no Início: há quanto tempo, horário e conversas (verde até 75 min, amarelo até 3h, vermelho depois); toque para puxar os dados do computador","Central de atualização em Ajustes: versão instalada e disponível, Atualizar agora, aviso azul quando sai versão nova","O celular puxa os dados do computador assim que o app é aberto"]},
     {v:"4.2",data:"14/11/2026",itens:["Importar agenda envia todos os contatos para a ponte (cópia de segurança completa)","Alertas na tela bloqueada e tempo de conversa individual ativos na ponte"]},
@@ -2683,6 +2686,15 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     db.doc("config/ausencia").onSnapshot(s=>{ S.ausencia=s.exists?s.data():null; S.dbPronto=true; render(); }, ()=>{});
     db.doc("meta/status").onSnapshot(s=>{ S.meta=s.exists?s.data():null; render(); }, ()=>{});
   })();
+})();
+</script>
+<script>
+/* Trava zoom: pinça e duplo toque (iOS ignora user-scalable=no) */
+(function(){
+  ["gesturestart","gesturechange","gestureend"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();},{passive:false});});
+  document.addEventListener("touchmove",function(e){if(e.touches.length>1)e.preventDefault();},{passive:false});
+  var ult=0;document.addEventListener("touchend",function(e){var a=Date.now();if(a-ult<=300){var t=e.target;if(!(t.closest&&t.closest("input,textarea,select,[contenteditable]")))e.preventDefault();}ult=a;},{passive:false});
+  document.addEventListener("dblclick",function(e){e.preventDefault();},{passive:false});
 })();
 </script>
 </body>
