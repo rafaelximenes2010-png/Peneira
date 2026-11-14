@@ -1430,8 +1430,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.7";
+  const VERSAO="3.8";
   const VERSOES=[
+    {v:"3.8",data:"13/11/2026",itens:["Alertas na tela bloqueada (Web Push): VIP, golpe e menções a qualquer hora; o resto das 5h às 23h"]},
     {v:"3.7",data:"13/11/2026",itens:["Ao conectar a ponte, o app restaura VIPs, critérios, perfil, grupos, contatos, importantes, agenda e relatórios"]},
     {v:"3.6",data:"13/11/2026",itens:["App do celular recebe também os grupos: a varredura manda os relatórios para a ponte e o app puxa a cada minuto"]},
     {v:"3.5",data:"13/11/2026",itens:["Radar azul volta ao verde assim que a atualização termina"]},
@@ -1919,7 +1920,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
     }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
   }
-  function ponteLiga(){ clearInterval(ponteTimer); if(ponte&&ponte.url){ $("ponte-url").value=ponte.url; $("ponte-tok").value=ponte.tok?"••••••••":""; $("ponte-sair").hidden=false; ponteTimer=setInterval(ponteSync,60000); setTimeout(ponteSync,2500); } else { $("ponte-sair").hidden=true; ponteMostra("Não conectada."); } }
+  function ponteLiga(){ clearInterval(ponteTimer); try{ guardaCfgPonte(); }catch(e){} if(ponte&&ponte.url){ $("ponte-url").value=ponte.url; $("ponte-tok").value=ponte.tok?"••••••••":""; $("ponte-sair").hidden=false; ponteTimer=setInterval(ponteSync,60000); setTimeout(ponteSync,2500); } else { $("ponte-sair").hidden=true; ponteMostra("Não conectada."); } }
   $("ponte-ok").addEventListener("click",async()=>{
     const url=$("ponte-url").value.trim(); let tok=$("ponte-tok").value.trim(); if(tok==="••••••••"&&ponte) tok=ponte.tok;
     if(!/^https:\/\//.test(url)||!tok){ ponteMostra("Preencha o endereço (https://…) e a senha.",false); return; }
@@ -1928,6 +1929,33 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
   $("ponte-sair").addEventListener("click",()=>{ ponte=null; try{ localStorage.removeItem(PONTE_KEY); }catch(e){} $("ponte-url").value=""; $("ponte-tok").value=""; ponteLiga(); });
   ponteLiga();
+
+  /* ---------- alertas na tela bloqueada (Web Push) ---------- */
+  const VAPID_PUB="BHo7pH3Gt_ejTU4RD_Ef1FDYqEXj6xtiLhCrgBv-epCBr4VuY-Zg0lUgzuiQMynC_Dr5zjb6AMqpHEPNtzC0i4w";
+  function b64u(b){ const p="=".repeat((4-b.length%4)%4); const r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from([...r].map(c=>c.charCodeAt(0))); }
+  const ehApp=()=> (window.matchMedia&&matchMedia("(display-mode: standalone)").matches) || navigator.standalone===true;
+  async function guardaCfgPonte(){ try{ if(!("caches" in window)) return; const c=await caches.open("peneira-cfg"); if(ponte&&ponte.url) await c.put("/__ponte",new Response(JSON.stringify({url:ponte.url,tok:ponte.tok}),{headers:{"content-type":"application/json"}})); else await c.delete("/__ponte"); }catch(e){} }
+  async function pushEstado(ps,pb){
+    if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){ ps.textContent= /iPhone|iPad/.test(navigator.userAgent)&&!ehApp() ? "No iPhone, abra o Peneira pelo ícone da Tela de Início para ativar." : "Este navegador não aceita alertas."; pb.disabled=!ehApp(); return; }
+    try{ const r=await navigator.serviceWorker.ready; const s=await r.pushManager.getSubscription(); if(s && Notification.permission==="granted"){ ps.textContent="✓ Alertas ativos neste aparelho."; pb.textContent="Enviar alerta de teste"; } }catch(e){}
+  }
+  async function ativaPush(pb,ps){
+    if(!ponte||!ponte.url){ ps.textContent="Conecte a ponte oficial primeiro (Ajustes → Ponte oficial)."; return; }
+    if(/iPhone|iPad/.test(navigator.userAgent) && !ehApp()){ ps.textContent="No iPhone, abra o Peneira pelo ícone da Tela de Início e toque de novo."; return; }
+    try{
+      const perm=await Notification.requestPermission();
+      if(perm!=="granted"){ ps.textContent="Permissão negada. Ative em Ajustes do iPhone → Notificações → Peneira."; return; }
+      const reg=await navigator.serviceWorker.ready;
+      let sub=await reg.pushManager.getSubscription();
+      if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUB)});
+      await guardaCfgPonte();
+      const r=await ponteReq("/push/inscrever",{method:"POST",body:JSON.stringify({subscription:sub.toJSON(),aparelho:/iPhone/.test(navigator.userAgent)?"iPhone":"Computador"})});
+      if(!r.ok) throw new Error(r.erro||"falha");
+      const t=await ponteReq("/push/teste",{method:"POST"});
+      ps.textContent= t.ok ? "✓ Alertas ativos. Um aviso de teste deve chegar agora." : "Inscrito, mas a ponte ainda não tem as chaves de alerta.";
+      pb.textContent="Enviar alerta de teste"; salvoOk(pb,"✓ Ativado");
+    }catch(e){ ps.textContent="Não consegui ativar agora ("+(e.message||"erro")+"). Tente de novo."; }
+  }
 
   /* ---------- lista VIP (ver quem está cadastrado) ---------- */
   function renderVipLista(){
@@ -2237,7 +2265,10 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       tg.onclick=()=>{ if(S.canWrite) salvaNotif({[k]:!n[k]}); };
       r.append(t,tg); N.appendChild(r);
     });
-    N.appendChild(el("div","pn-meta","As notificações chegam pelo app do Claude no seu celular."));
+    const pb=el("button","pn-btn pri","Ativar alertas na tela bloqueada"); pb.type="button"; pb.id="push-ativar"; pb.style.cssText="width:100%;margin-top:6px;padding:12px";
+    const ps=el("div","pn-meta",""); ps.id="push-st"; ps.style.marginTop="8px";
+    pb.onclick=()=>ativaPush(pb,ps); N.appendChild(pb); N.appendChild(ps); pushEstado(ps,pb);
+    N.appendChild(el("div","pn-meta","VIP, golpe e menções avisam a qualquer hora; o resto, das 5h às 23h. Os relatórios chegam também pelo app do Claude."));
     if(!horasPreenchidas && (S.notif || S.dbPronto || S.demo)){ $("h-manha").value=n.horaManha; $("h-noite").value=n.horaNoite; horasPreenchidas=true; }
     const sug=S.criterios.filter(k=>(k.status||"sugerido")==="sugerido").length, apr=S.criterios.filter(k=>k.status==="aprovado").length;
     $("aj-crit").textContent = apr+" aprovados"+(sug?" · "+sug+" aguardando você":"");

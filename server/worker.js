@@ -36,6 +36,9 @@ export default {
       if (url.pathname === "/") return cors(json({ ok: true, app: "peneira-ponte", envia: false }));
       if (!autorizado(req, env)) return cors(json({ erro: "senha inválida" }, 401));
       if (url.pathname === "/status") return cors(json(await status(env)));
+      if (url.pathname === "/push/inscrever" && req.method === "POST") return cors(json(await inscreve(req, env)));
+      if (url.pathname === "/push/teste" && req.method === "POST") return cors(json(await empurra(env, true)));
+      if (url.pathname === "/ultimo") return cors(json(await ultimo(env)));
       if (url.pathname === "/sync" && req.method === "POST") return cors(json(await recebeSync(req, env)));
       if (url.pathname === "/dados") return cors(json(await dados(env)));
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
@@ -152,6 +155,7 @@ async function guardaRecebida(m, perfis, cfg, env) {
   };
   await env.KV.put("item:" + quando + ":" + item.id, JSON.stringify(item), { expirationTtl: RETEM });
   await contaDia(env, "importantes");
+  await registraAlerta(env, { titulo: (item.prioridade === "alta" ? "⚠️ " : "") + item.contato, texto: item.resumo, alta: item.prioridade === "alta" });
 }
 
 async function registraResposta(m, env) {
@@ -282,6 +286,11 @@ async function recebeSync(req, env) {
     const m = new Map(atual.map(x => [x.id, x]));
     for (const x of b[col]) if (x && x.id) m.set(String(x.id), x);
     const lista = [...m.values()].sort((a, c) => String(c.geradoEm || c.recebidoEm || c.quando || "").localeCompare(String(a.geradoEm || a.recebidoEm || a.quando || ""))).slice(0, max);
+    if (col === "itens") {
+      const antes = new Set(atual.map(x => x.id));
+      for (const x of b.itens) if (x && x.id && !antes.has(x.id) && (x.status || "pendente") === "pendente")
+        await registraAlerta(env, { titulo: (x.prioridade === "alta" ? "⚠️ " : "") + (x.grupo ? x.grupo + " · " : "") + (x.contato || "Peneira"), texto: x.resumo || "", alta: x.prioridade === "alta" || !!x.mencao });
+    }
     await env.KV.put("d:" + col, JSON.stringify(lista));
     feito[col] = lista.length;
   }
@@ -293,6 +302,45 @@ async function dados(env) {
   const o = { em: await env.KV.get("d:em") };
   for (const col of [...Object.keys(COLS), ...DOCS]) o[col] = await env.KV.get("d:" + col, "json");
   return o;
+}
+
+// ---------- alertas na tela bloqueada (Web Push, sem conteúdo no envio) ----------
+// O aviso vai vazio; o app (service worker) busca /ultimo para mostrar quem e o resumo.
+async function inscreve(req, env) {
+  const b = await req.json().catch(() => ({}));
+  const sub = b.subscription;
+  if (!sub || !sub.endpoint || !/^https:\/\//.test(sub.endpoint)) return { ok: false, erro: "inscrição inválida" };
+  const subs = ((await env.KV.get("push:subs", "json")) || []).filter(x => x.endpoint !== sub.endpoint);
+  subs.push({ endpoint: sub.endpoint, em: new Date().toISOString(), aparelho: String(b.aparelho || "").slice(0, 40) });
+  await env.KV.put("push:subs", JSON.stringify(subs.slice(-10)));
+  return { ok: true, aparelhos: subs.length };
+}
+async function registraAlerta(env, a) {
+  const h = Number(new Date(Date.now() - 3 * 3600e3).toISOString().slice(11, 13));
+  if (!a.alta && (h >= 23 || h < 5)) return; // madrugada: só VIP, golpe e menção
+  await env.KV.put("push:ultimo", JSON.stringify({ ...a, em: new Date().toISOString() }), { expirationTtl: 7 * DIA });
+  await empurra(env, false);
+}
+async function ultimo(env) { return (await env.KV.get("push:ultimo", "json")) || { titulo: "Peneira", texto: "Abra o app para ver." }; }
+async function empurra(env, teste) {
+  if (!env.VAPID_JWK || !env.VAPID_PUB) return { ok: false, erro: "chaves de push não configuradas" };
+  if (teste) await env.KV.put("push:ultimo", JSON.stringify({ titulo: "Peneira", texto: "Alertas na tela bloqueada ativados ✓", em: new Date().toISOString() }), { expirationTtl: DIA });
+  const subs = (await env.KV.get("push:subs", "json")) || [];
+  const chave = await crypto.subtle.importKey("jwk", JSON.parse(env.VAPID_JWK), { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+  const vivos = []; let enviados = 0;
+  for (const s of subs) {
+    const aud = new URL(s.endpoint).origin;
+    const b64 = o => btoa(typeof o === "string" ? o : String.fromCharCode(...new Uint8Array(o))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const cab = b64(JSON.stringify({ typ: "JWT", alg: "ES256" }));
+    const corpo = b64(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: "https://rafaelximenes2010-png.github.io/Peneira/" }));
+    const ass = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, chave, new TextEncoder().encode(cab + "." + corpo));
+    const jwt = cab + "." + corpo + "." + b64(ass);
+    const r = await fetch(s.endpoint, { method: "POST", headers: { TTL: "3600", Urgency: "high", Authorization: "vapid t=" + jwt + ", k=" + env.VAPID_PUB, "Content-Length": "0" } }).catch(() => null);
+    if (r && (r.status === 404 || r.status === 410)) continue; // inscrição expirada
+    vivos.push(s); if (r && r.ok) enviados++;
+  }
+  if (vivos.length !== subs.length) await env.KV.put("push:subs", JSON.stringify(vivos));
+  return { ok: true, enviados, aparelhos: vivos.length };
 }
 
 // ---------- quem mais fala (conversas individuais) ----------
