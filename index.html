@@ -632,7 +632,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <p class="pn-meta" style="margin:-4px 0 10px">Tudo o que o app guarda, num arquivo só: importantes, agenda, VIPs, contatos, grupos, falantes, relatórios e prevenção.</p>
       <div class="pn-card"><div class="pn-bd" id="bd-cont"></div></div>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="bd-pdf" style="flex:1">PDF completo</button><button class="pn-btn pri" type="button" id="bd-xlsx" style="flex:1">Excel completo</button></div>
-      <p class="pn-meta" style="margin:8px 4px">O Excel sai com uma aba por tabela. Números de telefone de quem não está salvo nunca são guardados.</p>
+      <p class="pn-meta" style="margin:8px 4px">O Excel sai com uma aba por tabela. Telefones só dos contatos salvos na sua agenda; de quem não está salvo, nunca.</p>
     </div>
     <div id="rel-dia">
       <div class="pn-h2" style="margin-top:4px">Relatórios do dia</div>
@@ -709,6 +709,14 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
       <button class="pn-btn" type="button" id="vip-testar" style="margin-top:8px;width:100%">Testar o som</button>
     </div>
 
+    <div class="pn-h2" id="agenda-h">Agenda de contatos · telefones</div>
+    <div class="pn-card" id="agtel-card">
+      <p class="pn-meta" style="margin:0 0 10px">Importe a agenda do celular para o cadastro ter o telefone de cada contato salvo. Só entram contatos da sua agenda; número de quem não está salvo nunca é guardado.</p>
+      <div id="agtel-st" class="pn-meta" style="margin:0 0 10px;font-weight:600"></div>
+      <label class="pn-btn pri" style="display:flex;align-items:center;justify-content:center;width:100%;padding:12px;cursor:pointer">Importar agenda (.vcf ou .csv)<input type="file" id="agtel-arq" accept=".vcf,.vcard,.csv,text/vcard,text/x-vcard,text/csv" hidden></label>
+      <p class="pn-meta" style="margin:8px 0 0">iPhone: icloud.com → Contatos → selecionar todos → Exportar vCard. Android/Google: contacts.google.com → Exportar → vCard ou CSV.</p>
+    </div>
+
     <div class="pn-h2" id="ponte-h">Ponte oficial · conversas individuais 24h</div>
     <div class="pn-card pn-form" id="ponte-card">
       <p class="pn-meta" style="margin:0 0 10px">Recebe as conversas individuais do WhatsApp Business em tempo real pela API oficial da Meta, sem Chrome e sem notebook. Grupos continuam na varredura de hora em hora.</p>
@@ -756,7 +764,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   <!-- ========== POLÍTICA ========== -->
   <section class="pn-view" id="politica">
     <div class="pn-card pn-pol" style="margin-top:12px"><h1>Política de Privacidade do Peneira</h1>
-<p class="pn-meta">Versão 1.0 · vigente desde 13 de novembro de 2026</p>
+<p class="pn-meta">Versão 1.1 · vigente desde 13 de novembro de 2026</p>
 
 <p>O <b>Peneira · Central do WhatsApp</b> é um projeto pessoal de Rafael Ximenes, ainda em fase de teste. Ele organiza mensagens do WhatsApp para destacar o que é importante. Esta política explica, em linguagem simples, quais dados o app usa, para quê, e quais são os seus direitos pela Lei Geral de Proteção de Dados (LGPD, Lei nº 13.709/2018).</p>
 
@@ -769,6 +777,7 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   <li><b>Preferências:</b> lista de critérios, contatos VIP, horários de relatório, tema e cores.</li>
   <li><b>Conteúdo das mensagens:</b> só quando você liga a leitura. O texto é processado para identificar o que é importante. Guardamos apenas um <b>resumo</b>, o contato, o prazo e a prioridade. A mensagem completa não é armazenada.</li>
   <li><b>Agenda e relatórios:</b> os lembretes que você ou a leitura criam e os relatórios do dia.</li>
+  <li><b>Telefones dos contatos:</b> só de quem está <b>salvo na sua agenda</b>, vindos da importação que você faz ou da sincronização oficial da Meta. Número de quem não está salvo (por exemplo, participantes de grupos) <b>nunca</b> é guardado.</li>
 </ul>
 <p>Não coletamos senhas, códigos de verificação, dados de cartão ou de conta bancária. O app nunca pede esses dados.</p>
 
@@ -1430,8 +1439,9 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="3.8";
+  const VERSAO="3.9";
   const VERSOES=[
+    {v:"3.9",data:"13/11/2026",itens:["Importar agenda (.vcf/.csv): telefone dos contatos salvos e dos VIPs no cadastro","A ponte mantém os telefones atualizados pela sincronização oficial da Meta","Política de privacidade 1.1: telefones só de contatos salvos"]},
     {v:"3.8",data:"13/11/2026",itens:["Alertas na tela bloqueada (Web Push): VIP, golpe e menções a qualquer hora; o resto das 5h às 23h"]},
     {v:"3.7",data:"13/11/2026",itens:["Ao conectar a ponte, o app restaura VIPs, critérios, perfil, grupos, contatos, importantes, agenda e relatórios"]},
     {v:"3.6",data:"13/11/2026",itens:["App do celular recebe também os grupos: a varredura manda os relatórios para a ponte e o app puxa a cada minuto"]},
@@ -1930,6 +1940,41 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
   $("ponte-sair").addEventListener("click",()=>{ ponte=null; try{ localStorage.removeItem(PONTE_KEY); }catch(e){} $("ponte-url").value=""; $("ponte-tok").value=""; ponteLiga(); });
   ponteLiga();
 
+
+  /* ---------- importar agenda (telefones dos contatos salvos) ---------- */
+  function telBR(t){ let d=String(t||"").replace(/\D/g,""); if(!d) return ""; if(d.startsWith("00")) d=d.slice(2); if(d.length===10||d.length===11) d="55"+d; if(d.length<10) return "";
+    if(d.startsWith("55")&&(d.length===12||d.length===13)){ const dd=d.slice(2,4), n=d.slice(4); return "+55 "+dd+" "+(n.length===9?n.slice(0,5)+"-"+n.slice(5):n.slice(0,4)+"-"+n.slice(4)); } return "+"+d; }
+  function slugN(s){ return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+  function lerVCF(txt){ const out=[]; txt=txt.replace(/\r\n[ \t]/g,"").replace(/\n[ \t]/g,"");
+    txt.split(/BEGIN:VCARD/i).slice(1).forEach(b=>{ let nome="", tels=[]; b.split(/\r?\n/).forEach(l=>{ const i=l.indexOf(":"); if(i<0) return; const k=l.slice(0,i).toUpperCase(), v=l.slice(i+1).trim();
+      if(k==="FN"||k.startsWith("FN;")) nome=v.replace(/\\,/g,",").replace(/\\;/g,";");
+      else if(!nome && (k==="N"||k.startsWith("N;"))){ const p=v.split(";"); nome=[p[1],p[2],p[0]].filter(Boolean).join(" ").trim(); }
+      else if(k.startsWith("TEL")||k.includes(".TEL")) tels.push({v, cel:/CELL|MOBILE|IPHONE/i.test(k)}); });
+      tels.sort((a,b)=>b.cel-a.cel); const t=tels.map(x=>telBR(x.v)).find(Boolean); if(nome&&t) out.push({nome,tel:t}); }); return out; }
+  function lerCSV(txt){ const linhas=[]; let row=[],cel="",q=false; for(let i=0;i<txt.length;i++){ const c=txt[i];
+      if(q){ if(c==='"'){ if(txt[i+1]==='"'){cel+='"';i++;} else q=false; } else cel+=c; }
+      else if(c==='"') q=true; else if(c===","||c===";"){ row.push(cel); cel=""; } else if(c==="\n"){ row.push(cel.replace(/\r$/,"")); linhas.push(row); row=[]; cel=""; } else cel+=c; }
+    if(cel||row.length){ row.push(cel); linhas.push(row); }
+    const h=(linhas.shift()||[]).map(x=>x.trim().toLowerCase()); const ix=re=>h.findIndex(x=>re.test(x));
+    const iNome=ix(/^(name|nome|full name|nome completo)$/), iFirst=ix(/^(first name|given name|nome)$/), iLast=ix(/^(last name|family name|sobrenome)$/);
+    const iTels=h.map((x,i)=>/(phone|telefone|celular|mobile)/.test(x)&&!/(type|tipo|label)/.test(x)?i:-1).filter(i=>i>=0);
+    const out=[]; linhas.forEach(r=>{ const nome=(iNome>=0?r[iNome]:[r[iFirst],r[iLast]].filter(Boolean).join(" "))||""; const t=iTels.map(i=>(r[i]||"").split(":::")[0]).map(telBR).find(Boolean); if(nome.trim()&&t) out.push({nome:nome.trim(),tel:t}); }); return out; }
+  async function importaAgenda(arq){
+    const st=$("agtel-st"); st.textContent="Lendo "+arq.name+"…";
+    const txt=await arq.text(); const lista=/BEGIN:VCARD/i.test(txt)?lerVCF(txt):lerCSV(txt);
+    if(!lista.length){ st.textContent="Não encontrei contatos com telefone nesse arquivo."; return; }
+    const porNome=new Map((S.contatos||[]).map(c=>[norm(c.nome),c])); let novos=0, atual=0, vipsTel=0; const mudados=[];
+    lista.forEach(x=>{ const k=norm(x.nome); const c=porNome.get(k);
+      if(c){ if(c.tel!==x.tel){ c.tel=x.tel; c.origem="agenda"; atual++; mudados.push(c); } }
+      else { const n={id:slugN(x.nome)||("c"+Date.now()+novos),nome:x.nome,tipo:"pessoa",tel:x.tel,origem:"agenda"}; S.contatos.push(n); porNome.set(k,n); novos++; mudados.push(n); } });
+    const vipsMud=[]; (S.vips||[]).forEach(v=>{ if(v.tipo==="grupo") return; const c=porNome.get(norm(v.nome)) || [...porNome.values()].find(c=>c.tel && norm(c.nome).startsWith(norm(v.nome)+" ")); if(c&&c.tel&&v.tel!==c.tel){ v.tel=c.tel; vipsTel++; vipsMud.push(v); } });
+    if(S.demo) demoSave();
+    else if(S.db && S.canWrite!==false){ st.textContent="Salvando…"; for(const c of mudados){ const {id,...d}=c; try{ await S.db.doc("contatos/"+id).set(d); }catch(e){} } for(const v of vipsMud){ try{ await S.db.doc("vips/"+v.id).update({tel:v.tel}); }catch(e){} } }
+    if(ponte&&ponte.url){ try{ await ponteReq("/sync",{method:"POST",body:JSON.stringify({contatos:mudados,vips:vipsMud})}); }catch(e){} }
+    render();
+    st.textContent="✓ "+lista.length+" contatos com telefone lidos · "+novos+" novos · "+atual+" atualizados · "+vipsTel+" VIPs com número.";
+  }
+  $("agtel-arq").addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(f) importaAgenda(f).catch(()=>{ $("agtel-st").textContent="Não consegui ler esse arquivo."; }); e.target.value=""; });
   /* ---------- alertas na tela bloqueada (Web Push) ---------- */
   const VAPID_PUB="BHo7pH3Gt_ejTU4RD_Ef1FDYqEXj6xtiLhCrgBv-epCBr4VuY-Zg0lUgzuiQMynC_Dr5zjb6AMqpHEPNtzC0i4w";
   function b64u(b){ const p="=".repeat((4-b.length%4)%4); const r=atob((b+p).replace(/-/g,"+").replace(/_/g,"/")); return Uint8Array.from([...r].map(c=>c.charCodeAt(0))); }
@@ -2082,8 +2127,8 @@ html,body{margin:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
     return [
       ["Importantes",(S.itens||[]).map(i=>({"Contato":i.contato||"","Grupo":i.grupo||"","Categoria":i.categoria||"","Prioridade":i.prioridade||"","Resumo":i.resumo||"","Ação":i.acao||"","Prazo":i.prazo||"","Status":i.status||"pendente","Recebido em":i.recebidoEm?fmt(i.recebidoEm):"","Origem":i.origem==="api"?"Ponte oficial":"Varredura"}))],
       ["Agenda",(S.agenda||[]).map(a=>({"Título":a.titulo||"","Tipo":a.tipo||"","Quando":a.quando||"","Contato":a.contato||"","Feito":a.feito?"Sim":"Não","Origem":a.origem||""}))],
-      ["VIPs",(S.vips||[]).map(v=>({"Nome":v.nome,"Tipo":v.tipo||"pessoa","Relação":v.relacao||"","Alerta sonoro":v.som===false?"Não":"Sim"}))],
-      ["Contatos",(S.contatos||[]).map(c=>({"Nome":c.nome,"Tipo":c.tipo||""}))],
+      ["VIPs",(S.vips||[]).map(v=>({"Nome":v.nome,"Tipo":v.tipo||"pessoa","Relação":v.relacao||"","Telefone":v.tel||"","Alerta sonoro":v.som===false?"Não":"Sim"}))],
+      ["Contatos",(S.contatos||[]).map(c=>({"Nome":c.nome,"Tipo":c.tipo||"","Telefone":c.tel||""}))],
       ["Grupos",linhasCadastroGrupos()],
       ["Falantes individuais",f.falantes.map((x,i)=>({"#":i+1,"Contato":x.nome,"Mensagens no mês":x.msgs}))],
       ["Falantes em grupos",falGrupos().map((x,i)=>({"#":i+1,"Pessoa":x.nome,"Mensagens":x.msgs,"Grupos":x.grupos.join(", "),"Líder":x.lider?"Sim":"Não"}))],

@@ -101,7 +101,10 @@ async function processa(dados, env) {
       if (campo === "smb_app_state_sync") {
         for (const s of v.state_sync || []) {
           const c = s.contact || {};
-          if (c.phone_number && c.full_name) await env.KV.put("nome:" + soDig(c.phone_number), c.full_name);
+          if (c.phone_number && c.full_name) {
+            await env.KV.put("nome:" + soDig(c.phone_number), c.full_name);
+            if (s.action !== "remove") await salvaContatoAgenda(env, c.full_name, c.phone_number);
+          }
         }
       }
       // mensagens recebidas
@@ -272,6 +275,18 @@ async function salvaConfig(req, env) {
   };
   await env.KV.put("cfg", JSON.stringify(cfg));
   return { ok: true, vips: cfg.vips.length, criterios: cfg.criterios.length };
+}
+
+// contato salvo na agenda do WhatsApp Business (sincronização oficial da Meta) → cadastro com telefone
+async function salvaContatoAgenda(env, nome, tel) {
+  const d = soDig(tel); if (!d) return;
+  const id = String(nome).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const lista = (await env.KV.get("d:contatos", "json")) || [];
+  const i = lista.findIndex(x => x.id === id);
+  const novo = { ...(i >= 0 ? lista[i] : {}), id, nome, tipo: "pessoa", tel: "+" + d, origem: "agenda" };
+  if (i >= 0) lista[i] = novo; else lista.push(novo);
+  await env.KV.put("d:contatos", JSON.stringify(lista.slice(-1500)));
+  await env.KV.put("d:em", new Date().toISOString());
 }
 
 // ---------- espelho dos dados da varredura de grupos (para o app fora do Claude) ----------
