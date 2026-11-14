@@ -1440,10 +1440,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
         o.frequency.setValueAtTime(f0,t0); o.frequency.exponentialRampToValueAtTime(f1,t0+dur*.4);
         g.gain.setValueAtTime(.0001,t0); g.gain.exponentialRampToValueAtTime(v,t0+.005); g.gain.exponentialRampToValueAtTime(.0001,t0+dur);
         o.connect(g).connect(out); o.start(t0); o.stop(t0+dur+.03); };
-      gota(t,170,90,.07,vol*.35);          // toque na água
-      gota(t+.004,480,1450,.17,vol);       // o "plic"
-      gota(t+.12,640,1800,.11,vol*.3);     // respingo
-      gota(t+.22,820,2200,.07,vol*.1);     // eco
+      gota(t,650,1900,.13,vol);           // uma gota só: o "plóc" da gota no copo
       return true;
     }catch(e){ return false; }
   }
@@ -1623,8 +1620,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.9.1";
+  const VERSAO="4.9.2";
   const VERSOES=[
+    {v:"4.9.2",data:"14/11/2026",itens:["Som mais simples: uma gota só caindo no copo d'água"]},
     {v:"4.9.1",data:"14/11/2026",itens:["Varrer agora volta ao verde","Pingo d'água na abertura: se o iPhone segurar o som, ele toca no primeiro toque na tela"]},
     {v:"4.9",data:"14/11/2026",itens:["Som de pingo d'água na abertura e ao tocar Varrer agora","Radar com teia completa: anéis, raios, marcações e pontos detectados","Botão Varrer agora azul, com ícone girando ao pedir","Frequência da varredura ajustável: 1h, 2h, 3h, 4h ou 6h (padrão: a cada 2 horas)"]},
     {v:"4.8",data:"14/11/2026",itens:["Novidades mostram só as 3 últimas versões; o histórico completo continua guardado"]},
