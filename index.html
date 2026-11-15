@@ -578,6 +578,9 @@ button.ub-row{cursor:pointer}
 .ub-cta{width:100%;margin-top:14px;padding:14px;font-size:16px;font-weight:700;border-radius:14px}
 .ub-link{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;background:var(--ink);color:var(--bg);border-radius:16px;padding:16px 18px;margin:4px 0 6px;cursor:pointer}
 .ub-link span{flex:1;display:flex;flex-direction:column;gap:2px} .ub-link b{font-size:16.5px} .ub-link small{font-size:13px;opacity:.75} .ub-link i{font-style:normal;font-size:26px}
+.ub-bars{display:grid;gap:4px;align-items:end;padding:6px 0 2px}
+.ub-bars .ub-day .bar{height:110px;max-width:26px}
+.ub-bars .ub-day b{font-size:11px;font-weight:600;color:var(--ink-3)} .ub-bars .ub-day.top b{color:var(--accent)}
 .ub-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;padding:6px 0 2px}
 .ub-day{all:unset;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
 .ub-day .bar{width:100%;max-width:34px;height:120px;border-radius:10px;background:var(--surface-2);display:flex;align-items:flex-end;overflow:hidden}
@@ -840,6 +843,7 @@ button.ub-row{cursor:pointer}
   <section class="pn-view" id="relatorios">
     <div class="pn-chips" id="rel-abas" style="margin:4px 0 12px">
       <button class="pn-chip" type="button" data-aba="dia" aria-pressed="true">Do dia</button>
+      <button class="pn-chip" type="button" data-aba="uso" aria-pressed="false">Estatísticas</button>
       <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
       <button class="pn-chip" type="button" data-aba="fal" aria-pressed="false">Quem mais fala</button>
       <button class="pn-chip" type="button" data-aba="reu" aria-pressed="false">Reuniões no Whats</button>
@@ -880,6 +884,21 @@ button.ub-row{cursor:pointer}
       <div class="pn-card" id="reu-lista"></div>
       <p class="pn-meta" id="reu-obs" style="margin:6px 4px 0"></p>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="reu-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="reu-xlsx" style="flex:1">Excel</button></div>
+    </div>
+    <div id="rel-uso" hidden>
+      <div class="ub-seg pn-chips" id="uso-per" style="margin:2px 0 10px"></div>
+      <div class="ub-hero" id="uso-hero"></div>
+      <div class="pn-h2">Importantes por dia</div>
+      <div class="pn-card"><div class="ub-bars" id="uso-dias"></div></div>
+      <div class="pn-h2">Por assunto</div>
+      <div class="pn-card ub-list" id="uso-ass"></div>
+      <div class="pn-h2">Horário em que mais chega coisa importante</div>
+      <div class="pn-card"><div class="ub-bars" id="uso-hora"></div></div>
+      <div class="pn-h2">Quem mais gera importantes</div>
+      <div class="pn-card ub-list" id="uso-quem"></div>
+      <div class="pn-h2">De onde vem</div>
+      <div class="pn-card ub-list" id="uso-orig"></div>
+      <p class="pn-meta" style="margin:8px 4px">Tempo economizado = estimativa de leitura evitada (≈5 s por mensagem descartada + 20 s por conversa aberta), somada de todas as varreduras do período.</p>
     </div>
     <div id="rel-sem" hidden>
       <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
@@ -1803,8 +1822,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.13";
+  const VERSAO="4.14";
   const VERSOES=[
+    {v:"4.14",data:"15/11/2026",itens:["Relatórios → Estatísticas: importantes do período (7 dias, 30 dias, mês ou tudo), % tratadas, pendentes, tempo economizado e varreduras","Gráficos de importantes por dia e por horário, ranking de assuntos e de quem mais gera importantes, e de onde vem cada um; tudo abre o detalhe ao tocar"]},
     {v:"4.13",data:"15/11/2026",itens:["Importantes por assunto: cada assunto em uma aba com os pendentes em cima e o histórico completo embaixo (resolvidos e ignorados continuam guardados)","Toque em qualquer mensagem do histórico para ver o detalhe e reabrir"]},
     {v:"4.12",data:"15/11/2026",itens:["Relatórios → Dias da semana: que dia tem mais reunião pelo WhatsApp e o campeão de cada dia, com detalhe ao tocar","Meu estilo: o Peneira aprende como você responde e como cada grupo funciona, e deixa uma resposta sugerida no seu estilo em cada importante (copiar ou abrir no WhatsApp; nada é enviado sem você)","Visual novo: fichas de detalhe, Importantes com filtros agrupados e contagem, relatórios com números em destaque, Prevenção mais limpa"]},
     {v:"4.11",data:"15/11/2026",itens:["Campeões do mês: top 10 de quem mais fala nos grupos e nas conversas individuais, guardado mês a mês com histórico","Reuniões no Whats: todo debate de grupo com mais de 10 minutos seguidos vira reunião, com o tempo perdido por grupo, horas-pessoa e a lista do mês","Tudo também no Excel/PDF e no Banco de dados"]},
@@ -2021,6 +2041,41 @@ button.ub-row{cursor:pointer}
     if(r.v!=null) d.appendChild(el("span","ub-v",String(r.v))); if(r.on) d.appendChild(el("i","ub-chev","›")); return d; }
   function ubHero(box,big,txt,tiles){ box.textContent=""; box.appendChild(el("div","ub-big",big)); box.appendChild(el("div","ub-cap",txt));
     if(tiles){ const T=el("div","ub-tiles"); tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); box.appendChild(T); } }
+
+
+  // ----- Estatísticas de uso -----
+  const USO_P=[["7","7 dias"],["30","30 dias"],["mes","Este mês"],["tudo","Tudo"]];
+  function usoDesde(p){ const d=new Date(); if(p==="7"){ d.setDate(d.getDate()-6); d.setHours(0,0,0,0); return d; } if(p==="30"){ d.setDate(d.getDate()-29); d.setHours(0,0,0,0); return d; } if(p==="mes"){ return new Date(d.getFullYear(),d.getMonth(),1); } return new Date(0); }
+  function barrasV(box,arr,cor){ box.textContent=""; const mx=Math.max(1,...arr.map(x=>x.v)); const top=arr.reduce((a,x,i)=>x.v>arr[a].v?i:a,0);
+    box.style.gridTemplateColumns="repeat("+arr.length+",1fr)";
+    arr.forEach((x,i)=>{ const c=el("button","ub-day"+(i===top&&x.v?" top":"")); c.type="button"; c.appendChild(el("small",null,x.v?String(x.v):"")); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(x.v?8:2,Math.round(100*x.v/mx))+"%"; bar.appendChild(ii); c.appendChild(bar); c.appendChild(el("b",null,x.l)); if(x.on) c.onclick=x.on; box.appendChild(c); }); }
+  function listaItensFicha(tit,sub,arr){ ficha(tit,sub,{tiles:[[String(arr.length),"importantes"],[String(arr.filter(i=>(i.status||"pendente")==="pendente").length),"pendentes"]],rowsTit:"Mensagens",rows:arr.slice().sort((a,b)=>String(b.recebidoEm||"").localeCompare(String(a.recebidoEm||""))).map(i=>({t:(i.grupo?i.grupo+" · ":"")+(i.contato||""),s:(i.resumo||"")+(i.recebidoEm?" · "+fmt(i.recebidoEm):""),v:(i.status||"pendente")==="pendente"?"Pendente":i.status==="ignorado"?"Ignorado":"✓",on:()=>abreItem(i)}))}); }
+  function renderUso(){ if(!$("uso-hero")) return; const P=S.usoPer||"30"; const desde=usoDesde(P);
+    const per=$("uso-per"); per.textContent=""; USO_P.forEach(([k,t])=>{ const b=el("button","pn-chip",t); b.type="button"; b.setAttribute("aria-pressed",P===k?"true":"false"); b.onclick=()=>{ S.usoPer=k; renderUso(); }; per.appendChild(b); });
+    const dt=i=>{ const d=new Date(i.recebidoEm||i.criadoEm||0); return isNaN(d)?null:d; };
+    const its=(S.itens||[]).filter(i=>{ const d=dt(i); return d&&d>=desde; });
+    const rels=(S.relatorios||[]).filter(r=>{ const d=new Date(r.geradoEm||r.data||0); return !isNaN(d)&&d>=desde; });
+    const pend=its.filter(i=>(i.status||"pendente")==="pendente").length, res=its.filter(i=>i.status==="feito").length, ign=its.filter(i=>i.status==="ignorado").length;
+    const econ=rels.reduce((a,r)=>a+((r.numeros||{}).minutosEconomizados||0),0), msgs=rels.reduce((a,r)=>a+((r.numeros||{}).mensagens||0),0);
+    const taxa=its.length?Math.round(100*(res+ign)/its.length):0;
+    ubHero($("uso-hero"),String(its.length),"mensagens importantes separadas para você · "+USO_P.find(x=>x[0]===P)[1].toLowerCase(),[[taxa+"%","tratadas · "+res+" resolvidas"],[String(pend),"pendentes agora"],[econ?fmtHM(econ):"—","tempo economizado"],[String(rels.length),"varreduras"+(msgs?" · "+msgs+" msgs lidas":"")]]);
+    // por dia
+    const nd=P==="7"?7:14; const dias=[]; for(let k=nd-1;k>=0;k--){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-k); dias.push(d); }
+    barrasV($("uso-dias"),dias.map(d=>{ const a=(S.itens||[]).filter(i=>{ const x=dt(i); return x&&x.toDateString()===d.toDateString(); }); return {v:a.length,l:nd>7?String(d.getDate()):DSEM[d.getDay()],on:()=>listaItensFicha(DSEM_L[d.getDay()]+", "+d.getDate()+"/"+(d.getMonth()+1),"Importantes do dia",a)}; }));
+    // assunto
+    const A=$("uso-ass"); A.textContent=""; const pg={}; its.forEach(i=>{ const g=catGrupo(i); (pg[g]=pg[g]||[]).push(i); });
+    Object.entries(pg).sort((a,b)=>b[1].length-a[1].length).forEach(([g,a])=>{ const p2=a.filter(i=>(i.status||"pendente")==="pendente").length; A.appendChild(ubRow({t:g,s:Math.round(100*a.length/its.length)+"% do total"+(p2?" · "+p2+" pendente"+(p2>1?"s":""):" · tudo tratado"),v:String(a.length),on:()=>{ S.filtro=g; go("importantes"); render(); }})); });
+    if(!A.childNodes.length) A.appendChild(el("div","pn-empty","Sem importantes neste período."));
+    // hora
+    const faixas=[[0,6,"0–6h"],[6,8,"6–8"],[8,10,"8–10"],[10,12,"10–12"],[12,14,"12–14"],[14,16,"14–16"],[16,18,"16–18"],[18,20,"18–20"],[20,24,"20–24"]];
+    barrasV($("uso-hora"),faixas.map(([a,b,l])=>{ const x=its.filter(i=>{ const h=dt(i).getHours(); return h>=a&&h<b; }); return {v:x.length,l:l,on:()=>listaItensFicha("Das "+a+"h às "+b+"h","Importantes que chegaram nesse horário",x)}; }));
+    // quem
+    const Q=$("uso-quem"); Q.textContent=""; const qm={}; its.forEach(i=>{ const k=i.grupo||i.contato||"—"; (qm[k]=qm[k]||[]).push(i); });
+    Object.entries(qm).sort((a,b)=>b[1].length-a[1].length).slice(0,10).forEach(([k,a],ix)=>Q.appendChild(ubRow({n:ix<3?["🥇","🥈","🥉"][ix]:ix+1,t:k,s:a[0].grupo?"grupo":"conversa individual",v:String(a.length),on:()=>listaItensFicha(k,a[0].grupo?"Grupo":"Conversa individual",a)})));
+    if(!Q.childNodes.length) Q.appendChild(el("div","pn-empty","Sem dados neste período."));
+    // origem
+    const O=$("uso-orig"); O.textContent=""; const api=its.filter(i=>i.origem==="api"), vr=its.filter(i=>i.origem!=="api"), web=its.filter(i=>i.verificacao), sug=its.filter(i=>i.sugestaoResposta);
+    [["Ponte oficial (tempo real)","conversas individuais, 24h",api],["Varredura dos grupos","Chrome do notebook",vr],["Checados na web","golpes, notícias e estradas",web],["Com resposta sugerida","no seu estilo",sug]].forEach(([t,s2,a])=>O.appendChild(ubRow({t:t,s:s2,v:String(a.length),on:a.length?()=>listaItensFicha(t,s2,a):null}))); }
 
   // ----- Dias da semana -----
   function semDados(m){ const R=reunioes(m); const dias={}; ORD.forEach(w=>dias[w]={qtd:0,min:0,lista:[],fal:{},msgs:0});
@@ -2538,8 +2593,8 @@ button.ub-row{cursor:pointer}
   const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"],["contextoWeb","Checado na web"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-reu").hidden=b.dataset.aba!=="reu"; $("rel-sem").hidden=b.dataset.aba!=="sem"; $("rel-est").hidden=b.dataset.aba!=="est"; $("rel-bd").hidden=b.dataset.aba!=="bd";
-    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="reu") renderReu(); if(b.dataset.aba==="sem") renderSem(); if(b.dataset.aba==="est") renderEst(); if(b.dataset.aba==="bd") renderBDados(); }));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-reu").hidden=b.dataset.aba!=="reu"; $("rel-sem").hidden=b.dataset.aba!=="sem"; $("rel-uso").hidden=b.dataset.aba!=="uso"; $("rel-est").hidden=b.dataset.aba!=="est"; $("rel-bd").hidden=b.dataset.aba!=="bd";
+    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="reu") renderReu(); if(b.dataset.aba==="sem") renderSem(); if(b.dataset.aba==="uso") renderUso(); if(b.dataset.aba==="est") renderEst(); if(b.dataset.aba==="bd") renderBDados(); }));
   function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
   function renderTodosGrupos(){
     const T=$("rg-todos"); if(!T) return; T.textContent=""; const q=norm(($("rg-busca")||{}).value||"");
