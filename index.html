@@ -633,6 +633,65 @@ button.ub-row{cursor:pointer}
 .ub-hist summary::-webkit-details-marker{display:none}
 .ub-hist .ub-v{font-size:12.5px;color:var(--ink-3);font-weight:600}
 #drill .pn-card{margin-top:8px}
+/* ===== v4.15 · Início estilo Uber / iFood ===== */
+#inicio .pn-hero{background:none;color:var(--ink);padding:18px 2px 2px;margin:0 0 16px;border-radius:0;box-shadow:none}
+#inicio .pn-hero h1{font:800 30px/1.1 var(--font-ui);letter-spacing:-.03em;margin:0 0 4px}
+#inicio .pn-hero p{color:var(--ink-3);opacity:1;font-size:14.5px}
+#inicio .pn-hero-mark{display:none}
+#inicio .pn-hero .pn-hero-l{margin-top:10px}
+#inicio .pn-hero .pn-hero-l span{background:var(--surface-2);color:var(--ink-2);border:0;font-weight:600;font-size:12.5px;padding:5px 11px}
+.ub-busca{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:999px;background:var(--surface-2);color:var(--ink-3);font-size:16px;font-weight:600;cursor:pointer;margin:0 0 18px}
+.ub-busca .pn-ico svg{width:20px;height:20px;color:var(--ink);stroke-width:2.4}
+.ub-busca:active{filter:brightness(.95)}
+.ub-atalhos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 22px}
+.ub-atalhos button{all:unset;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ub-atalhos i{position:relative;width:100%;max-width:76px;aspect-ratio:1;border-radius:20px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);transition:transform .12s}
+.ub-atalhos button:active i{transform:scale(.94)}
+.ub-atalhos i .pn-ico svg{width:28px;height:28px;stroke-width:2.1}
+.ub-atalhos i.c1{background:color-mix(in srgb,#ffb020 18%,var(--surface));color:#ffb020}
+.ub-atalhos i.c2{background:color-mix(in srgb,#0a84ff 18%,var(--surface));color:#0a84ff}
+.ub-atalhos i.c3{background:color-mix(in srgb,#ff375f 16%,var(--surface));color:#ff375f}
+.ub-atalhos i.c4{background:color-mix(in srgb,#30d158 16%,var(--surface));color:#30d158}
+.ub-atalhos em{position:absolute;top:-5px;right:-5px;display:none;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:11px;background:#ff3b30;color:#fff;font:700 12px/22px var(--font-ui);font-style:normal;text-align:center;border:2px solid var(--bg)}
+.ub-atalhos em.on{display:block}
+.ub-atalhos button>span{font-size:12.5px;font-weight:650;color:var(--ink);letter-spacing:-.01em}
+#varr-card{padding:16px 16px 6px;border-radius:20px}
+#varr-card .pn-scan{display:grid;grid-template-columns:84px 1fr;column-gap:14px;align-items:center;text-align:left;margin:0}
+#varr-card .pn-scan-ring{width:84px;height:84px;margin:0;grid-row:1}
+#varr-card .pn-scan-c{gap:0;padding:0}
+#varr-card .pn-scan-c b svg{width:26px;height:26px}
+#varr-card #scan-lbl{display:none}
+#varr-card .pn-scan-info{grid-row:1;align-items:flex-start;gap:5px}
+#varr-card .pn-scan-info>b{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+#varr-card .pn-scan-ult{font-size:12px;padding:5px 10px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+#varr-card .pn-scan-info>span{font-size:12.5px}
+#varr-card .pn-scan-cont{grid-column:1/-1;margin:14px 0 12px;padding:10px 0}
+#varr-card .pn-scan-cont b{font-size:22px}
+#varr-card .pn-scan-cont span{font-size:10px}
+#varr-card .pn-scan-btn{grid-column:1/-1;padding:13px;font-size:16px;border-radius:14px}
+#varr-card .pn-scan-nx{grid-column:1/-1;text-align:center;margin:8px 0 2px}
+.ub-cfg{margin:10px -16px 0;border-top:.5px solid var(--border)}
+.ub-cfg summary{list-style:none;display:flex;align-items:center;gap:10px;padding:13px 16px 8px;cursor:pointer}
+.ub-cfg summary::-webkit-details-marker{display:none}
+.ub-cfg summary .pn-ico svg{width:18px;height:18px;color:var(--ink-3)}
+.ub-cfg summary b{font-size:15px;font-weight:650;flex:none;white-space:nowrap}
+.ub-cfg summary small{flex:1;text-align:right;font-size:12.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ub-cfg summary::after{content:"›";font-size:22px;line-height:1;color:var(--ink-3);transition:transform .2s}
+.ub-cfg[open] summary::after{transform:rotate(90deg)}
+.ub-cfg>.pn-set,.ub-cfg>#varr-proc{padding:6px 16px 10px}
+.ub-sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:22px 2px 10px}
+.ub-sec-h b{font-size:21px;font-weight:800;letter-spacing:-.02em}
+.ub-sec-h small{font-size:13px;color:var(--ink-3)}
+.pn-kpis.ub-carr{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:0 -16px 14px;padding:2px 16px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pn-kpis.ub-carr::-webkit-scrollbar{display:none}
+.ub-carr .pn-kpi{flex:0 0 40%;scroll-snap-align:start;border-radius:18px;padding:14px 14px 12px;min-height:104px;display:flex;flex-direction:column;justify-content:space-between}
+.ub-carr .pn-kpi::before{display:none}
+.ub-carr .pn-kpi b{font-size:32px;font-weight:800;margin:8px 0 0}
+.ub-carr .pn-kpi .k-l{text-transform:none;letter-spacing:0;font-size:13px;font-weight:650;color:var(--ink-2)}
+#inicio #btn-viplista{display:none}
+#inicio .pn-farol{border-radius:18px}
+.pn-scan.velho .prg,.pn-scan.ok.velho .prg{stroke:#ff9f0a}
+.pn-scan.velho .pn-scan-radar{color:#ff9f0a}
 </style>
 </head>
 <body>
@@ -706,6 +765,15 @@ button.ub-row{cursor:pointer}
       <svg class="pn-hero-mark" aria-hidden="true"><use href="#pnMark"/></svg>
     </div>
 
+    <button type="button" class="ub-busca" id="ub-busca"><span data-ico="search"></span><span>Buscar pessoa, grupo ou assunto</span></button>
+
+    <div class="ub-atalhos" id="ub-atalhos">
+      <button type="button" data-go="importantes"><i class="c1"><span data-ico="star"></span><em data-badge="b-imp"></em></i><span>Importantes</span></button>
+      <button type="button" data-go="agenda"><i class="c2"><span data-ico="calendar"></span><em data-badge="b-ag"></em></i><span>Agenda</span></button>
+      <button type="button" data-go="vips"><i class="c3"><span data-ico="user"></span></i><span>VIPs</span></button>
+      <button type="button" data-go="relatorios"><i class="c4"><span data-ico="doc"></span></i><span>Relatórios</span></button>
+    </div>
+
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
       <div class="pn-scan" id="scan">
         <div class="pn-scan-ring" id="scan-ring">
@@ -730,6 +798,7 @@ button.ub-row{cursor:pointer}
         <button class="pn-btn pri pn-scan-btn" type="button" id="varr-agora"><span data-ico="refresh"></span>Varrer agora</button>
         <div class="pn-scan-nx" id="varr-agora-st">Varredura automática</div>
       </div>
+      <details class="ub-cfg" id="varr-cfg"><summary><span data-ico="gear"></span><b>Ajustes da varredura</b><small id="varr-cfg-sub"></small></summary>
       <div class="pn-set">
         <div class="pn-set-t">Varredura</div>
         <div class="pn-set-g">
@@ -759,6 +828,14 @@ button.ub-row{cursor:pointer}
         </div>
       </div>
       <div id="varr-proc" style="display:none"></div>
+      </details>
+    </div>
+    <div class="ub-sec-h" id="ub-agir-h"><b>Para agir agora</b><small>Toque para ver</small></div>
+    <div class="pn-kpis ub-carr" id="resumo">
+      <button class="pn-kpi" type="button" data-drill="pend"><div class="k-l">Pendentes<span data-ico="inbox"></span></div><b id="k-pend">–</b><div class="k-s">para tratar</div></button>
+      <button class="pn-kpi alta" type="button" data-drill="alta"><div class="k-l">Prioridade alta<span data-ico="alert"></span></div><b id="k-alta">–</b><div class="k-s">agir primeiro</div></button>
+      <button class="pn-kpi prazo" type="button" data-drill="prazo"><div class="k-l">Vencem em 7 dias<span data-ico="clock"></span></div><b id="k-prazo">–</b><div class="k-s">com prazo</div></button>
+      <button class="pn-kpi ag" type="button" data-drill="agenda"><div class="k-l">Agenda hoje<span data-ico="calendar"></span></div><b id="k-ag">–</b><div class="k-s">inclui atrasados</div></button>
     </div>
     <div class="pn-card" id="bd-hoje" hidden style="margin-bottom:14px;border-color:var(--gold)">
       <div class="pn-row" style="align-items:center"><b>Bom dia de hoje</b><span class="pn-meta" id="bd-hoje-st"></span></div>
@@ -773,12 +850,6 @@ button.ub-row{cursor:pointer}
     </div>
     <button class="pn-cta" type="button" id="btn-viplista" style="margin-bottom:14px;background:var(--surface);border:0;color:var(--ink);box-shadow:var(--shadow)">
       <span style="display:flex;align-items:center;gap:10px"><span data-ico="star"></span><span><b>Lista VIP</b><br><span class="pn-meta" id="viplista-sub">Quem está cadastrado</span></span></span><span class="pn-meta">Ver →</span></button>
-    <div class="pn-kpis" id="resumo">
-      <button class="pn-kpi" type="button" data-drill="pend"><div class="k-l">Pendentes<span data-ico="inbox"></span></div><b id="k-pend">–</b><div class="k-s">para tratar</div></button>
-      <button class="pn-kpi alta" type="button" data-drill="alta"><div class="k-l">Prioridade alta<span data-ico="alert"></span></div><b id="k-alta">–</b><div class="k-s">agir primeiro</div></button>
-      <button class="pn-kpi prazo" type="button" data-drill="prazo"><div class="k-l">Vencem em 7 dias<span data-ico="clock"></span></div><b id="k-prazo">–</b><div class="k-s">com prazo</div></button>
-      <button class="pn-kpi ag" type="button" data-drill="agenda"><div class="k-l">Agenda hoje<span data-ico="calendar"></span></div><b id="k-ag">–</b><div class="k-s">inclui atrasados</div></button>
-    </div>
 
     <div class="pn-card" id="status-card" style="margin-bottom:10px">
       <div class="pn-row" style="align-items:center"><b>Meu status · resposta automática</b><span class="pn-meta" id="st-atual">Disponível</span></div>
@@ -1397,7 +1468,7 @@ button.ub-row{cursor:pointer}
     const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
     const br=$("pn-brand"); if(br) br.style.display = (id==="inicio") ? "" : "none";
     const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
-    const tt=$("pn-titulo"); if(tt) tt.textContent=TIT[id]||"Peneira";
+    const tt=$("pn-titulo"); if(tt){ tt.textContent=TIT[id]||"Peneira"; tt.hidden=(id==="inicio"); }
   }
   $("btn-voltar").addEventListener("click",()=>{ let prev=pilha.pop(); while(prev && prev===((document.querySelector(".pn-view.on")||{}).id)) prev=pilha.pop(); go(prev||"inicio",true,true); });
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
@@ -1822,8 +1893,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.14";
+  const VERSAO="4.15";
   const VERSOES=[
+    {v:"4.15",data:"15/11/2026",itens:["Início novo, no estilo Uber e iFood: saudação grande, busca em destaque e atalhos para Importantes, Agenda, VIPs e Relatórios","Varredura num cartão compacto, com Varrer agora sempre à vista e os ajustes recolhidos","Para agir agora: pendentes, prioridade alta, prazos e agenda em cartões que deslizam para o lado","Status coerente: se a automática atrasar, o radar fica laranja e avisa, em vez de mostrar Protegido"]},
     {v:"4.14",data:"15/11/2026",itens:["Relatórios → Estatísticas: importantes do período (7 dias, 30 dias, mês ou tudo), % tratadas, pendentes, tempo economizado e varreduras","Gráficos de importantes por dia e por horário, ranking de assuntos e de quem mais gera importantes, e de onde vem cada um; tudo abre o detalhe ao tocar"]},
     {v:"4.13",data:"15/11/2026",itens:["Importantes por assunto: cada assunto em uma aba com os pendentes em cima e o histórico completo embaixo (resolvidos e ignorados continuam guardados)","Toque em qualquer mensagem do histórico para ver o detalhe e reabrir"]},
     {v:"4.12",data:"15/11/2026",itens:["Relatórios → Dias da semana: que dia tem mais reunião pelo WhatsApp e o campeão de cada dia, com detalhe ao tocar","Meu estilo: o Peneira aprende como você responde e como cada grupo funciona, e deixa uma resposta sugerida no seu estilo em cada importante (copiar ou abrir no WhatsApp; nada é enviado sem você)","Visual novo: fichas de detalhe, Importantes com filtros agrupados e contagem, relatórios com números em destaque, Prevenção mais limpa"]},
@@ -2127,10 +2199,10 @@ button.ub-row{cursor:pointer}
   function renderUlt(){ const b=$("ult-ind"); if(!b) return; const m=S.meta||{}; b.classList.remove("am","ve");
     if(m.emAndamento){ $("ult-txt").innerHTML=""; $("ult-txt").append("Varrendo agora"+(m.progresso!=null?" · "+m.progresso+"%":"")+"…"); return; }
     if(!m.ultimaVarredura){ $("ult-txt").textContent="Ainda sem varredura dos grupos"; b.classList.add("am"); return; }
-    const ih=intervaloH()*60, min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>ih+120) b.classList.add("ve"); else if(min>ih+15) b.classList.add("am"); const sc=$("scan"); if(sc) sc.classList.toggle("velho",min>ih+120);
+    const ih=intervaloH()*60, min=(Date.now()-Date.parse(m.ultimaVarredura))/60000; if(min>ih+120) b.classList.add("ve"); else if(min>ih+15) b.classList.add("am"); const sc=$("scan"); if(sc) sc.classList.toggle("velho",min>ih+15);
     const nx=$("varr-agora-st"); if(nx && !(S.pedidaAte&&Date.now()<S.pedidaAte) && !nx.dataset.fixo){ const d=proxVarr(); nx.textContent="Automática "+txtInt(intervaloH())+" · próxima às "+pad2(d.getHours())+":"+pad2(d.getMinutes()); }
-    const t=$("ult-txt"); t.textContent=""; t.append("Última varredura "); t.appendChild(el("b",null,haQuanto(m.ultimaVarredura)));
-    const dU=new Date(m.ultimaVarredura), hoje=dU.toDateString()===new Date().toDateString(); t.append(" · "+(hoje?"às "+hhmm(m.ultimaVarredura):fmt(m.ultimaVarredura)));
+    const t=$("ult-txt"); t.textContent=""; t.append("Última "); t.appendChild(el("b",null,haQuanto(m.ultimaVarredura)));
+    const dU=new Date(m.ultimaVarredura), hoje=dU.toDateString()===new Date().toDateString(); t.append(" · "+(hoje?hhmm(m.ultimaVarredura):fmt(m.ultimaVarredura)));
     const ud=$("upd-dados"); if(ud) ud.textContent=(ponte&&ponte.vistoEm)?haQuanto(ponte.vistoEm)+" ("+hhmm(ponte.vistoEm)+")":(ponte&&ponte.url?"aguardando":"ponte não conectada"); }
   $("ult-ind").addEventListener("click",async()=>{ $("ult-txt").textContent="Puxando dados do computador…"; try{ if(ponte){ ponte.dadosEm=""; } await ponteSync(); }catch(e){} renderUlt(); });
   setInterval(renderUlt,30000);
@@ -2332,8 +2404,9 @@ button.ub-row{cursor:pointer}
     if(!on && !S.ponteSt){ $("scan-pct").textContent="—"; $("scan-lbl").textContent="desligado"; $("scan-tit").textContent="Varredura desligada"; $("scan-sub").textContent="Ative abaixo para começar"; }
     else if(rodando && on){ $("scan-pct").textContent=pct+"%"; $("scan-lbl").textContent="varrendo"; $("scan-tit").textContent="Varrendo seu WhatsApp…";
       $("scan-sub").textContent=(m.conversaAtual?"Agora: "+m.conversaAtual+" · ":"")+(m.feitas!=null&&m.total?m.feitas+" de "+m.total+" conversas":"analisando conversas"); }
-    else if(m.ultimaVarredura && on){ $("scan-pct").textContent=""; $("scan-pct").appendChild(ico("check")); $("scan-lbl").textContent="Protegido"; $("scan-tit").textContent="Tudo peneirado";
-      $("scan-sub").textContent=m.minutosEconomizados?"≈ "+m.minutosEconomizados+" min economizados na última varredura":"Grupos e conversas em dia"; }
+    else if(m.ultimaVarredura && on){ const atr=(Date.now()-Date.parse(m.ultimaVarredura))/60000>intervaloH()*60+15; sc.classList.toggle("velho",atr);
+      $("scan-pct").textContent=""; $("scan-pct").appendChild(ico(atr?"clock":"check")); $("scan-lbl").textContent=atr?"Atrasada":"Protegido"; $("scan-tit").textContent=atr?"Varredura atrasada":"Tudo peneirado";
+      $("scan-sub").textContent=atr?"A automática não rodou no horário. Toque em Varrer agora.":(m.minutosEconomizados?"≈ "+m.minutosEconomizados+" min economizados na última varredura":"Grupos e conversas em dia"); }
     else if(S.ponteSt){ const ps=S.ponteSt; sc.classList.add("ok","aovivo"); sc.classList.remove("espera"); prg.style.strokeDashoffset="0";
       $("scan-pct").textContent="●"; $("scan-lbl").textContent="ao vivo"; $("scan-tit").textContent="Ponte oficial ao vivo";
       $("scan-sub").textContent=ps.mensagens+" mensagens hoje · "+ps.importantes+" importantes"+(ps.ultimaMensagem?" · última "+fmt(ps.ultimaMensagem):""); }
@@ -2351,6 +2424,7 @@ button.ub-row{cursor:pointer}
     const conectado=!!m.conectado, num=m.numero||v.numero;
     $("varr-num-show").textContent=fmtTel(num)||"Não informado";
     $("varr-sub").textContent=!on?"Desligado · nada é lido":"Ligado · "+txtInt(intervaloH());
+    { const cs=$("varr-cfg-sub"); if(cs) cs.textContent=on?"Ligada · "+txtInt(intervaloH()):"Desligada"; }
     { const n=intervaloH(); $("varr-int-sub").textContent=n===1?"De hora em hora":"A cada "+n+" horas"; $("varr-int").querySelectorAll("button").forEach(b=>{ const s=Number(b.dataset.h)===n; b.classList.toggle("on",s); b.setAttribute("aria-checked",s?"true":"false"); b.setAttribute("role","radio"); b.disabled=!on||S.canWrite===false; }); }
     const P=$("varr-proc"); P.style.display=on?"block":"none"; P.textContent=""; if(!on) return;
     const sec=el("div","pn-set"); sec.appendChild(el("div","pn-set-t","Conexões")); const g=el("div","pn-set-g"); sec.appendChild(g); P.appendChild(sec);
@@ -2583,6 +2657,8 @@ button.ub-row{cursor:pointer}
         r.append(av,t); L.appendChild(r); }); });
     if(!lista.length) L.appendChild(el("div","pn-empty",S.vips.length?"Nenhum nome encontrado.":"Nenhum VIP cadastrado ainda."));
   }
+  $("ub-busca").addEventListener("click",()=>$("btn-busca").click());
+  $("ub-atalhos").addEventListener("click",e=>{ const b=e.target.closest("button[data-go]"); if(!b) return; const g=b.dataset.go; if(g==="vips") return $("btn-viplista").click(); go(g); });
   $("btn-viplista").addEventListener("click",()=>{ $("vs-busca").value=""; renderVipLista(); $("vip-sheet").hidden=false; });
   $("vs-busca").addEventListener("input",renderVipLista);
   $("vs-x").addEventListener("click",()=>{ $("vip-sheet").hidden=true; });
