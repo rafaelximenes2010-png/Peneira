@@ -618,6 +618,18 @@ button.ub-row{cursor:pointer}
 .ub-sug-h{display:flex;align-items:center;gap:6px;color:var(--accent);font-size:13px} .ub-sug-h svg{width:16px;height:16px}
 .ub-sug p{margin:6px 0 10px;font-size:15px;line-height:1.45;color:var(--ink)}
 .ub-sug-b{display:flex;gap:8px;margin-bottom:6px} .ub-sug-b .pn-btn{flex:1;text-align:center;text-decoration:none;font-weight:700}
+.ub-seg .pn-chip em.pend{background:var(--coral,#ff453a);color:#fff}
+.ub-assunto{margin:0 0 18px}
+.ub-as-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:6px 4px 10px}
+.ub-as-h b{display:block;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.ub-as-h small{font-size:13px;color:var(--ink-3)}
+.ub-as-ver{all:unset;cursor:pointer;font-size:14px;font-weight:700;color:var(--accent);padding:6px 0}
+.ub-hist{background:var(--surface);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow)}
+.ub-hist summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:700;font-size:15px;display:flex;justify-content:space-between}
+.ub-hist summary::after{content:"›";color:var(--ink-3);transition:transform .2s} .ub-hist[open] summary::after{transform:rotate(90deg)}
+.ub-hist summary::-webkit-details-marker{display:none}
+.ub-hist .ub-v{font-size:12.5px;color:var(--ink-3);font-weight:600}
+#drill .pn-card{margin-top:8px}
 </style>
 </head>
 <body>
@@ -1461,18 +1473,31 @@ button.ub-row{cursor:pointer}
     top3.forEach(i=>ag.appendChild(cardItem(i)));
 
     // Filtros + lista
-    const pendL=S.itens.filter(i=>(i.status||"pendente")==="pendente"); const cont={}; pendL.forEach(i=>{ const g=catGrupo(i); cont[g]=(cont[g]||0)+1; });
-    if(S.filtro!=="todos"&&S.filtro!=="concluídos"&&!CAT_G.includes(S.filtro)) S.filtro="todos";
+    // Importantes por ASSUNTO: abas com pendentes + histórico completo (nada some)
+    const porG={}; S.itens.forEach(i=>{ const g=catGrupo(i); (porG[g]=porG[g]||{pend:[],hist:[]})[(i.status||"pendente")==="pendente"?"pend":"hist"].push(i); });
+    const gruposOn=CAT_G.filter(g=>porG[g]);
+    if(S.filtro==="concluídos") S.filtro="todos"; if(S.filtro!=="todos"&&!gruposOn.includes(S.filtro)) S.filtro="todos";
     const f=$("filtros"); f.textContent=""; f.classList.add("ub-seg");
-    const chip=(k,txt,n)=>{ const b=el("button","pn-chip"); b.type="button"; b.appendChild(el("span",null,txt)); if(n!=null) b.appendChild(el("em",null,String(n))); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
-    chip("todos","Todos",pendL.length); CAT_G.forEach(g=>{ if(cont[g]) chip(g,g,cont[g]); }); chip("concluídos","Concluídos",null);
-    let lista=S.itens.slice();
-    if(S.filtro==="concluídos") lista=lista.filter(i=>i.status&&i.status!=="pendente");
-    else { lista=lista.filter(i=>(i.status||"pendente")==="pendente"); if(S.filtro!=="todos") lista=lista.filter(i=>catGrupo(i)===S.filtro); }
-    lista.sort(ordena);
+    const totPend=S.itens.filter(i=>(i.status||"pendente")==="pendente").length;
+    const chip=(k,txt,np,nt)=>{ const b=el("button","pn-chip"); b.type="button"; b.appendChild(el("span",null,txt)); const e=el("em",null,np?String(np):String(nt)); if(np) e.classList.add("pend"); b.appendChild(e); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
+    chip("todos","Todos",totPend,S.itens.length); gruposOn.forEach(g=>chip(g,g,porG[g].pend.length,porG[g].pend.length+porG[g].hist.length));
     const L=$("lista-itens"); L.textContent="";
-    if(!lista.length) L.appendChild(el("div","pn-empty", S.itens.length?"Nada aqui. 🎉":"Ainda não há mensagens."));
-    lista.forEach(i=>L.appendChild(cardItem(i)));
+    if(!S.itens.length) L.appendChild(el("div","pn-empty","Ainda não há mensagens. Depois da primeira leitura, os importantes aparecem aqui, separados por assunto."));
+    const quando=i=>String(i.recebidoEm||i.feitoEm||"");
+    const secao=(g,aberto)=>{ const d=porG[g]; const box=el("section","ub-assunto");
+      const h=el("div","ub-as-h"); const ht=el("div"); ht.appendChild(el("b",null,g)); ht.appendChild(el("small",null,(d.pend.length?d.pend.length+" pendente"+(d.pend.length>1?"s":""):"nenhum pendente")+" · "+d.hist.length+" no histórico")); h.appendChild(ht);
+      if(S.filtro==="todos"){ const ver=el("button","ub-as-ver","Ver tudo ›"); ver.type="button"; ver.onclick=()=>{ S.filtro=g; render(); window.scrollTo({top:0,behavior:"smooth"}); }; h.appendChild(ver); }
+      box.appendChild(h);
+      d.pend.slice().sort(ordena).forEach(i=>box.appendChild(cardItem(i)));
+      if(d.hist.length){ const det=document.createElement("details"); det.className="ub-hist"; if(aberto) det.open=true;
+        const sm=document.createElement("summary"); sm.textContent="Histórico · "+d.hist.length; det.appendChild(sm);
+        const lst=el("div","ub-list"); d.hist.slice().sort((x,y)=>quando(y).localeCompare(quando(x))).slice(0,aberto?200:8).forEach(i=>{
+          lst.appendChild(ubRow({t:(i.grupo?i.grupo+" · ":"")+(i.contato||""),s:(i.resumo||"")+(i.recebidoEm?" · "+fmt(i.recebidoEm):""),v:i.status==="ignorado"?"Ignorado":"✓ Resolvido",on:()=>abreItem(i)})); });
+        if(!aberto&&d.hist.length>8){ const mais=el("button","ub-as-ver","Ver os "+d.hist.length+" do histórico ›"); mais.type="button"; mais.onclick=()=>{ S.filtro=g; render(); }; lst.appendChild(mais); }
+        det.appendChild(lst); box.appendChild(det); }
+      L.appendChild(box); };
+    if(S.filtro==="todos") gruposOn.slice().sort((x,y)=>porG[y].pend.length-porG[x].pend.length||CAT_G.indexOf(x)-CAT_G.indexOf(y)).forEach(g=>secao(g,false));
+    else secao(S.filtro,true);
 
     // Critérios
     const G={aprovado:$("crit-aprovados"),sugerido:$("crit-sugeridos"),recusado:$("crit-recusados")};
@@ -1778,8 +1803,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.12";
+  const VERSAO="4.13";
   const VERSOES=[
+    {v:"4.13",data:"15/11/2026",itens:["Importantes por assunto: cada assunto em uma aba com os pendentes em cima e o histórico completo embaixo (resolvidos e ignorados continuam guardados)","Toque em qualquer mensagem do histórico para ver o detalhe e reabrir"]},
     {v:"4.12",data:"15/11/2026",itens:["Relatórios → Dias da semana: que dia tem mais reunião pelo WhatsApp e o campeão de cada dia, com detalhe ao tocar","Meu estilo: o Peneira aprende como você responde e como cada grupo funciona, e deixa uma resposta sugerida no seu estilo em cada importante (copiar ou abrir no WhatsApp; nada é enviado sem você)","Visual novo: fichas de detalhe, Importantes com filtros agrupados e contagem, relatórios com números em destaque, Prevenção mais limpa"]},
     {v:"4.11",data:"15/11/2026",itens:["Campeões do mês: top 10 de quem mais fala nos grupos e nas conversas individuais, guardado mês a mês com histórico","Reuniões no Whats: todo debate de grupo com mais de 10 minutos seguidos vira reunião, com o tempo perdido por grupo, horas-pessoa e a lista do mês","Tudo também no Excel/PDF e no Banco de dados"]},
     {v:"4.10",data:"15/11/2026",itens:["Botão de pesquisa (lupa) no topo: procura palavras e seções em todo o app, como contatos, grupos, mensagens, agenda, relatórios, VIPs, critérios e ajustes","Alertas na tela bloqueada com as cores do Farol: 🔴 Agir já toca a qualquer hora; 🟡 Atenção respeita o silêncio noturno","Lembretes da agenda no celular bloqueado: na hora do compromisso e se atrasar","Número de alertas vermelhos no ícone do app"]},
@@ -1921,6 +1947,7 @@ button.ub-row{cursor:pointer}
     r.appendChild(t); r.appendChild(ico("arrow")); r.onclick=()=>{ fechaDrill(); go(dest); }; return r;
   }
   function fechaDrill(){ $("drill").hidden=true; }
+  function abreItem(i){ const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=i.contato||"Mensagem"; B.appendChild(el("div","ub-sub",catGrupo(i)+(i.recebidoEm?" · "+fmt(i.recebidoEm):""))); B.appendChild(cardItem(i)); $("drill").hidden=false; }
   $("drill-x").addEventListener("click",fechaDrill);
   $("drill").addEventListener("click",e=>{ if(e.target.id==="drill") fechaDrill(); });
   function abreDrill(tipo,dado){
