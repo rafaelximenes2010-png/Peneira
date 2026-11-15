@@ -743,6 +743,23 @@ button.ub-row{cursor:pointer}
 .pn .pn-scan-btn.ub-varrer.gira .vi .pn-ico svg{animation:pnRadar 1s linear infinite}
 .pn .pn-scan-btn.ub-varrer:disabled{opacity:.8}
 @media (prefers-reduced-motion:reduce){.ub-varrer::after{animation:none;display:none}}
+/* ===== v4.18 · radar grande no centro, botão compacto ===== */
+#varr-card .pn-scan{display:flex!important;flex-direction:column;align-items:center;text-align:center;gap:0}
+#varr-card .pn-scan-ring{order:1;width:min(62vw,230px)!important;height:min(62vw,230px)!important;margin:6px auto 18px!important}
+#varr-card .pn-scan-info{order:2;align-items:center;text-align:center;width:100%}
+#varr-card .pn-scan-info>b{font-size:24px}
+#varr-card .pn-scan-cont{order:3;width:100%}
+#varr-card .pn-scan-btn.ub-varrer{order:4;margin:2px auto 0}
+#varr-card .pn-scan-nx{order:5;margin:10px 0 0;text-align:center}
+#varr-card .pn-scan.ativo .pn-scan-c b{font-size:22px;padding:2px 8px}
+.pn .pn-scan-btn.ub-varrer{min-height:0;height:46px;width:auto;min-width:200px;padding:0 22px;border-radius:999px;gap:8px;justify-content:center;
+  background:var(--accent,#30d158);color:#04210f;box-shadow:0 6px 18px -8px color-mix(in srgb,var(--accent,#30d158) 80%,transparent)}
+.ub-varrer .vi{width:auto;height:auto;background:none;box-shadow:none;border-radius:0}
+.ub-varrer .vi .pn-ico svg{width:18px;height:18px;stroke-width:2.6;color:currentColor}
+.ub-varrer .vx{flex:none}
+.ub-varrer .vt{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.ub-varrer .vx small,.ub-varrer .va{display:none}
+.ub-varrer::after{display:none}
 </style>
 </head>
 <body>
@@ -1950,8 +1967,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.17";
+  const VERSAO="4.18";
   const VERSOES=[
+    {v:"4.18",data:"15/11/2026",itens:["Radar grande no centro do cartão","Botão Varrer agora menor e discreto, embaixo dos números"]},
     {v:"4.17",data:"15/11/2026",itens:["Varrer agora em destaque no topo do cartão de varredura, acima do radar: botão maior, com ícone, frase de apoio e brilho"]},
     {v:"4.16",data:"15/11/2026",itens:["Radar realista: tela de fósforo com moldura, anéis de distância, marcas de grau, feixe com rastro e alvos que acendem quando o feixe passa (amarelos = importantes pendentes)","Cor do radar mostra o estado: verde em dia, azul quando você pede, laranja atrasada, cinza desligada"]},
     {v:"4.15",data:"15/11/2026",itens:["Início novo, no estilo Uber e iFood: saudação grande, busca em destaque e atalhos para Importantes, Agenda, VIPs e Relatórios","Varredura num cartão compacto, com Varrer agora sempre à vista e os ajustes recolhidos","Para agir agora: pendentes, prioridade alta, prazos e agenda em cartões que deslizam para o lado","Status coerente: se a automática atrasar, o radar fica laranja e avisa, em vez de mostrar Protegido"]},
