@@ -41,6 +41,7 @@ export default {
       if (url.pathname === "/ultimo") return cors(json(await ultimo(env)));
       if (url.pathname === "/alertas") return cors(json(await alertas(env)));
       if (url.pathname === "/sync" && req.method === "POST") return cors(json(await recebeSync(req, env)));
+      if (url.pathname === "/estilo") return cors(json(await estilo(env)));
       if (url.pathname === "/dados") return cors(json(await dados(env)));
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
       if (url.pathname === "/itens") return cors(json(await itens(env, url.searchParams.get("desde"))));
@@ -83,7 +84,8 @@ async function processaKapso(dados, env, cfg) {
     const tel = soDig(m.from || conv.phone_number || "");
     if (k.direction === "outbound") {
       // eco do que o Rafael mandou pelo app: mede tempo de resposta
-      if (tel) await registraResposta({ to: tel, timestamp: m.timestamp }, env);
+      const txtOut = (m.text && m.text.body) || k.content || "";
+      if (tel) { await guardaAmostra(env, tel, txtOut, m.timestamp); await registraResposta({ to: tel, timestamp: m.timestamp }, env); }
       continue;
     }
     if (!tel) continue;
@@ -118,7 +120,7 @@ async function processa(dados, env) {
       }
       // mensagens que o Rafael enviou pelo app (para medir tempo de resposta e dar baixa)
       if (campo === "smb_message_echoes") {
-        for (const m of v.message_echoes || []) await registraResposta(m, env);
+        for (const m of v.message_echoes || []) { await guardaAmostra(env, soDig(m.to || ""), (m.text && m.text.body) || "", m.timestamp); await registraResposta(m, env); }
       }
       // histórico (até 6 meses) — só alimenta a lista de contatos, não vira pendência
       if (campo === "history") {
@@ -142,6 +144,7 @@ async function guardaRecebida(m, perfis, cfg, env) {
   const texto = textoDe(m);
   const quando = new Date((Number(m.timestamp) || Date.now() / 1000) * 1000).toISOString();
   await env.KV.put("ult:" + de, quando, { expirationTtl: RETEM });
+  if (texto) await env.KV.put("ultTxt:" + de, JSON.stringify({ t: texto.slice(0, 300), nome: nomeAgenda || perfis[m.from] || "", salvo: !!nomeAgenda }), { expirationTtl: 7 * DIA });
   await contaDia(env, "mensagens");
   await contaFalante(env, nome, quando);
 
@@ -162,6 +165,25 @@ async function guardaRecebida(m, perfis, cfg, env) {
   await env.KV.put("item:" + quando + ":" + item.id, JSON.stringify(item), { expirationTtl: RETEM });
   await contaDia(env, "importantes");
   await registraAlerta(env, { id: item.id, cor: corFarol(item, cfg), titulo: item.contato, texto: item.resumo, url: "./#importantes" });
+}
+
+// ---------- aprendizado do estilo do Rafael (só as mensagens que ELE escreveu) ----------
+async function guardaAmostra(env, tel, texto, ts) {
+  texto = String(texto || "").trim();
+  if (!tel || texto.length < 2) return;
+  const ant = (await env.KV.get("ultTxt:" + tel, "json")) || {};
+  const ult = await env.KV.get("ult:" + tel);
+  const quando = new Date((Number(ts) || Date.now() / 1000) * 1000).toISOString();
+  const min = ult ? Math.max(0, Math.round((Date.parse(quando) - Date.parse(ult)) / 60000)) : null;
+  const a = { em: quando, para: ant.nome || (await env.KV.get("nome:" + tel)) || "contato", salvo: !!ant.salvo,
+    recebida: ant.t || "", resposta: texto.slice(0, 600), min: (min != null && min < 7 * 24 * 60) ? min : null };
+  const lista = (await env.KV.get("estilo:amostras", "json")) || [];
+  lista.push(a); while (lista.length > 400) lista.shift();
+  await env.KV.put("estilo:amostras", JSON.stringify(lista));
+}
+async function estilo(env) {
+  const lista = (await env.KV.get("estilo:amostras", "json")) || [];
+  return { total: lista.length, amostras: lista.slice(-200), perfil: await env.KV.get("d:estilo", "json") };
 }
 
 async function registraResposta(m, env) {
@@ -295,7 +317,7 @@ async function salvaContatoAgenda(env, nome, tel) {
 
 // ---------- espelho dos dados da varredura de grupos (para o app fora do Claude) ----------
 const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 6000, relatorios: 120, vips: 300, criterios: 100, acoes: 200 };
-const DOCS = ["status", "gestao", "perfil", "varredura", "bomdia", "notificacoes", "ausencia", "regrasLeitura", "regrasGrupos", "seguranca"];
+const DOCS = ["status", "gestao", "perfil", "varredura", "bomdia", "notificacoes", "ausencia", "regrasLeitura", "regrasGrupos", "seguranca", "estilo"];
 async function recebeSync(req, env) {
   const b = await req.json().catch(() => ({}));
   const cfgPush = Array.isArray(b.itens) ? ((await env.KV.get("cfg", "json")) || {}) : {};

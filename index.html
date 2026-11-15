@@ -544,6 +544,80 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-busca-mais{width:100%;margin-top:6px}
 .pn-achado{animation:pnAchado 2.4s ease-out;border-radius:10px}
 @keyframes pnAchado{0%,40%{box-shadow:0 0 0 3px var(--gold,#f3c75c);background:color-mix(in srgb,var(--gold,#f3c75c) 22%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+/* ===== v4.12 · visual estilo Uber ===== */
+#rel-abas,.ub-seg{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-left:-2px;padding:2px 2px 4px}
+#rel-abas::-webkit-scrollbar,.ub-seg::-webkit-scrollbar{display:none}
+#rel-abas .pn-chip,.ub-seg .pn-chip{flex:none;font-weight:600;padding:9px 15px;border:0;background:var(--surface-2);color:var(--ink)}
+#rel-abas .pn-chip[aria-pressed="true"],.ub-seg .pn-chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.ub-seg .pn-chip{display:inline-flex;align-items:center;gap:7px}
+.ub-seg .pn-chip em{font-style:normal;font-size:12px;font-weight:700;min-width:20px;height:20px;padding:0 6px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.ub-seg .pn-chip[aria-pressed="true"] em{background:color-mix(in srgb,var(--bg) 22%,transparent)}
+.ub-tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.ub-tiles>div{background:var(--surface-2);border-radius:14px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:4px;min-height:74px;justify-content:flex-end}
+.ub-tiles b{font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ub-tiles span{font-size:12px;font-weight:600;color:var(--ink-3);text-transform:none;letter-spacing:0}
+.pn-card .ub-tiles>div{background:var(--surface-2)}
+.ub-hero{background:var(--surface);border-radius:18px;padding:20px 18px 8px;margin-bottom:6px;box-shadow:var(--shadow)}
+.ub-big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.ub-cap{font-size:14.5px;color:var(--ink-3);margin-top:4px}
+.ub-list{padding:4px 0}
+.pn-card.ub-list{padding:4px 16px}
+.ub-row{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;padding:13px 0;border-bottom:.5px solid var(--border);cursor:default}
+button.ub-row{cursor:pointer}
+.ub-row:last-child{border-bottom:0}
+.ub-n{flex:none;min-width:34px;height:34px;border-radius:10px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--ink)}
+.ub-txt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ub-txt b{font-size:15.5px;font-weight:650;color:var(--ink);white-space:normal;line-height:1.3}
+.ub-txt small{font-size:13px;color:var(--ink-3);line-height:1.35}
+.ub-v{flex:none;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.ub-chev{font-style:normal;font-size:22px;color:var(--ink-3);margin-left:-4px}
+.ub-sub{font-size:14px;color:var(--ink-3);margin:-2px 0 4px}
+.ub-sec{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:16px 0 2px}
+.ub-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:14px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.45;color:var(--ink-2)}
+.ub-note svg{flex:none;width:18px;height:18px;color:var(--accent);margin-top:1px}
+.ub-cta{width:100%;margin-top:14px;padding:14px;font-size:16px;font-weight:700;border-radius:14px}
+.ub-link{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;background:var(--ink);color:var(--bg);border-radius:16px;padding:16px 18px;margin:4px 0 6px;cursor:pointer}
+.ub-link span{flex:1;display:flex;flex-direction:column;gap:2px} .ub-link b{font-size:16.5px} .ub-link small{font-size:13px;opacity:.75} .ub-link i{font-style:normal;font-size:26px}
+.ub-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;padding:6px 0 2px}
+.ub-day{all:unset;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.ub-day .bar{width:100%;max-width:34px;height:120px;border-radius:10px;background:var(--surface-2);display:flex;align-items:flex-end;overflow:hidden}
+.ub-day .bar i{display:block;width:100%;background:color-mix(in srgb,var(--ink) 55%,transparent);border-radius:10px}
+.ub-day.top .bar i{background:var(--accent)}
+.ub-day b{font-size:13px;font-weight:700} .ub-day span{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums} .ub-day small{font-size:11px;color:var(--ink-3);min-height:14px}
+.ub-day.top b{color:var(--accent)}
+.ub-leg{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-top:8px} .ub-leg i{display:inline-block;width:8px;height:8px;border-radius:2px;background:color-mix(in srgb,var(--ink) 55%,transparent);margin-right:5px}
+/* drill sheet */
+.pn-sheet-card{padding-top:10px}
+.pn-sheet-card::before{content:"";display:block;width:38px;height:5px;border-radius:3px;background:var(--border);margin:0 auto 12px}
+#drill-t{font-size:24px!important;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+#drill-x{width:36px;height:36px;padding:0;border-radius:50%;font-size:0;background:var(--surface-2);border:0;flex:none;position:relative}
+#drill-x::after{content:"✕";font-size:15px;font-weight:700;color:var(--ink);position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.pn-drill-box{background:var(--surface-2);border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.5}
+/* relatórios */
+.pn-nums{display:grid!important;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0 4px}
+.pn-nums span{background:var(--surface-2)!important;border-radius:12px!important;padding:12px!important;display:flex;flex-direction:column;gap:2px;cursor:pointer}
+.pn-nums span b{font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.pn-nums span small{font-size:12px;color:var(--ink-3)}
+.pn-rel h3{font-size:19px;letter-spacing:-.02em}
+.pn-rel ul{padding-left:18px;margin:8px 0} .pn-rel li{margin:4px 0;line-height:1.45}
+/* prevenção */
+.pn-prob{gap:10px;padding:16px}
+.pn-prob .t{align-items:flex-start;justify-content:flex-start;gap:12px}
+.pn-prob .t>div b{font-size:17px;line-height:1.3}
+.pn-prob .n{flex:none;width:54px;height:54px;border-radius:14px;background:color-mix(in srgb,#ff453a 14%,transparent);color:#ff453a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:inherit}
+.pn-prob .n b{font-size:22px;line-height:1;font-weight:800} .pn-prob .n small{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.ub-trend{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px}
+.ub-trend.up{background:color-mix(in srgb,#ff453a 14%,transparent);color:#ff453a} .ub-trend.down{background:color-mix(in srgb,#34c759 14%,transparent);color:#34c759} .ub-trend.eq{background:var(--surface-2);color:var(--ink-3)}
+.ub-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ub-tag{all:unset;cursor:pointer;font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.pn-prob .acao{border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.45}
+.ub-ghost{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);border:0;font-weight:700;padding:12px;border-radius:12px}
+.ub-ghost svg{width:17px;height:17px}
+/* sugestão de resposta */
+.ub-sug{margin:10px 0 4px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 10%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.ub-sug-h{display:flex;align-items:center;gap:6px;color:var(--accent);font-size:13px} .ub-sug-h svg{width:16px;height:16px}
+.ub-sug p{margin:6px 0 10px;font-size:15px;line-height:1.45;color:var(--ink)}
+.ub-sug-b{display:flex;gap:8px;margin-bottom:6px} .ub-sug-b .pn-btn{flex:1;text-align:center;text-decoration:none;font-weight:700}
 </style>
 </head>
 <body>
@@ -757,6 +831,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
       <button class="pn-chip" type="button" data-aba="fal" aria-pressed="false">Quem mais fala</button>
       <button class="pn-chip" type="button" data-aba="reu" aria-pressed="false">Reuniões no Whats</button>
+      <button class="pn-chip" type="button" data-aba="sem" aria-pressed="false">Dias da semana</button>
+      <button class="pn-chip" type="button" data-aba="est" aria-pressed="false">Meu estilo</button>
       <button class="pn-chip" type="button" data-aba="prev" aria-pressed="false">Prevenção</button>
       <button class="pn-chip" type="button" data-aba="bd" aria-pressed="false">Banco de dados</button>
     </div>
@@ -784,13 +860,34 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       <div class="pn-h2" style="margin-top:4px">Reuniões por WhatsApp</div>
       <p class="pn-meta" style="margin:-4px 0 10px">Todo debate de grupo com <b>mais de 10 minutos seguidos</b> (mensagens com menos de 15 min entre si) conta como uma reunião pelo WhatsApp. Tempo perdido = duração da reunião; horas-pessoa = duração × pessoas que escreveram.</p>
       <div class="pn-cal-top" style="margin:0 0 8px"><button class="pn-btn" type="button" id="reu-prev" aria-label="Mês anterior">‹</button><b id="reu-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="reu-next" aria-label="Próximo mês">›</button></div>
-      <div class="pn-bd" id="reu-kpi" style="margin-bottom:10px"></div>
+      <div class="ub-tiles" id="reu-kpi" style="margin-bottom:10px"></div>
+      <button type="button" class="ub-link" id="reu-ir-sem"><span><b>Dias da semana</b><small>Que dia tem mais reunião e os campeões de cada dia</small></span><i>›</i></button>
       <div class="pn-h2">Grupos que fazem reunião pelo Whats</div>
       <div class="pn-card" id="reu-gr"></div>
       <div class="pn-h2">Reuniões do mês</div>
       <div class="pn-card" id="reu-lista"></div>
       <p class="pn-meta" id="reu-obs" style="margin:6px 4px 0"></p>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="reu-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="reu-xlsx" style="flex:1">Excel</button></div>
+    </div>
+    <div id="rel-sem" hidden>
+      <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
+      <div class="ub-hero" id="sem-hero"></div>
+      <div class="pn-h2">Reuniões por dia da semana</div>
+      <div class="pn-card"><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
+      <div class="pn-h2">🏆 Campeões de cada dia</div>
+      <p class="pn-meta" style="margin:-4px 4px 10px">Quem mais escreve nos grupos em cada dia da semana, somando o mês.</p>
+      <div class="pn-card ub-list" id="sem-camp"></div>
+      <p class="pn-meta" style="margin:8px 4px">Reunião = debate de grupo com mais de 10 minutos seguidos. O dia vem da data de cada reunião e de cada leitura dos grupos.</p>
+    </div>
+    <div id="rel-est" hidden>
+      <div class="ub-hero" id="est-hero"></div>
+      <div class="pn-h2">Como você escreve</div>
+      <div class="pn-card ub-list" id="est-perfil"></div>
+      <div class="pn-h2">Como cada grupo funciona</div>
+      <div class="pn-card ub-list" id="est-grupos"></div>
+      <div class="pn-h2">Exemplos aprendidos</div>
+      <div class="pn-card ub-list" id="est-ex"></div>
+      <p class="pn-meta" style="margin:8px 4px">O Peneira aprende só com as mensagens que <b>você</b> escreve e com o jeito de cada grupo. As respostas sugeridas aparecem em cada importante, prontas para copiar: nada é enviado sem você.</p>
     </div>
     <div id="rel-bd" hidden>
       <div class="pn-h2" style="margin-top:4px">Banco de dados do Peneira</div>
@@ -1328,6 +1425,11 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       if(v.resumo) bx.appendChild(el("div",null,v.resumo));
       if(v.fonte||v.url){ const f=el("div","pn-web-f","Fonte: "); if(v.url&&/^https:\/\//.test(v.url)){ const a=document.createElement("a"); a.href=v.url; a.target="_blank"; a.rel="noopener noreferrer"; a.textContent=v.fonte||"abrir"; f.appendChild(a); } else f.append(v.fonte); bx.appendChild(f); }
       c.appendChild(bx); }
+    if(i.sugestaoResposta && (i.status||"pendente")==="pendente"){ const sg=el("div","ub-sug"); const h=el("div","ub-sug-h"); h.appendChild(ico("sparkle")); h.appendChild(el("b",null,"Resposta no seu estilo")); sg.appendChild(h);
+      sg.appendChild(el("p",null,i.sugestaoResposta)); const bb=el("div","ub-sug-b"); const cp=el("button","pn-btn","Copiar"); cp.type="button";
+      cp.onclick=async()=>{ try{ await navigator.clipboard.writeText(i.sugestaoResposta); salvoOk(cp,"✓ Copiada"); }catch(e){ aviso("Não consegui copiar. Segure o texto para copiar."); } }; bb.appendChild(cp);
+      const tel=telDoContato(i.contato); if(tel&&!i.grupo){ const wa=document.createElement("a"); wa.className="pn-btn pri"; wa.textContent="Abrir no WhatsApp"; wa.target="_blank"; wa.rel="noopener"; wa.href="https://wa.me/"+tel+"?text="+encodeURIComponent(i.sugestaoResposta); bb.appendChild(wa); }
+      sg.appendChild(bb); sg.appendChild(el("div","pn-meta","Sugestão: confira antes de enviar. Nada sai sem você.")); c.appendChild(sg); }
     if(i.recebidoEm) c.appendChild(el("div","pn-meta","Recebida "+fmt(i.recebidoEm)));
     const a = el("div","pn-acts");
     if(pend){
@@ -1359,13 +1461,14 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     top3.forEach(i=>ag.appendChild(cardItem(i)));
 
     // Filtros + lista
-    const cats = Array.from(new Set(S.itens.map(i=>i.categoria).filter(Boolean))).sort();
-    const f=$("filtros"); f.textContent="";
-    ["todos",...cats,"concluídos"].forEach(c=>{ const b=el("button","pn-chip",c==="todos"?"Todos pendentes":c); b.type="button";
-      b.setAttribute("aria-pressed",S.filtro===c?"true":"false"); b.onclick=()=>{S.filtro=c;render();}; f.appendChild(b); });
+    const pendL=S.itens.filter(i=>(i.status||"pendente")==="pendente"); const cont={}; pendL.forEach(i=>{ const g=catGrupo(i); cont[g]=(cont[g]||0)+1; });
+    if(S.filtro!=="todos"&&S.filtro!=="concluídos"&&!CAT_G.includes(S.filtro)) S.filtro="todos";
+    const f=$("filtros"); f.textContent=""; f.classList.add("ub-seg");
+    const chip=(k,txt,n)=>{ const b=el("button","pn-chip"); b.type="button"; b.appendChild(el("span",null,txt)); if(n!=null) b.appendChild(el("em",null,String(n))); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
+    chip("todos","Todos",pendL.length); CAT_G.forEach(g=>{ if(cont[g]) chip(g,g,cont[g]); }); chip("concluídos","Concluídos",null);
     let lista=S.itens.slice();
     if(S.filtro==="concluídos") lista=lista.filter(i=>i.status&&i.status!=="pendente");
-    else { lista=lista.filter(i=>(i.status||"pendente")==="pendente"); if(S.filtro!=="todos") lista=lista.filter(i=>i.categoria===S.filtro); }
+    else { lista=lista.filter(i=>(i.status||"pendente")==="pendente"); if(S.filtro!=="todos") lista=lista.filter(i=>catGrupo(i)===S.filtro); }
     lista.sort(ordena);
     const L=$("lista-itens"); L.textContent="";
     if(!lista.length) L.appendChild(el("div","pn-empty", S.itens.length?"Nada aqui. 🎉":"Ainda não há mensagens."));
@@ -1675,8 +1778,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.11";
+  const VERSAO="4.12";
   const VERSOES=[
+    {v:"4.12",data:"15/11/2026",itens:["Relatórios → Dias da semana: que dia tem mais reunião pelo WhatsApp e o campeão de cada dia, com detalhe ao tocar","Meu estilo: o Peneira aprende como você responde e como cada grupo funciona, e deixa uma resposta sugerida no seu estilo em cada importante (copiar ou abrir no WhatsApp; nada é enviado sem você)","Visual novo: fichas de detalhe, Importantes com filtros agrupados e contagem, relatórios com números em destaque, Prevenção mais limpa"]},
     {v:"4.11",data:"15/11/2026",itens:["Campeões do mês: top 10 de quem mais fala nos grupos e nas conversas individuais, guardado mês a mês com histórico","Reuniões no Whats: todo debate de grupo com mais de 10 minutos seguidos vira reunião, com o tempo perdido por grupo, horas-pessoa e a lista do mês","Tudo também no Excel/PDF e no Banco de dados"]},
     {v:"4.10",data:"15/11/2026",itens:["Botão de pesquisa (lupa) no topo: procura palavras e seções em todo o app, como contatos, grupos, mensagens, agenda, relatórios, VIPs, critérios e ajustes","Alertas na tela bloqueada com as cores do Farol: 🔴 Agir já toca a qualquer hora; 🟡 Atenção respeita o silêncio noturno","Lembretes da agenda no celular bloqueado: na hora do compromisso e se atrasar","Número de alertas vermelhos no ícone do app"]},
     {v:"4.9.3",data:"14/11/2026",itens:["Checagem na web: a varredura confere golpes, correntes, bloqueios de estrada e notícias de clientes, e mostra o veredito com a fonte em cada alerta","Relatórios por grupo ganham o tema Checado na web"]},
@@ -1867,6 +1971,72 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     H.appendChild(el("span",null,"v"+VERSAO));
   }
 
+
+  /* ---------- v4.12 · fichas estilo Uber, dias da semana, meu estilo ---------- */
+  const DSEM=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"], DSEM_L=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"], ORD=[1,2,3,4,5,6,0];
+  function diaSem(d){ if(!d) return null; const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m) return null; if(String(d).length>10){ const x=new Date(d); return isNaN(x)?null:x.getDay(); } return new Date(+m[1],+m[2]-1,+m[3]).getDay(); }
+  const CAT_G=["Golpe e segurança","Menções","Clientes","Prazos e urgências","Trabalho","Família","Outros"];
+  function catGrupo(i){ const c=norm((i.categoria||"")+" "+(i.verificacao&&/golpe/i.test(i.verificacao.veredito||"")?"golpe":""));
+    if(/golpe|suspeit|seguran|verificar/.test(c)) return "Golpe e segurança"; if(/mencao|@/.test(c)||i.mencao) return "Menções";
+    if(/famil/.test(c)) return "Família"; if(/cliente|consulta|\bnf\b|nota fiscal|pedido do/.test(c)) return "Clientes";
+    if(/prazo|hoje|urgent|venc/.test(c)) return "Prazos e urgências"; if(/vip|trabalho|equipe|operac/.test(c)) return "Trabalho"; return "Outros"; }
+  function telDoContato(nome){ const k=norm(nome||""); if(!k) return ""; const c=(S.contatos||[]).find(x=>norm(x.nome)===k&&x.tel); const v=(S.vips||[]).find(x=>norm(x.nome)===k&&x.tel); const t=String((c&&c.tel)||(v&&v.tel)||"").replace(/\D/g,""); return t?(t.length<=11?"55"+t:t):""; }
+  function ficha(tit,sub,o){ o=o||{}; const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=tit;
+    if(sub) B.appendChild(el("div","ub-sub",sub));
+    if(o.tiles&&o.tiles.length){ const T=el("div","ub-tiles"); o.tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); B.appendChild(T); }
+    if(o.rows&&o.rows.length){ if(o.rowsTit) B.appendChild(el("div","ub-sec",o.rowsTit)); const L=el("div","ub-list"); o.rows.slice(0,40).forEach(r=>L.appendChild(ubRow(r))); B.appendChild(L); }
+    if(o.nota){ const n=el("div","ub-note"); n.appendChild(ico("sparkle")); n.appendChild(el("span",null,o.nota)); B.appendChild(n); }
+    if(o.acao){ const b=el("button","pn-btn pri ub-cta",o.acao[0]); b.type="button"; b.onclick=o.acao[1]; B.appendChild(b); }
+    $("drill").hidden=false; }
+  function ubRow(r){ const d=el(r.on?"button":"div","ub-row"); if(r.on){ d.type="button"; d.onclick=r.on; }
+    if(r.n!=null) d.appendChild(el("span","ub-n",String(r.n)));
+    const a=el("div","ub-txt"); a.appendChild(el("b",null,r.t||"")); if(r.s) a.appendChild(el("small",null,r.s)); d.appendChild(a);
+    if(r.v!=null) d.appendChild(el("span","ub-v",String(r.v))); if(r.on) d.appendChild(el("i","ub-chev","›")); return d; }
+  function ubHero(box,big,txt,tiles){ box.textContent=""; box.appendChild(el("div","ub-big",big)); box.appendChild(el("div","ub-cap",txt));
+    if(tiles){ const T=el("div","ub-tiles"); tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); box.appendChild(T); } }
+
+  // ----- Dias da semana -----
+  function semDados(m){ const R=reunioes(m); const dias={}; ORD.forEach(w=>dias[w]={qtd:0,min:0,lista:[],fal:{},msgs:0});
+    R.lista.forEach(x=>{ const w=diaSem(x.data); if(w==null) return; const d=dias[w]; d.qtd++; d.min+=x.min||0; d.lista.push(x); });
+    relDoMes(m).forEach(r=>{ const w=diaSem(r.geradoEm); if(w==null) return; const d=dias[w]; (r.participantes||[]).forEach(p=>{ const k=norm(p.nome); const f=d.fal[k]=d.fal[k]||{nome:p.nome,msgs:0,min:0}; f.msgs+=p.msgs||0; f.min+=p.min||0; d.msgs+=p.msgs||0; }); });
+    ORD.forEach(w=>{ dias[w].rank=Object.values(dias[w].fal).sort((a,b)=>b.msgs-a.msgs||b.min-a.min); }); return dias; }
+  function abreDia(m,w,D){ const d=D[w];
+    ficha(DSEM_L[w],nomeMes(m)+" · grupos",{tiles:[[String(d.qtd),"reuniões"],[fmtHM(d.min),"tempo em reunião"],[String(d.msgs),"mensagens nos grupos"],[String(d.rank.length),"pessoas"]],
+      rowsTit:"Quem mais fala na "+DSEM_L[w].toLowerCase(), rows:d.rank.slice(0,10).map((x,i)=>({n:i<3?["🥇","🥈","🥉"][i]:i+1,t:x.nome,s:x.min?fmtHM(x.min)+" de conversa":"",v:x.msgs+" msgs"})).concat(
+        d.lista.sort((a,b)=>(b.min||0)-(a.min||0)).map(x=>({t:x.grupo,s:"Reunião "+String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):""),v:fmtHM(x.min),on:()=>{ fechaDrill(); abreGrupo(x.grupo); }}))),
+      nota:d.qtd?"Na "+DSEM_L[w].toLowerCase()+" os grupos somam "+fmtHM(d.min)+" de reunião pelo WhatsApp. Uma ligação de 15 min com pauta, nesse dia, resolve a maior parte.":"Nenhum debate longo neste dia da semana."}); }
+  function renderSem(){ if(!$("sem-dias")) return; const m=S.semMes||mesAtual(); const ms=mesesDisp();
+    $("sem-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("sem-prev").disabled=ms.indexOf(m)<=0; $("sem-next").disabled=ms.indexOf(m)>=ms.length-1;
+    const D=semDados(m); const top=ORD.slice().sort((a,b)=>D[b].min-D[a].min||D[b].qtd-D[a].qtd)[0]; const tot=ORD.reduce((a,w)=>a+D[w].min,0), totQ=ORD.reduce((a,w)=>a+D[w].qtd,0);
+    const falTop=ORD.slice().sort((a,b)=>D[b].msgs-D[a].msgs)[0];
+    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês"],[fmtHM(tot),"tempo total"],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado"],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês"]]);
+    const B=$("sem-dias"); B.textContent=""; const mx=Math.max(1,...ORD.map(w=>D[w].min));
+    ORD.forEach(w=>{ const d=D[w]; const c=el("button","ub-day"+(w===top&&tot?" top":"")); c.type="button";
+      c.appendChild(el("small",null,d.qtd?d.qtd+"×":"")); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(d.min?8:2,Math.round(100*d.min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
+      c.appendChild(el("b",null,DSEM[w])); c.appendChild(el("span",null,d.min?fmtHM(d.min):"—")); c.onclick=()=>abreDia(m,w,D); B.appendChild(c); });
+    const C=$("sem-camp"); C.textContent="";
+    ORD.forEach(w=>{ const d=D[w], r1=d.rank[0], r2=d.rank[1];
+      C.appendChild(ubRow({n:DSEM[w],t:r1?r1.nome:"Sem dados ainda",s:r1?(r2?"2º "+r2.nome+" ("+r2.msgs+")":"")+(d.qtd?(r2?" · ":"")+d.qtd+" reuniões":""):"",v:r1?r1.msgs+" msgs":"",on:()=>abreDia(m,w,D)})); }); }
+  $("sem-prev").addEventListener("click",()=>{ navMes("semMes",-1); renderSem(); });
+  $("sem-next").addEventListener("click",()=>{ navMes("semMes",1); renderSem(); });
+  $("reu-ir-sem").addEventListener("click",()=>{ const b=document.querySelector('#rel-abas [data-aba="sem"]'); if(b){ b.click(); b.scrollIntoView({inline:"center",block:"nearest"}); } });
+
+  // ----- Meu estilo -----
+  async function carregaEstilo(){ if(!ponte||!ponte.url||S.estiloEm&&Date.now()-S.estiloEm<300000) return; try{ S.estiloP=await ponteReq("/estilo"); S.estiloEm=Date.now(); renderEst(); }catch(e){} }
+  function renderEst(){ if(!$("est-perfil")) return; carregaEstilo(); const P=(S.estiloP&&S.estiloP.perfil)||S.estilo||{}; const tot=(S.estiloP&&S.estiloP.total)||P.amostras||0;
+    const nivel=tot>=150?"Afinado":tot>=50?"Aprendendo bem":tot>=10?"Começando":"Coletando";
+    ubHero($("est-hero"),nivel,"seu assistente de respostas · "+tot+" mensagens suas analisadas",[[String(tot),"respostas suas"],[P.tamanhoMedio?P.tamanhoMedio+" pal.":"—","tamanho médio"],[P.tempoResposta&&P.tempoResposta.geral!=null?fmtMin(P.tempoResposta.geral):"—","tempo de resposta"],[String(((S.itens||[]).filter(i=>i.sugestaoResposta&&(i.status||"pendente")==="pendente")).length),"sugestões prontas"]]);
+    const E=$("est-perfil"); E.textContent=""; const lin=(t,v)=>{ if(v&&(!Array.isArray(v)||v.length)) E.appendChild(ubRow({t:t,s:Array.isArray(v)?v.join(" · "):String(v)})); };
+    lin("Tom",P.tom); lin("Como abre",P.saudacoes); lin("Expressões que você usa",P.expressoes); lin("Como fecha",P.fechamentos||P.assinatura); lin("Emojis",P.emojis);
+    if(P.tempoResposta){ const tr=P.tempoResposta; lin("Tempo de resposta",[tr.cliente!=null?"clientes "+fmtMin(tr.cliente):"",tr.equipe!=null?"equipe "+fmtMin(tr.equipe):"",tr.familia!=null?"família "+fmtMin(tr.familia):""].filter(Boolean)); }
+    (P.regras||[]).forEach(r=>E.appendChild(ubRow({t:"Padrão",s:r})));
+    if(!E.childNodes.length) E.appendChild(el("div","pn-empty","Ainda aprendendo. A cada mensagem que você responde, o Peneira entende melhor seu jeito de escrever. O primeiro perfil sai depois de umas 10 respostas suas."));
+    const G=$("est-grupos"); G.textContent=""; const gs=(S.grupos||[]).filter(g=>g.dinamica).sort((a,b)=>String(a.nome).localeCompare(String(b.nome)));
+    gs.forEach(g=>{ const d=g.dinamica; G.appendChild(ubRow({t:g.nome,s:[d.tom,d.pico?"pico "+d.pico:"",d.quemDecide?"decide: "+d.quemDecide:""].filter(Boolean).join(" · "),on:()=>ficha(g.nome,"Como o grupo funciona",{tiles:[[d.ritmo||"—","ritmo"],[d.pico||"—","horário de pico"]],rows:[{t:"Tom",s:d.tom},{t:"Quem decide",s:d.quemDecide},{t:"Como você atua",s:d.comoRafaelAtua},{t:"Melhor jeito de falar aqui",s:d.dica}].filter(x=>x.s),acao:["Abrir o grupo",()=>{ fechaDrill(); abreGrupo(g.nome); }]})})); });
+    if(!gs.length) G.appendChild(el("div","pn-empty","Na próxima varredura eu descrevo o jeito de cada grupo: tom, horário de pico, quem decide e como você costuma agir ali."));
+    const X=$("est-ex"); X.textContent=""; const ex=(P.exemplos&&P.exemplos.length?P.exemplos:((S.estiloP&&S.estiloP.amostras)||[]).slice(-8).reverse().map(a=>({situacao:a.recebida?"“"+a.recebida.slice(0,80)+"”":"Mensagem para "+a.para,resposta:a.resposta})));
+    ex.slice(0,8).forEach(e=>X.appendChild(ubRow({t:e.resposta,s:e.situacao||""})));
+    if(!ex.length) X.appendChild(el("div","pn-empty","Os exemplos aparecem aqui assim que você responder conversas pelo WhatsApp Business.")); }
 
   /* ---------- Indicador da última varredura + Central de atualização ---------- */
   function haQuanto(iso){ const t=Date.parse(iso); if(isNaN(t)) return ""; const m=Math.max(0,Math.round((Date.now()-t)/60000));
@@ -2214,6 +2384,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     if(dd.perfil){ const loc=S.perfil||{}; S.perfil={...dd.perfil,...Object.fromEntries(Object.entries(loc).filter(([k,v])=>v))}; try{ localStorage.setItem("peneira-perfil",JSON.stringify(S.perfil)); }catch(e){} }
     junta("relGrupos",dd.relGrupos,[]); junta("relatorios",dd.relatorios,[]); junta("contatos",dd.contatos,[]);
     junta("grupos",dd.grupos,["silenciar"]); junta("itens",dd.itens,["status","favoritado"]); junta("agenda",dd.agenda,["feito"]);
+    if(dd.estilo) S.estilo=dd.estilo;
     if(dd.gestao){ const metasLocais=S.gestao&&S.gestao.metas; S.gestao={...dd.gestao}; if(metasLocais) S.gestao.metas=metasLocais; }
     if(dd.status && (!S.meta || String(dd.status.ultimaVarredura||"")>String(S.meta.ultimaVarredura||""))) S.meta={...(S.meta||{}),...dd.status};
     demoSave(); checaVips(); render();
@@ -2340,8 +2511,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"],["contextoWeb","Checado na web"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-reu").hidden=b.dataset.aba!=="reu"; $("rel-bd").hidden=b.dataset.aba!=="bd";
-    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="reu") renderReu(); if(b.dataset.aba==="bd") renderBDados(); }));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-reu").hidden=b.dataset.aba!=="reu"; $("rel-sem").hidden=b.dataset.aba!=="sem"; $("rel-est").hidden=b.dataset.aba!=="est"; $("rel-bd").hidden=b.dataset.aba!=="bd";
+    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="reu") renderReu(); if(b.dataset.aba==="sem") renderSem(); if(b.dataset.aba==="est") renderEst(); if(b.dataset.aba==="bd") renderBDados(); }));
   function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
   function renderTodosGrupos(){
     const T=$("rg-todos"); if(!T) return; T.textContent=""; const q=norm(($("rg-busca")||{}).value||"");
@@ -2524,7 +2695,10 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const max=Math.max(1,...R.grupos.map(x=>x.min)); R.grupos.forEach((x,i)=>{ const r=el("div","pn-fal"); r.style.cursor="pointer"; r.appendChild(el("span","n",String(i+1)));
       const n=el("span","nm",x.grupo); n.title=x.grupo; r.appendChild(n); const b=el("div","bar"); const ii=el("i"); ii.style.width=Math.max(4,Math.round(100*x.min/max))+"%"; ii.style.background="linear-gradient(90deg,var(--gold),var(--coral))"; b.appendChild(ii); r.appendChild(b);
       const q=el("span","q",x.qtd+"× · "+fmtHM(x.min)); q.style.minWidth="96px"; r.appendChild(q);
-      r.onclick=()=>abreInfo(x.grupo,x.qtd+" reunião(ões) pelo WhatsApp em "+nomeMes(m)+"\nTempo perdido: "+fmtHM(x.min)+"\nMaior reunião: "+fmtHM(x.maior)+(x.pessoaMin?"\nHoras-pessoa (medidas): "+fmtHM(x.pessoaMin):"")+"\n\nSugestão: se o assunto pede mais de 10 minutos de debate, marque uma ligação curta com pauta e registre só a decisão no grupo.");
+      r.onclick=()=>{ const lr=R.lista.filter(y=>nG(y.grupo)===nG(x.grupo)); const dd={}; lr.forEach(y=>{ const w=diaSem(y.data); if(w!=null) dd[w]=(dd[w]||0)+(y.min||0); }); const top=Object.entries(dd).sort((a,b)=>b[1]-a[1])[0];
+        ficha(x.grupo,"Reuniões pelo WhatsApp · "+nomeMes(m),{tiles:[[String(x.qtd),"reuniões"],[fmtHM(x.min),"tempo perdido"],[fmtHM(x.maior),"maior reunião"],[x.pessoaMin?fmtHM(x.pessoaMin):"—","horas-pessoa"]],
+          rows:lr.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).map(y=>({t:DSEM[diaSem(y.data)]+" · "+String(y.data||"").split("-").reverse().slice(0,2).join("/"),s:(y.inicio?y.inicio+(y.fim?"–"+y.fim:"")+" · ":"")+(y.msgs?y.msgs+" msgs":"")+(nPess(y)?" · "+nPess(y)+" pessoas":""),v:fmtHM(y.min)})),
+          rowsTit:"Reuniões do mês", nota:(top?"Dia com mais reunião neste grupo: "+DSEM_L[top[0]]+". ":"")+"Se o assunto pede mais de 10 minutos de debate, marque uma ligação curta com pauta e registre só a decisão no grupo.", acao:["Abrir o grupo",()=>{ fechaDrill(); abreGrupo(x.grupo); }]}); };
       g.appendChild(r); });
     const L=$("reu-lista"); L.textContent=""; const ls=R.lista.slice().sort((a,b)=>String(b.data+(b.inicio||"")).localeCompare(String(a.data+(a.inicio||""))));
     if(!ls.length) L.appendChild(el("div","pn-empty","Sem reuniões registradas."));
@@ -2619,11 +2793,13 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const probs=(g.problemas||[]).slice().sort((a,b)=>(b.ocorrencias||0)-(a.ocorrencias||0));
     if(!probs.length) P.appendChild(el("div","pn-empty","Depois de algumas varreduras eu identifico os problemas que se repetem e sugiro ações para preveni-los."));
     probs.forEach(pr=>{ const c=el("div","pn-card pn-prob");
-      const t1=el("div","t"); const l=el("div"); l.appendChild(el("b",null,pr.tema)); l.appendChild(el("div","pn-meta",[(pr.grupos||[]).join(", "),pr.tendencia?("tendência "+pr.tendencia):""].filter(Boolean).join(" · ")));
-      t1.append(l, el("span","n",String(pr.ocorrencias||0))); c.appendChild(t1);
+      const t1=el("div","t"); const nb=el("div","n"); nb.appendChild(el("b",null,String(pr.ocorrencias||0))); nb.appendChild(el("small",null,"vezes")); const l=el("div"); l.style.flex="1"; l.appendChild(el("b",null,pr.tema));
+      const td=String(pr.tendencia||""); if(td){ const tt=el("span","ub-trend "+(td.includes("↑")?"up":td.includes("↓")?"down":"eq"),td.includes("↑")?"▲ subindo":td.includes("↓")?"▼ caindo":"■ estável"); l.appendChild(tt); }
+      t1.append(nb,l); c.appendChild(t1);
+      if((pr.grupos||[]).length){ const gg=el("div","ub-tags"); pr.grupos.forEach(x=>{ const b=el("button","ub-tag",x); b.type="button"; b.onclick=()=>abreGrupo(x); gg.appendChild(b); }); c.appendChild(gg); }
       if(pr.causa) c.appendChild(el("div","pn-meta","Causa provável: "+pr.causa));
       if(pr.acaoPreventiva){ const a=el("div","acao"); a.appendChild(el("b",null,"Ação preventiva: ")); a.appendChild(document.createTextNode(pr.acaoPreventiva+(pr.responsavel?" (responsável: "+pr.responsavel+")":""))); c.appendChild(a); }
-      const bt=el("button","pn-btn","Levar para a Agenda"); bt.type="button"; bt.style.alignSelf="flex-start";
+      const bt=el("button","pn-btn ub-ghost"); bt.type="button"; bt.appendChild(ico("calendar")); bt.append(" Levar para a Agenda");
       bt.onclick=()=>{ if(!S.canWrite) return; const d=new Date(); d.setDate(d.getDate()+1); d.setHours(9,0,0,0);
         salvaAg("add",{titulo:"Prevenção: "+pr.tema,tipo:"processo",quando:`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}T09:00`,contato:pr.responsavel||"",info:pr.acaoPreventiva||"",feito:false,criadoEm:new Date().toISOString(),origem:"prevencao"}); salvoOk(bt,"✓ Na agenda"); };
       c.appendChild(bt); P.appendChild(c); });
@@ -2771,14 +2947,15 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     top.appendChild(el("span","pn-meta", fmt(r.geradoEm||r.data)));
     c.appendChild(top);
     if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
+    const nmPos=c.childNodes.length;
     if(Array.isArray(r.destaques)&&r.destaques.length){ const u=el("ul"); r.destaques.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); }
     const n=r.numeros||{}, nm=el("div","pn-nums");
-    [["mensagens","mensagens"],["lidas","conversas lidas"],["marcadasLidas","marcadas como lidas"],["naoLidas","mantidas não lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null) nm.appendChild(el("span",null,n[k]+" "+t)); });
+    [["mensagens","mensagens"],["lidas","conversas lidas"],["marcadasLidas","marcadas como lidas"],["naoLidas","mantidas não lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null){ const sp=el("span"); sp.appendChild(el("b",null,String(n[k]))); sp.appendChild(el("small",null,t)); nm.appendChild(sp); } });
     if(n.minutosEconomizados!=null){ const tz=el("div","pn-drill-box"); tz.style.marginTop="8px"; const h=Math.floor(n.minutosEconomizados/60), mi=n.minutosEconomizados%60;
       tz.textContent="⏱ Tempo economizado: "+(h?h+"h ":"")+mi+" min"+(n.criterioTempo?" ("+n.criterioTempo+")":""); c.appendChild(tz); }
     if(Array.isArray(r.indicacoes)&&r.indicacoes.length){ c.appendChild(el("div","pn-ag-g","Indicações")); const u2=el("ul"); r.indicacoes.forEach(d=>u2.appendChild(el("li",null,d))); c.appendChild(u2); }
     if(Array.isArray(r.assuntos)&&r.assuntos.length){ c.appendChild(el("div","pn-ag-g","Assuntos importantes")); const u3=el("ul"); r.assuntos.forEach(d=>u3.appendChild(el("li",null,d))); c.appendChild(u3); }
-    if(nm.childNodes.length) c.appendChild(nm);
+    if(nm.childNodes.length) c.insertBefore(nm,c.childNodes[nmPos]||null);
     return c;
   }
   function renderRel(){
