@@ -531,6 +531,19 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-web-h{display:flex;align-items:center;gap:6px;margin-bottom:3px} .pn-web-h svg{width:15px;height:15px}
 .pn-web.ruim .pn-web-h{color:#ff453a} .pn-web.ok .pn-web-h{color:#34c759}
 .pn-web-f{margin-top:4px;color:var(--ink-3);font-size:12.5px} .pn-web-f a{color:var(--accent)}
+/* pesquisa */
+.pn-busca-top{display:flex;gap:8px;align-items:center;position:sticky;top:-18px;background:var(--surface);padding:2px 0 10px;z-index:2}
+.pn-busca-top input{flex:1;font-size:16px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink)}
+.pn-busca-g{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin:14px 2px 6px}
+.pn-busca-r{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--border);padding:10px 2px;color:inherit;font:inherit;cursor:pointer}
+.pn-busca-r:hover{background:var(--surface-2)}
+.pn-busca-r .pn-ico{flex:none;margin-top:2px;opacity:.75}
+.pn-busca-r b{display:block;font-size:15px}
+.pn-busca-r small{display:block;color:var(--ink-2);font-size:13px;margin-top:2px;line-height:1.35}
+.pn-busca-r mark{background:var(--gold,#f3c75c);color:#141a2e;border-radius:3px;padding:0 1px}
+.pn-busca-mais{width:100%;margin-top:6px}
+.pn-achado{animation:pnAchado 2.4s ease-out;border-radius:10px}
+@keyframes pnAchado{0%,40%{box-shadow:0 0 0 3px var(--gold,#f3c75c);background:color-mix(in srgb,var(--gold,#f3c75c) 22%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
 </style>
 </head>
 <body>
@@ -582,6 +595,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
+      <button class="pn-dn" type="button" id="btn-busca" aria-label="Pesquisar no app" title="Pesquisar (Ctrl+K)"><span data-ico="search"></span></button>
       <button class="pn-dn" type="button" id="btn-hub" aria-label="Alertas e central: novidades, atualizações e mais"><span data-ico="bell"></span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
       <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico"></span><span id="dn-txt">Noite</span></button>
     </div>
@@ -1115,6 +1129,16 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   </form>
 </div>
 
+<div class="pn-sheet" id="busca" hidden role="dialog" aria-label="Pesquisar no app">
+  <div class="pn-sheet-card" style="max-height:90vh;overflow:auto">
+    <div class="pn-busca-top">
+      <input id="busca-q" type="search" placeholder="Pesquisar palavras e seções" autocomplete="off" enterkeyhint="search" aria-label="Pesquisar">
+      <button class="pn-btn" type="button" id="busca-x">Fechar</button>
+    </div>
+    <div id="busca-r"></div>
+  </div>
+</div>
+
 <div class="pn-sheet" id="drill" hidden role="dialog" aria-labelledby="drill-t">
   <div class="pn-sheet-card" style="max-height:82vh;overflow:auto">
     <div class="pn-row" style="align-items:center"><b id="drill-t" style="font-size:17px"></b><button class="pn-btn" type="button" id="drill-x" aria-label="Voltar">← Voltar</button></div>
@@ -1188,7 +1212,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     { id:"ajustes", nome:"Ajustes", ico:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', badge:"b-crit" }
   ];
 
-  const ICONS={"inbox": "<path d=\"M3 13h5l2 3h4l2-3h5\"/><path d=\"M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z\"/>", "alert": "<path d=\"M12 3l9.5 17h-19z\"/><path d=\"M12 10v4M12 17.5v.01\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>", "calendar": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>", "busy": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 12h8\"/>", "meeting": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><circle cx=\"17\" cy=\"9\" r=\"2.5\"/><path d=\"M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 14.5c3 .2 6.5 1.8 6.5 5.5\"/>", "car": "<path d=\"M5 16l1.5-5a2 2 0 0 1 1.9-1.4h7.2a2 2 0 0 1 1.9 1.4L19 16\"/><rect x=\"3\" y=\"16\" width=\"18\" height=\"4\" rx=\"1.5\"/><circle cx=\"7\" cy=\"20\" r=\"1.5\"/><circle cx=\"17\" cy=\"20\" r=\"1.5\"/>", "plane": "<path d=\"M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6a2 2 0 0 1 3 3L15 13.5l1 7.5-1.5 1.5-2.5-7.5L9 18v3l-1.5 1L6 18l-4-1.5L3 15h3z\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z\"/>", "check": "<path d=\"M5 12.5l4.5 4.5L19 7.5\"/>", "chat": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z\"/>", "clipboard": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9 12h6M9 16h4\"/>", "pin": "<path d=\"M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/>", "bell": "<path d=\"M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "star": "<path d=\"M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z\"/>", "shield": "<path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/><path d=\"M9 12l2 2 4-4\"/>", "refresh": "<path d=\"M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4\"/>", "megaphone": "<path d=\"M3 10v4h3l7 4V6L6 10z\"/><path d=\"M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11\"/>", "bolt": "<path d=\"M13 3L5 14h6l-1 7 8-11h-6z\"/>", "phone": "<rect x=\"7\" y=\"2.5\" width=\"10\" height=\"19\" rx=\"2.5\"/><path d=\"M12 8v6M9.5 11.5L12 14l2.5-2.5M11 18.5h2\"/>", "share": "<circle cx=\"18\" cy=\"5.5\" r=\"2.5\"/><circle cx=\"6\" cy=\"12\" r=\"2.5\"/><circle cx=\"18\" cy=\"18.5\" r=\"2.5\"/><path d=\"M8.2 10.8l7.6-4M8.2 13.2l7.6 4\"/>", "doc": "<path d=\"M6 3h8l4 4v14H6z\"/><path d=\"M14 3v4h4M9 12h6M9 16h6\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1\"/>", "help": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01\"/>", "sparkle": "<path d=\"M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z\"/><path d=\"M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z\"/>", "arrow": "<path d=\"M5 12h14M13 6l6 6-6 6\"/>", "grid": "<circle cx=\"5\" cy=\"5\" r=\"1.6\"/><circle cx=\"12\" cy=\"5\" r=\"1.6\"/><circle cx=\"19\" cy=\"5\" r=\"1.6\"/><circle cx=\"5\" cy=\"12\" r=\"1.6\"/><circle cx=\"12\" cy=\"12\" r=\"1.6\"/><circle cx=\"19\" cy=\"12\" r=\"1.6\"/><circle cx=\"5\" cy=\"19\" r=\"1.6\"/><circle cx=\"12\" cy=\"19\" r=\"1.6\"/><circle cx=\"19\" cy=\"19\" r=\"1.6\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"5\" fill=\"currentColor\" stroke=\"none\"/>"};
+  const ICONS={"inbox": "<path d=\"M3 13h5l2 3h4l2-3h5\"/><path d=\"M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z\"/>", "alert": "<path d=\"M12 3l9.5 17h-19z\"/><path d=\"M12 10v4M12 17.5v.01\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>", "calendar": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>", "busy": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M8 12h8\"/>", "meeting": "<circle cx=\"9\" cy=\"8\" r=\"3\"/><circle cx=\"17\" cy=\"9\" r=\"2.5\"/><path d=\"M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 14.5c3 .2 6.5 1.8 6.5 5.5\"/>", "car": "<path d=\"M5 16l1.5-5a2 2 0 0 1 1.9-1.4h7.2a2 2 0 0 1 1.9 1.4L19 16\"/><rect x=\"3\" y=\"16\" width=\"18\" height=\"4\" rx=\"1.5\"/><circle cx=\"7\" cy=\"20\" r=\"1.5\"/><circle cx=\"17\" cy=\"20\" r=\"1.5\"/>", "plane": "<path d=\"M10.5 13.5L3 11l1.5-1.5 7.5 1L16.5 6a2 2 0 0 1 3 3L15 13.5l1 7.5-1.5 1.5-2.5-7.5L9 18v3l-1.5 1L6 18l-4-1.5L3 15h3z\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z\"/>", "check": "<path d=\"M5 12.5l4.5 4.5L19 7.5\"/>", "chat": "<path d=\"M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z\"/>", "clipboard": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><path d=\"M9 4h6v3H9zM9 12h6M9 16h4\"/>", "pin": "<path d=\"M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2\"/>", "bell": "<path d=\"M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "star": "<path d=\"M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z\"/>", "shield": "<path d=\"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z\"/><path d=\"M9 12l2 2 4-4\"/>", "refresh": "<path d=\"M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4\"/>", "megaphone": "<path d=\"M3 10v4h3l7 4V6L6 10z\"/><path d=\"M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11\"/>", "bolt": "<path d=\"M13 3L5 14h6l-1 7 8-11h-6z\"/>", "phone": "<rect x=\"7\" y=\"2.5\" width=\"10\" height=\"19\" rx=\"2.5\"/><path d=\"M12 8v6M9.5 11.5L12 14l2.5-2.5M11 18.5h2\"/>", "share": "<circle cx=\"18\" cy=\"5.5\" r=\"2.5\"/><circle cx=\"6\" cy=\"12\" r=\"2.5\"/><circle cx=\"18\" cy=\"18.5\" r=\"2.5\"/><path d=\"M8.2 10.8l7.6-4M8.2 13.2l7.6 4\"/>", "doc": "<path d=\"M6 3h8l4 4v14H6z\"/><path d=\"M14 3v4h4M9 12h6M9 16h6\"/>", "user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1\"/>", "help": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01\"/>", "sparkle": "<path d=\"M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z\"/><path d=\"M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z\"/>", "arrow": "<path d=\"M5 12h14M13 6l6 6-6 6\"/>", "grid": "<circle cx=\"5\" cy=\"5\" r=\"1.6\"/><circle cx=\"12\" cy=\"5\" r=\"1.6\"/><circle cx=\"19\" cy=\"5\" r=\"1.6\"/><circle cx=\"5\" cy=\"12\" r=\"1.6\"/><circle cx=\"12\" cy=\"12\" r=\"1.6\"/><circle cx=\"19\" cy=\"12\" r=\"1.6\"/><circle cx=\"5\" cy=\"19\" r=\"1.6\"/><circle cx=\"12\" cy=\"19\" r=\"1.6\"/><circle cx=\"19\" cy=\"19\" r=\"1.6\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M20 20l-4-4\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"5\" fill=\"currentColor\" stroke=\"none\"/>"};
   function ico(n){ const sp=document.createElement("span"); sp.className="pn-ico"; sp.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[n]||"")+'</svg>'; return sp; }
   function rotulo(n,t,cls){ const sp=el("span",cls); sp.appendChild(ico(n)); sp.appendChild(document.createTextNode(" "+t)); return sp; }
   document.querySelectorAll("[data-ico]").forEach(x=>x.replaceWith(ico(x.dataset.ico)));
@@ -1632,8 +1656,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.9.3";
+  const VERSAO="4.10";
   const VERSOES=[
+    {v:"4.10",data:"15/11/2026",itens:["Botão de pesquisa (lupa) no topo: procura palavras e seções em todo o app, como contatos, grupos, mensagens, agenda, relatórios, VIPs, critérios e ajustes","Alertas na tela bloqueada com as cores do Farol: 🔴 Agir já toca a qualquer hora; 🟡 Atenção respeita o silêncio noturno","Lembretes da agenda no celular bloqueado: na hora do compromisso e se atrasar","Número de alertas vermelhos no ícone do app"]},
     {v:"4.9.3",data:"14/11/2026",itens:["Checagem na web: a varredura confere golpes, correntes, bloqueios de estrada e notícias de clientes, e mostra o veredito com a fonte em cada alerta","Relatórios por grupo ganham o tema Checado na web"]},
     {v:"4.9.2",data:"14/11/2026",itens:["Som mais simples: uma gota só caindo no copo d'água"]},
     {v:"4.9.1",data:"14/11/2026",itens:["Varrer agora volta ao verde","Pingo d'água na abertura: se o iPhone segurar o som, ele toca no primeiro toque na tela"]},
@@ -2176,7 +2201,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   async function ponteSync(){
     if(!ponte||!ponte.url||!ponte.tok) return;
     try{
-      const cfg={vips:(S.vips||[]).map(v=>({nome:v.nome,som:v.som!==false})),criterios:(S.criterios||[]).filter(c=>c.status==="aprovado").map(c=>({nome:c.nome}))};
+      const cfg={vips:(S.vips||[]).map(v=>({nome:v.nome,som:v.som!==false})),criterios:(S.criterios||[]).filter(c=>c.status==="aprovado").map(c=>({nome:c.nome})),notif:notifPonte()};
       const h=JSON.stringify(cfg); if(h!==ponteCfgHash){ await ponteReq("/config",{method:"POST",body:h}); ponteCfgHash=h; }
       const desde=ponte.desde?new Date(Date.parse(ponte.desde)-120000).toISOString():"";
       const r=await ponteReq("/itens"+(desde?"?desde="+encodeURIComponent(desde):""));
@@ -2613,8 +2638,13 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 
   /* ---------- notificações + horários ---------- */
-  const NOTIF_PADRAO={alta:true,manha:true,noite:true,golpe:true,horaManha:"07:30",horaNoite:"18:30"};
-  const NOTIFS=[["alta","Prioridade alta","Aviso na hora quando chegar algo importante"],["golpe","Alerta de golpe","Aviso na hora em caso de possível golpe"],["manha","Relatório da manhã",""],["noite","Relatório da noite",""]];
+  const NOTIF_PADRAO={alta:true,manha:true,noite:true,golpe:true,horaManha:"07:30",horaNoite:"18:30",vermelho:true,amarelo:true,agenda:true,silIni:"23:00",silFim:"05:00",amareloNoSilencio:false};
+  const NOTIFS=[["vermelho","🔴 Agir já","Prioridade alta, VIP, golpe, menção (@) e compromisso atrasado. Toca a qualquer hora, mesmo no silêncio, e fica na tela até você ver."],
+    ["amarelo","🟡 Atenção","Os demais importantes. Respeitam o silêncio noturno."],
+    ["agenda","📅 Agenda","Lembrete na hora do compromisso (amarelo) e aviso se atrasar 30 min sem marcar feito (vermelho)."],
+    ["amareloNoSilencio","🟡 também no silêncio","Desligado: à noite só o vermelho toca."],
+    ["manha","Relatório da manhã",""],["noite","Relatório da noite",""]];
+  const notifPonte=()=>{ const n={...NOTIF_PADRAO,...(S.notif||{})}; return {vermelho:n.vermelho!==false,amarelo:n.amarelo!==false,agenda:n.agenda!==false,silIni:n.silIni,silFim:n.silFim,amareloNoSilencio:!!n.amareloNoSilencio}; };
   async function salvaNotif(patch){
     const novo={...NOTIF_PADRAO,...(S.notif||{}),...patch,atualizadoEm:new Date().toISOString()};
     if(S.demo){ S.notif=novo; demoSave(); render(); return; }
@@ -2637,7 +2667,13 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const pb=el("button","pn-btn pri","Ativar alertas na tela bloqueada"); pb.type="button"; pb.id="push-ativar"; pb.style.cssText="width:100%;margin-top:6px;padding:12px";
     const ps=el("div","pn-meta",""); ps.id="push-st"; ps.style.marginTop="8px";
     pb.onclick=()=>ativaPush(pb,ps); N.appendChild(pb); N.appendChild(ps); pushEstado(ps,pb);
-    N.appendChild(el("div","pn-meta","VIP, golpe e menções avisam a qualquer hora; o resto, das 5h às 23h. Os relatórios chegam também pelo app do Claude."));
+    const sil=el("div","pn-form"); sil.style.cssText="margin-top:12px;border-top:1px solid var(--border);padding-top:10px";
+    sil.appendChild(el("b",null,"Silêncio noturno")); sil.appendChild(el("div","pn-meta","Nesse horário só o 🔴 Agir já toca (horário de Brasília)."));
+    const lin=el("div","pn-grid2"); lin.style.margin="6px 0 0";
+    [["silIni","Começa"],["silFim","Termina"]].forEach(([k,l])=>{ const d=el("div"); const lb=el("label",null,l); lb.htmlFor="n-"+k; const i=el("input"); i.type="time"; i.id="n-"+k; i.value=n[k];
+      i.onchange=()=>{ if(S.canWrite&&/^\d{2}:\d{2}$/.test(i.value)) salvaNotif({[k]:i.value}); }; d.append(lb,i); lin.appendChild(d); });
+    sil.appendChild(lin); sil.style.marginBottom="10px"; N.insertBefore(sil,pb);
+    N.appendChild(el("div","pn-meta","Os alertas seguem as cores do Farol do dia. Para chegarem com o iPhone bloqueado, abra o Peneira pelo ícone da Tela de Início e toque em Ativar. 🟢 Resolvido não avisa."));
     if(!horasPreenchidas && (S.notif || S.dbPronto || S.demo)){ $("h-manha").value=n.horaManha; $("h-noite").value=n.horaNoite; horasPreenchidas=true; }
     const sug=S.criterios.filter(k=>(k.status||"sugerido")==="sugerido").length, apr=S.criterios.filter(k=>k.status==="aprovado").length;
     $("aj-crit").textContent = apr+" aprovados"+(sug?" · "+sug+" aguardando você":"");
@@ -2670,6 +2706,109 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     const U=$("ultimo-rel"); U.textContent="";
     if(lista.length) U.appendChild(cardRel(lista[0])); else U.appendChild(el("div","pn-empty","Sem relatórios ainda."));
   }
+
+  /* ---------- número no ícone (alertas vermelhos não vistos): zera ao abrir ---------- */
+  function zeraBadge(){ if(!ehApp()) return; try{ if(navigator.clearAppBadge) navigator.clearAppBadge(); if(navigator.serviceWorker&&navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage("zera-badge"); }catch(e){} }
+  zeraBadge(); document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") zeraBadge(); });
+
+  /* ---------- pesquisa: palavras e seções do app ---------- */
+  const TIT_VIEW={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
+  const ABA_REL={dia:"Do dia",grupos:"Por grupo",fal:"Quem mais fala",prev:"Prevenção",bd:"Banco de dados"};
+  function abaRel(k){ go("relatorios"); const b=document.querySelector('#rel-abas [data-aba="'+k+'"]'); if(b) b.click(); }
+  function realca(alvo){ if(!alvo) return; setTimeout(()=>{ const d=alvo.closest("details"); if(d) d.open=true;
+      alvo.scrollIntoView({behavior:"smooth",block:"center"}); alvo.classList.remove("pn-achado"); void alvo.offsetWidth; alvo.classList.add("pn-achado");
+      setTimeout(()=>alvo.classList.remove("pn-achado"),2600); },120); }
+  function achaTexto(raiz,q){ if(!raiz) return null; const w=document.createTreeWalker(raiz,NodeFilter.SHOW_TEXT); let n;
+    while((n=w.nextNode())){ if(norm(n.nodeValue).includes(q)) return n.parentElement; } return null; }
+  function abreItemBusca(i){ const B=$("drill-b"); B.textContent=""; B.appendChild(cardItem(i)); $("drill-t").textContent=i.grupo?"Grupo · "+i.grupo:"Importante"; $("drill").hidden=false; }
+  function abreAgBusca(a){ const q=new Date(a.quando); go("agenda"); if(!isNaN(q)){ calSel=new Date(q); calSel.setHours(0,0,0,0); calRef=new Date(q); calRef.setDate(1); renderCal(); }
+    realca(document.querySelector('.pn-ev[data-ev="'+(window.CSS&&CSS.escape?CSS.escape(a.id):a.id)+'"]')); }
+  function abreRelBusca(r){ const B=$("drill-b"); B.textContent=""; B.appendChild(cardRel(r)); $("drill-t").textContent=r.titulo||"Relatório"; $("drill").hidden=false; }
+  function txtDe(x){ if(x==null) return ""; if(typeof x==="string"||typeof x==="number") return String(x); if(Array.isArray(x)) return x.map(txtDe).join(" · "); if(typeof x==="object") return Object.values(x).map(txtDe).join(" "); return ""; }
+  function indiceBusca(){
+    const R=[]; const add=(g,ico,t,sub,txt,abre,tr)=>R.push({g,ico,t:String(t||"").trim(),sub:sub||"",txt:txt||"",abre,tr});
+    // seções: telas, abas e títulos dentro de cada tela
+    Object.entries(TIT_VIEW).forEach(([id,n])=>add("Seções","grid",n,"Tela do app","",()=>go(id)));
+    Object.entries(ABA_REL).forEach(([k,n])=>add("Seções","doc",n,"Relatórios · aba","",()=>abaRel(k)));
+    const vistos=new Set();
+    document.querySelectorAll(".pn-view").forEach(v=>{
+      v.querySelectorAll(".pn-h2,.pn-set-t,.pn-set-x>b,.pn-farol-t>b,h2,summary,.pn-kpi .k-l,.pn-card>.pn-row>b:first-child,.pn-cta b").forEach(h=>{
+        const t=(h.textContent||"").replace(/\s+/g," ").trim(); if(!t||t.length>70||/^\d+$/.test(t)) return;
+        const ab=h.closest("#rel-dia,#rel-grupos,#rel-fal,#rel-prev,#rel-bd"); const k=ab?ab.id.slice(4):"";
+        const sub=(TIT_VIEW[v.id]||"")+(k?" · "+ABA_REL[k]:""); const key=norm(t)+"|"+sub; if(vistos.has(key)) return; vistos.add(key);
+        add("Seções","arrow",t,sub,"",()=>{ if(k) abaRel(k); else go(v.id); realca(h); });
+      }); });
+    // dados
+    (S.itens||[]).forEach(i=>add("Importantes","star",(i.grupo?i.grupo+" · ":"")+(i.contato||"Contato"),[i.categoria,i.status&&i.status!=="pendente"?i.status:"",i.recebidoEm?fmt(i.recebidoEm):""].filter(Boolean).join(" · "),
+      [i.resumo,i.acao,i.categoria,i.contato,i.grupo,i.verificacao&&txtDe(i.verificacao)].map(txtDe).join(" "),()=>abreItemBusca(i),[i.resumo,i.acao].filter(Boolean).join(" — ")));
+    (S.agenda||[]).forEach(a=>add("Agenda","calendar",a.titulo||"Compromisso",[a.quando?fmt(a.quando):"",a.contato,a.feito?"feito":""].filter(Boolean).join(" · "),[a.titulo,a.contato,a.info,a.resposta,a.tipo].map(txtDe).join(" "),()=>abreAgBusca(a)));
+    (S.relatorios||[]).forEach(r=>add("Relatórios","doc",r.titulo||"Relatório",r.geradoEm?fmt(r.geradoEm):"",[r.resumo,r.destaques,r.indicacoes,r.assuntos].map(txtDe).join(" "),()=>abreRelBusca(r)));
+    (S.relGrupos||[]).forEach(r=>add("Relatórios por grupo","meeting",r.grupo||"Grupo",r.geradoEm?"Análise de "+fmt(r.geradoEm):"",
+      [r.resumo,r.assuntos,r.preocupacoes,r.metas,r.compromissos,r.reclamacoes,r.outros,r.contextoWeb,(r.participantes||[]).map(p=>p.nome)].map(txtDe).join(" "),()=>abreGrupo(r.grupo)));
+    const gr=new Set(); (S.grupos||[]).forEach(g=>{ if(!g.nome||gr.has(norm(g.nome))) return; gr.add(norm(g.nome)); add("Grupos e contatos","meeting",g.nome,"Grupo"+(g.silenciar?" · silenciado":""),"",()=>abreGrupo(g.nome)); });
+    (S.contatos||[]).forEach(c=>{ if(!c.nome) return; if(c.tipo==="grupo"){ if(gr.has(norm(c.nome))) return; gr.add(norm(c.nome)); return add("Grupos e contatos","meeting",c.nome,"Grupo","",()=>abreGrupo(c.nome)); }
+      add("Grupos e contatos","user",c.nome,"Contato"+(c.tel?" · na agenda":""),"",()=>{ const its=(S.itens||[]).filter(i=>norm(i.contato)===norm(c.nome));
+        abreInfo(c.nome,(c.tel?"Telefone na agenda: "+c.tel+"\n":"")+its.length+" mensagem(ns) importante(s) deste contato.",B=>its.slice(0,12).forEach(i=>B.appendChild(itemLinha(i,"importantes")))); }); });
+    (S.vips||[]).forEach(v=>add("VIPs","bell",v.nome,"Lista VIP"+(v.som===false?" · sem som":" · com som"),"",()=>{ go("ajustes"); realca($("vip-h")); }));
+    (S.criterios||[]).forEach(k=>add("Critérios","shield",k.nome,"Critério · "+(k.status||"sugerido"),k.descricao||"",()=>{ go("criterios"); realca(achaTexto($("criterios"),norm(k.nome))); }));
+    const ge=S.gestao||{};
+    (ge.problemas||[]).forEach(p=>add("Prevenção","alert",p.tema||"Problema",(p.ocorrencias?p.ocorrencias+" ocorrências":"")+(p.responsavel?" · "+p.responsavel:""),[p.causa,p.acaoPreventiva,p.grupos].map(txtDe).join(" "),()=>{ abaRel("prev"); realca(achaTexto($("pv-prob"),norm(p.tema||""))||$("pv-prob")); }));
+    (ge.clientes||[]).forEach(c=>add("Prevenção","user",c.nome,"Gera demandas · "+(c.tipo||""),c.principalAssunto||"",()=>{ abaRel("prev"); realca(achaTexto($("pv-cli"),norm(c.nome))||$("pv-cli")); }));
+    return R;
+  }
+  function textoLivre(q){ // palavras em qualquer texto visível das telas (ajudas, explicações, cartões)
+    const out=[], vistos=new Set();
+    document.querySelectorAll(".pn-view").forEach(v=>{ const w=document.createTreeWalker(v,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement&&!n.parentElement.closest("script,style,svg,button.pn-nav-btn")?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT}); let n;
+      while((n=w.nextNode())&&out.length<25){ const t=(n.nodeValue||"").replace(/\s+/g," ").trim(); if(t.length<3) continue; const nt=norm(t); if(!q.every(p=>nt.includes(p))) continue;
+        const k=nt+"|"+v.id; if(vistos.has(k)) continue; vistos.add(k); const h=n.parentElement; const ab=h.closest("#rel-dia,#rel-grupos,#rel-fal,#rel-prev,#rel-bd"); const kk=ab?ab.id.slice(4):"";
+        out.push({g:"Textos do app",ico:"help",t:t.length>90?t.slice(0,90)+"…":t,sub:(TIT_VIEW[v.id]||"")+(kk?" · "+ABA_REL[kk]:""),txt:"",abre:()=>{ if(kk) abaRel(kk); else go(v.id); realca(h); }}); } });
+    return out;
+  }
+  const nrm=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  function marca(texto,pal){ const f=document.createDocumentFragment(); const t=String(texto).normalize("NFC"); const nt=nrm(t);
+    // norm() preserva o tamanho de letras acentuadas comuns, então os índices batem com o original
+    const iv=[]; pal.forEach(p=>{ let i=nt.indexOf(p); while(i>=0&&p){ iv.push([i,i+p.length]); i=nt.indexOf(p,i+p.length); } });
+    iv.sort((a,b)=>a[0]-b[0]); let pos=0; iv.forEach(([a,b])=>{ if(a<pos) return; f.append(t.slice(pos,a)); const m=document.createElement("mark"); m.textContent=t.slice(a,b); f.append(m); pos=b; }); f.append(t.slice(pos)); return f; }
+  function trecho(txt,pal){ txt=String(txt).normalize("NFC"); const n=nrm(txt); const i=pal.map(p=>n.indexOf(p)).filter(x=>x>=0).sort((a,b)=>a-b)[0]; if(i==null) return ""; const a=Math.max(0,i-30); return (a?"…":"")+txt.slice(a,a+100)+(a+100<txt.length?"…":""); }
+  const BUSCA_K="peneira-buscas";
+  function recentes(){ try{ return JSON.parse(localStorage.getItem(BUSCA_K))||[]; }catch(e){ return []; } }
+  function guardaRecente(q){ try{ const l=[q,...recentes().filter(x=>x!==q)].slice(0,6); localStorage.setItem(BUSCA_K,JSON.stringify(l)); }catch(e){} }
+  let buscaT=null;
+  function buscaRender(){
+    const R=$("busca-r"); R.textContent=""; const raw=$("busca-q").value.trim(); const pal=norm(raw).split(/\s+/).filter(Boolean);
+    if(!pal.length){
+      const rc=recentes(); if(rc.length){ R.appendChild(el("div","pn-busca-g","Buscas recentes")); const ch=el("div","pn-chips"); rc.forEach(q=>{ const b=el("button","pn-chip",q); b.type="button"; b.onclick=()=>{ $("busca-q").value=q; buscaRender(); }; ch.appendChild(b); }); R.appendChild(ch); }
+      R.appendChild(el("div","pn-busca-g","Ir para"));
+      const ch=el("div","pn-chips"); [...Object.entries(TIT_VIEW).filter(([k])=>!["politica","perfil"].includes(k)).map(([k,n])=>[n,()=>go(k)]),...Object.entries(ABA_REL).map(([k,n])=>["Relatórios · "+n,()=>abaRel(k)])]
+        .forEach(([n,f])=>{ const b=el("button","pn-chip",n); b.type="button"; b.onclick=()=>{ fechaBusca(); f(); }; ch.appendChild(b); }); R.appendChild(ch);
+      R.appendChild(el("div","pn-meta","Procure por contato, grupo, assunto, palavra de uma mensagem ou nome de uma seção (ex.: VIP, frequência, golpe, CSN).")); return; }
+    const casa=x=>{ const a=norm(x.t+" "+x.sub+" "+x.txt); return pal.every(p=>a.includes(p)); };
+    const pontos=x=>{ const t=norm(x.t); return (pal.every(p=>t.includes(p))?0:1)+(t.startsWith(pal[0])?0:0.5); };
+    let res=indiceBusca().filter(casa); const ja=new Set(res.map(x=>norm(x.t)));
+    const jaTxt=res.map(x=>norm(x.t+" "+x.txt)).join("\n");
+    res=res.concat(textoLivre(pal).filter(x=>{ const t=norm(x.t.replace(/…$/,"")); return !ja.has(t)&&!jaTxt.includes(t); }));
+    if(!res.length){ R.appendChild(el("div","pn-empty","Nada encontrado para “"+raw+"”.")); return; }
+    R.appendChild(el("div","pn-meta",res.length+" resultado"+(res.length>1?"s":"")));
+    const ORD=["Seções","Importantes","Agenda","Grupos e contatos","Relatórios por grupo","Relatórios","VIPs","Critérios","Prevenção","Textos do app"];
+    ORD.forEach(g=>{ const l=res.filter(x=>x.g===g).sort((a,b)=>pontos(a)-pontos(b)); if(!l.length) return;
+      R.appendChild(el("div","pn-busca-g",g+" ("+l.length+")")); const box=el("div"); R.appendChild(box);
+      const mostra=n=>{ box.textContent=""; l.slice(0,n).forEach(x=>{ const b=el("button","pn-busca-r"); b.type="button"; b.appendChild(ico(x.ico));
+          const d=el("div"); const bt=el("b"); bt.appendChild(marca(x.t,pal)); d.appendChild(bt);
+          const tr=!pal.every(p=>norm(x.t).includes(p))&&x.txt?(x.tr&&pal.some(p=>norm(x.tr).includes(p))?trecho(x.tr,pal):trecho(x.txt,pal)):""; const sm=el("small"); sm.appendChild(marca([x.sub,tr].filter(Boolean).join(" — "),pal)); d.appendChild(sm);
+          b.appendChild(d); b.onclick=()=>{ guardaRecente(raw); fechaBusca(); x.abre(); }; box.appendChild(b); });
+        if(l.length>n){ const m=el("button","pn-btn pn-busca-mais","Ver mais "+(l.length-n)); m.type="button"; m.onclick=()=>mostra(l.length); box.appendChild(m); } };
+      mostra(6); });
+  }
+  function abreBusca(){ $("busca").hidden=false; const q=$("busca-q"); q.value=""; buscaRender(); setTimeout(()=>q.focus(),60); }
+  function fechaBusca(){ $("busca").hidden=true; }
+  $("btn-busca").addEventListener("click",abreBusca);
+  $("busca-x").addEventListener("click",fechaBusca);
+  $("busca").addEventListener("click",e=>{ if(e.target.id==="busca") fechaBusca(); });
+  $("busca-q").addEventListener("input",()=>{ clearTimeout(buscaT); buscaT=setTimeout(buscaRender,120); });
+  $("busca-q").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const b=document.querySelector("#busca-r .pn-busca-r"); if(b) b.click(); } });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("busca").hidden){ fechaBusca(); return; }
+    const alvo=e.target&&e.target.closest&&e.target.closest("input,textarea,select,[contenteditable]");
+    if(((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k")||(e.key==="/"&&!alvo)){ e.preventDefault(); abreBusca(); } });
 
   /* ---------- compartilhar ---------- */
   const LINK_PUB="https://rafaelximenes2010-png.github.io/Peneira/", LINK_PRIV="https://claude.ai/artifact/YKzSBnR8q7qd39HaM8dYXV";

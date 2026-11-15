@@ -21,3 +21,7 @@ GRAPH_VERSION = "v23.0"
 #   WA_TOKEN         token de acesso do WhatsApp (só se MARCAR_LIDAS = "sim")
 #   PHONE_NUMBER_ID  id do número no painel da Meta (só se MARCAR_LIDAS = "sim")
 #   ANTHROPIC_API_KEY  opcional: resumo e classificação com Claude; sem ela, usa regras de palavras
+
+# Lembretes da agenda (Farol): confere a cada 5 minutos. Plano grátis da Cloudflare aceita.
+[triggers]
+crons = ["*/5 * * * *"]

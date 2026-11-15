@@ -39,6 +39,7 @@ export default {
       if (url.pathname === "/push/inscrever" && req.method === "POST") return cors(json(await inscreve(req, env)));
       if (url.pathname === "/push/teste" && req.method === "POST") return cors(json(await empurra(env, true)));
       if (url.pathname === "/ultimo") return cors(json(await ultimo(env)));
+      if (url.pathname === "/alertas") return cors(json(await alertas(env)));
       if (url.pathname === "/sync" && req.method === "POST") return cors(json(await recebeSync(req, env)));
       if (url.pathname === "/dados") return cors(json(await dados(env)));
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
@@ -48,7 +49,9 @@ export default {
     } catch (e) {
       return cors(json({ erro: "falha interna" }, 500));
     }
-  }
+  },
+  // A cada 5 minutos: lembretes da agenda (na hora = amarelo; atrasado = vermelho), como no Farol.
+  async scheduled(ev, env, ctx) { ctx.waitUntil(lembretesAgenda(env)); }
 };
 
 // ---------- verificação do webhook (Meta → GET) ----------
@@ -158,7 +161,7 @@ async function guardaRecebida(m, perfis, cfg, env) {
   };
   await env.KV.put("item:" + quando + ":" + item.id, JSON.stringify(item), { expirationTtl: RETEM });
   await contaDia(env, "importantes");
-  await registraAlerta(env, { titulo: (item.prioridade === "alta" ? "⚠️ " : "") + item.contato, texto: item.resumo, alta: item.prioridade === "alta" });
+  await registraAlerta(env, { id: item.id, cor: corFarol(item, cfg), titulo: item.contato, texto: item.resumo, url: "./#importantes" });
 }
 
 async function registraResposta(m, env) {
@@ -271,6 +274,7 @@ async function salvaConfig(req, env) {
     vips: (b.vips || []).slice(0, 300).map(v => ({ nome: String(v.nome || "").slice(0, 60), som: v.som !== false })),
     criterios: (b.criterios || []).slice(0, 100).map(c => ({ nome: String(c.nome || "").slice(0, 80) })),
     palavras: (b.palavras || []).slice(0, 200).map(p => String(p).slice(0, 40)),
+    notif: limpaNotif(b.notif),
     em: new Date().toISOString()
   };
   await env.KV.put("cfg", JSON.stringify(cfg));
@@ -294,6 +298,7 @@ const COLS = { itens: 400, agenda: 300, relGrupos: 300, grupos: 400, contatos: 6
 const DOCS = ["status", "gestao", "perfil", "varredura", "bomdia", "notificacoes", "ausencia", "regrasLeitura", "regrasGrupos", "seguranca"];
 async function recebeSync(req, env) {
   const b = await req.json().catch(() => ({}));
+  const cfgPush = Array.isArray(b.itens) ? ((await env.KV.get("cfg", "json")) || {}) : {};
   const feito = {};
   for (const [col, max] of Object.entries(COLS)) {
     if (!Array.isArray(b[col])) continue;
@@ -304,7 +309,7 @@ async function recebeSync(req, env) {
     if (col === "itens") {
       const antes = new Set(atual.map(x => x.id));
       for (const x of b.itens) if (x && x.id && !antes.has(x.id) && (x.status || "pendente") === "pendente")
-        await registraAlerta(env, { titulo: (x.prioridade === "alta" ? "⚠️ " : "") + (x.grupo ? x.grupo + " · " : "") + (x.contato || "Peneira"), texto: x.resumo || "", alta: x.prioridade === "alta" || !!x.mencao });
+        await registraAlerta(env, { id: String(x.id), cor: corFarol(x, cfgPush), titulo: (x.grupo ? x.grupo + " · " : "") + (x.contato || "Peneira"), texto: x.resumo || "", url: "./#importantes" });
     }
     await env.KV.put("d:" + col, JSON.stringify(lista));
     feito[col] = lista.length;
@@ -330,13 +335,74 @@ async function inscreve(req, env) {
   await env.KV.put("push:subs", JSON.stringify(subs.slice(-10)));
   return { ok: true, aparelhos: subs.length };
 }
+// ---------- critérios do Farol (iguais aos do app) ----------
+//  🔴 Agir já  = pendente com prioridade alta, VIP, golpe ou menção (@); compromisso atrasado.
+//  🟡 Atenção  = demais pendentes importantes; compromisso chegando na hora.
+//  🟢 Resolvido = não avisa.
+const NOTIF_PADRAO = { vermelho: true, amarelo: true, agenda: true, silIni: "23:00", silFim: "05:00", amareloNoSilencio: false };
+function limpaNotif(n) {
+  n = n && typeof n === "object" ? n : {};
+  const hm = (x, d) => /^\d{2}:\d{2}$/.test(x || "") ? x : d;
+  return { vermelho: n.vermelho !== false, amarelo: n.amarelo !== false, agenda: n.agenda !== false,
+    silIni: hm(n.silIni, NOTIF_PADRAO.silIni), silFim: hm(n.silFim, NOTIF_PADRAO.silFim), amareloNoSilencio: n.amareloNoSilencio === true };
+}
+function corFarol(i, cfg) {
+  if (i.prioridade === "alta" || i.mencao) return "vermelho";
+  if (/golpe|suspeit/i.test((i.categoria || "") + " " + (i.resumo || ""))) return "vermelho";
+  const nome = String(i.contato || "").toLowerCase() + " " + String(i.grupo || "").toLowerCase();
+  if (((cfg && cfg.vips) || []).some(v => v && v.nome && v.som !== false && nome.includes(String(v.nome).toLowerCase()))) return "vermelho";
+  return "amarelo";
+}
+function minBrasilia() { const d = new Date(Date.now() - 3 * 3600e3); return d.getUTCHours() * 60 + d.getUTCMinutes(); }
+function emSilencio(n) {
+  const m = s => Number(s.slice(0, 2)) * 60 + Number(s.slice(3, 5));
+  const a = m(n.silIni), b = m(n.silFim), x = minBrasilia();
+  return a === b ? false : a < b ? (x >= a && x < b) : (x >= a || x < b);
+}
 async function registraAlerta(env, a) {
-  const h = Number(new Date(Date.now() - 3 * 3600e3).toISOString().slice(11, 13));
-  if (!a.alta && (h >= 23 || h < 5)) return; // madrugada: só VIP, golpe e menção
-  await env.KV.put("push:ultimo", JSON.stringify({ ...a, em: new Date().toISOString() }), { expirationTtl: 7 * DIA });
+  const cfg = (await env.KV.get("cfg", "json")) || {};
+  const n = limpaNotif(cfg.notif);
+  const cor = a.cor === "vermelho" ? "vermelho" : "amarelo";
+  if (a.tipo === "agenda" ? !n.agenda : !n[cor]) return;
+  if (cor === "amarelo" && !n.amareloNoSilencio && emSilencio(n)) return; // silêncio noturno: só o vermelho toca
+  const em = new Date().toISOString();
+  const al = { id: String(a.id || em).slice(0, 80), cor, tipo: a.tipo || "item", titulo: String(a.titulo || "Peneira").slice(0, 80),
+    texto: String(a.texto || "").slice(0, 180), url: a.url || "./#importantes", em };
+  const fila = ((await env.KV.get("push:fila", "json")) || []).filter(x => x.id !== al.id && Date.now() - Date.parse(x.em) < 6 * 3600e3);
+  fila.push(al);
+  await env.KV.put("push:fila", JSON.stringify(fila.slice(-30)), { expirationTtl: 2 * DIA });
+  // compatível com o app antigo, que lê só o último aviso
+  await env.KV.put("push:ultimo", JSON.stringify({ titulo: (cor === "vermelho" ? "🔴 " : "🟡 ") + al.titulo, texto: al.texto, alta: cor === "vermelho", em }), { expirationTtl: 7 * DIA });
   await empurra(env, false);
 }
+async function alertas(env) { return { ok: true, alertas: (await env.KV.get("push:fila", "json")) || [] }; }
 async function ultimo(env) { return (await env.KV.get("push:ultimo", "json")) || { titulo: "Peneira", texto: "Abra o app para ver." }; }
+
+// Agenda: "quando" vem como AAAA-MM-DDTHH:MM no horário de Brasília.
+function quandoMs(q) {
+  const s = String(q || "");
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(s)) return Date.parse(s + (s.length === 16 ? ":00" : "") + "-03:00");
+  return Date.parse(s);
+}
+async function lembretesAgenda(env) {
+  const ag = (await env.KV.get("d:agenda", "json")) || [];
+  const agora = Date.now();
+  for (const a of ag) {
+    if (!a || !a.id || a.feito) continue;
+    const t = quandoMs(a.quando); if (isNaN(t)) continue;
+    const hora = String(a.quando).slice(11, 16);
+    // na hora (até 10 min antes): amarelo
+    if (agora >= t - 10 * 60e3 && agora < t + 15 * 60e3 && !(await env.KV.get("pa:h:" + a.id))) {
+      await env.KV.put("pa:h:" + a.id, "1", { expirationTtl: 3 * DIA });
+      await registraAlerta(env, { id: "ag-h-" + a.id, tipo: "agenda", cor: "amarelo", titulo: "Agora · " + (a.titulo || "Compromisso"), texto: (hora ? hora + " · " : "") + (a.contato || "Agenda do Peneira"), url: "./#agenda" });
+    }
+    // atrasado (30 min depois, até 24h): vermelho, uma vez
+    if (agora >= t + 30 * 60e3 && agora < t + DIA * 1000 && !(await env.KV.get("pa:a:" + a.id))) {
+      await env.KV.put("pa:a:" + a.id, "1", { expirationTtl: 3 * DIA });
+      await registraAlerta(env, { id: "ag-a-" + a.id, tipo: "agenda", cor: "vermelho", titulo: "Atrasado · " + (a.titulo || "Compromisso"), texto: (hora ? "Era às " + hora : "Compromisso") + (a.contato ? " · " + a.contato : "") + " — ainda não marcado como feito.", url: "./#agenda" });
+    }
+  }
+}
 async function empurra(env, teste) {
   if (!env.VAPID_JWK || !env.VAPID_PUB) return { ok: false, erro: "chaves de push não configuradas" };
   if (teste) await env.KV.put("push:ultimo", JSON.stringify({ titulo: "Peneira", texto: "Alertas na tela bloqueada ativados ✓", em: new Date().toISOString() }), { expirationTtl: DIA });
