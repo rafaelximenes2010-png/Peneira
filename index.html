@@ -756,11 +756,18 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       <button class="pn-chip" type="button" data-aba="dia" aria-pressed="true">Do dia</button>
       <button class="pn-chip" type="button" data-aba="grupos" aria-pressed="false">Por grupo</button>
       <button class="pn-chip" type="button" data-aba="fal" aria-pressed="false">Quem mais fala</button>
+      <button class="pn-chip" type="button" data-aba="reu" aria-pressed="false">Reuniões no Whats</button>
       <button class="pn-chip" type="button" data-aba="prev" aria-pressed="false">Prevenção</button>
       <button class="pn-chip" type="button" data-aba="bd" aria-pressed="false">Banco de dados</button>
     </div>
     <div id="rel-fal" hidden>
-      <div class="pn-h2" style="margin-top:4px">Conversas individuais · quem mais escreve</div>
+      <div class="pn-h2" style="margin-top:4px">🏆 Campeões do mês · top 10</div>
+      <div class="pn-cal-top" style="margin:0 0 8px"><button class="pn-btn" type="button" id="camp-prev" aria-label="Mês anterior">‹</button><b id="camp-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="camp-next" aria-label="Próximo mês">›</button></div>
+      <div class="pn-card"><b>Nos grupos</b><p class="pn-meta" style="margin:2px 0 6px">Mensagens somadas de todos os grupos no mês.</p><div id="camp-gr"></div></div>
+      <div class="pn-card"><b>Nas conversas individuais</b><p class="pn-meta" style="margin:2px 0 6px">Mensagens recebidas pela ponte oficial no mês.</p><div id="camp-ind"></div></div>
+      <div class="pn-h2">Campeões de cada mês</div>
+      <div class="pn-card" id="camp-hist"></div>
+      <div class="pn-h2">Conversas individuais · quem mais escreve</div>
       <p class="pn-meta" style="margin:-4px 0 10px" id="fal-meta">Dados da ponte oficial, mês atual.</p>
       <div class="pn-card" id="fal-ind"></div>
       <div class="pn-h2">Tempo de conversa por grupo</div>
@@ -772,6 +779,18 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       <div class="pn-h2">Cadastro dos grupos</div>
       <div class="pn-card" id="fal-cad"></div>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="fal-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="fal-xlsx" style="flex:1">Excel</button></div>
+    </div>
+    <div id="rel-reu" hidden>
+      <div class="pn-h2" style="margin-top:4px">Reuniões por WhatsApp</div>
+      <p class="pn-meta" style="margin:-4px 0 10px">Todo debate de grupo com <b>mais de 10 minutos seguidos</b> (mensagens com menos de 15 min entre si) conta como uma reunião pelo WhatsApp. Tempo perdido = duração da reunião; horas-pessoa = duração × pessoas que escreveram.</p>
+      <div class="pn-cal-top" style="margin:0 0 8px"><button class="pn-btn" type="button" id="reu-prev" aria-label="Mês anterior">‹</button><b id="reu-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="reu-next" aria-label="Próximo mês">›</button></div>
+      <div class="pn-bd" id="reu-kpi" style="margin-bottom:10px"></div>
+      <div class="pn-h2">Grupos que fazem reunião pelo Whats</div>
+      <div class="pn-card" id="reu-gr"></div>
+      <div class="pn-h2">Reuniões do mês</div>
+      <div class="pn-card" id="reu-lista"></div>
+      <p class="pn-meta" id="reu-obs" style="margin:6px 4px 0"></p>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="reu-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="reu-xlsx" style="flex:1">Excel</button></div>
     </div>
     <div id="rel-bd" hidden>
       <div class="pn-h2" style="margin-top:4px">Banco de dados do Peneira</div>
@@ -1656,8 +1675,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.10";
+  const VERSAO="4.11";
   const VERSOES=[
+    {v:"4.11",data:"15/11/2026",itens:["Campeões do mês: top 10 de quem mais fala nos grupos e nas conversas individuais, guardado mês a mês com histórico","Reuniões no Whats: todo debate de grupo com mais de 10 minutos seguidos vira reunião, com o tempo perdido por grupo, horas-pessoa e a lista do mês","Tudo também no Excel/PDF e no Banco de dados"]},
     {v:"4.10",data:"15/11/2026",itens:["Botão de pesquisa (lupa) no topo: procura palavras e seções em todo o app, como contatos, grupos, mensagens, agenda, relatórios, VIPs, critérios e ajustes","Alertas na tela bloqueada com as cores do Farol: 🔴 Agir já toca a qualquer hora; 🟡 Atenção respeita o silêncio noturno","Lembretes da agenda no celular bloqueado: na hora do compromisso e se atrasar","Número de alertas vermelhos no ícone do app"]},
     {v:"4.9.3",data:"14/11/2026",itens:["Checagem na web: a varredura confere golpes, correntes, bloqueios de estrada e notícias de clientes, e mostra o veredito com a fonte em cada alerta","Relatórios por grupo ganham o tema Checado na web"]},
     {v:"4.9.2",data:"14/11/2026",itens:["Som mais simples: uma gota só caindo no copo d'água"]},
@@ -2320,8 +2340,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   const TEMAS_G=[["assuntos","Assuntos importantes"],["preocupacoes","Preocupações"],["metas","Metas"],["compromissos","Compromissos"],["reclamacoes","Reclamações"],["outros","Outros pontos"],["contextoWeb","Checado na web"]];
   document.querySelectorAll("#rel-abas [data-aba]").forEach(b=>b.addEventListener("click",()=>{
     document.querySelectorAll("#rel-abas [data-aba]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));
-    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-bd").hidden=b.dataset.aba!=="bd";
-    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="bd") renderBDados(); }));
+    $("rel-dia").hidden=b.dataset.aba!=="dia"; $("rel-grupos").hidden=b.dataset.aba!=="grupos"; $("rel-prev").hidden=b.dataset.aba!=="prev"; $("rel-fal").hidden=b.dataset.aba!=="fal"; $("rel-reu").hidden=b.dataset.aba!=="reu"; $("rel-bd").hidden=b.dataset.aba!=="bd";
+    if(b.dataset.aba==="fal"){ carregaFalantes(); renderFal(); } if(b.dataset.aba==="reu") renderReu(); if(b.dataset.aba==="bd") renderBDados(); }));
   function ultimosPorGrupo(){ const m={}; S.relGrupos.forEach(r=>{ const k=norm(r.grupo); if(!m[k]||String(r.geradoEm)>String(m[k].geradoEm)) m[k]=r; }); return Object.values(m).sort((a,b)=>(b.mensagens||0)-(a.mensagens||0)); }
   function renderTodosGrupos(){
     const T=$("rg-todos"); if(!T) return; T.textContent=""; const q=norm(($("rg-busca")||{}).value||"");
@@ -2449,7 +2469,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     return [...nomes.values()].sort((a,b)=>a.localeCompare(b,"pt")).map(nome=>{ const g=(S.grupos||[]).find(x=>norm(x.nome)===norm(nome))||{}; const r=rs.find(x=>norm(x.grupo)===norm(nome))||{};
       const ps=(r.participantes||[]).slice().sort((a,b)=>(b.msgs||0)-(a.msgs||0)); const vip=(S.vips||[]).some(v=>norm(v.nome)===norm(nome));
       return {"Grupo":nome,"Participantes":(r.participantes||[]).length||"","Mensagens (última análise)":r.mensagens||0,"Mais falante":ps[0]?ps[0].nome:"","Líder":(ps.find(p=>p.papel)||{}).nome||"","Silenciado":g.silenciar?"Sim":"Não","VIP":vip?"Sim":"Não","Última análise":r.geradoEm?fmt(r.geradoEm):"—"}; }); }
-  function renderFal(){ if(!$("fal-ind")) return;
+  function renderFal(){ if(!$("fal-ind")) return; try{ renderCamp(); }catch(e){}
     const f=S.falantes; $("fal-meta").textContent = ponte&&ponte.url ? (f?"Mês "+f.mes.split("-").reverse().join("/")+" · "+f.total+" mensagens de "+f.falantes.length+" contatos":"Carregando…") : "Conecte a ponte oficial em Ajustes para ver este ranking.";
     barras($("fal-ind"), f?f.falantes:[], "Ainda sem mensagens contadas neste mês.", x=>abreInfo(x.nome, x.msgs+" mensagens recebidas neste mês pelas conversas individuais."+(x.min!=null?"\nTempo de conversa: "+fmtHM(x.min)+(x.sessoes?" em "+x.sessoes+" conversa(s)":"")+(x.maiorSeqMin?"\nMaior conversa sem parar: "+fmtHM(x.maiorSeqMin):""):"")));
     graficoTempo($("fal-tempo"), tempoGrupos());
@@ -2458,6 +2478,68 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
     if(!ls.length){ cad.appendChild(el("div","pn-empty","Nenhum grupo cadastrado ainda. Eles entram sozinhos na primeira varredura dos grupos.")); }
     ls.forEach(x=>{ const r=el("div","pn-fal"); const n=el("span","nm",x["Grupo"]); n.style.maxWidth="60%"; r.appendChild(n); r.appendChild(el("span","pn-meta",(x["Participantes"]?x["Participantes"]+" pessoas · ":"")+(x["Mais falante"]?"↑ "+x["Mais falante"]:"sem análise")+(x["Silenciado"]==="Sim"?" · silenciado":"")+" ›")); r.style.cursor="pointer"; r.onclick=()=>abreGrupo(x["Grupo"]); cad.appendChild(r); });
   }
+  /* ---------- campeões do mês + reuniões por WhatsApp ---------- */
+  const MESES_C=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  const mesAtual=()=>{ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); };
+  const nomeMes=m=>{ const [a,b]=String(m).split("-"); return (MESES_C[+b-1]||b)+"/"+a; };
+  const nG=t=>norm(t).replace(/[^a-z0-9]+/g," ").trim();
+  const mesesSnap=()=>(S.gestao&&S.gestao.meses)||{};
+  S.falMes={}; S.campMes=null; S.reuMes=null;
+  function mesesDisp(){ const s=new Set(Object.keys(mesesSnap())); s.add(mesAtual()); (S.relGrupos||[]).forEach(r=>{ if(r.geradoEm) s.add(String(r.geradoEm).slice(0,7)); }); return [...s].filter(m=>/^\d{4}-\d{2}$/.test(m)).sort(); }
+  const relDoMes=m=>(S.relGrupos||[]).filter(r=>String(r.geradoEm||"").slice(0,7)===m);
+  function falGruposMes(m){ const g={}; relDoMes(m).forEach(r=>(r.participantes||[]).forEach(p=>{ const k=norm(p.nome); const x=g[k]=g[k]||{nome:p.nome,msgs:0,min:0,gr:new Set()}; x.msgs+=p.msgs||0; x.min+=p.min||0; x.gr.add(nG(r.grupo)); }));
+    return Object.values(g).map(x=>({nome:x.nome,msgs:x.msgs,min:x.min,grupos:x.gr.size})).sort((a,b)=>b.msgs-a.msgs||b.min-a.min); }
+  const somaMsgs=l=>(l||[]).reduce((a,x)=>a+(x.msgs||0),0);
+  function campeoes(m){ const sn=mesesSnap()[m]||{}; const vivo=falGruposMes(m).slice(0,10);
+    const gr=(sn.falantesGrupos&&somaMsgs(sn.falantesGrupos)>=somaMsgs(vivo))?sn.falantesGrupos:vivo;
+    let ind=sn.falantesIndividuais||[]; const f=(S.falantes&&S.falantes.mes===m)?S.falantes:S.falMes[m]; if(f&&somaMsgs(f.falantes.slice(0,10))>=somaMsgs(ind)) ind=f.falantes;
+    return {gr:(gr||[]).slice(0,10), ind:(ind||[]).slice(0,10)}; }
+  async function carregaFalMes(m){ if(!ponte||!ponte.url||S.falMes[m]||m===mesAtual()) return; try{ S.falMes[m]=await ponteReq("/falantes?mes="+m); renderCamp(); }catch(e){} }
+  function medalhas(box){ box.querySelectorAll(".pn-fal .n").forEach((n,i)=>{ if(i<3){ n.textContent=["🥇","🥈","🥉"][i]; n.style.fontSize="15px"; } }); }
+  function navMes(chave,dir){ const ms=mesesDisp(); let i=ms.indexOf(S[chave]||mesAtual()); if(i<0) i=ms.length-1; i=Math.max(0,Math.min(ms.length-1,i+dir)); S[chave]=ms[i]; }
+  function renderCamp(){ if(!$("camp-gr")) return; const m=S.campMes||mesAtual(); const ms=mesesDisp();
+    $("camp-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("camp-prev").disabled=ms.indexOf(m)<=0; $("camp-next").disabled=ms.indexOf(m)>=ms.length-1;
+    carregaFalMes(m); const c=campeoes(m);
+    barras($("camp-gr"),c.gr,"Ainda sem mensagens de grupos neste mês.",x=>abreInfo(x.nome,x.msgs+" mensagens nos grupos em "+nomeMes(m)+(x.min?"\nTempo de conversa: "+fmtHM(x.min):"")+(x.grupos?"\nEm "+x.grupos+" grupo(s)":""))); medalhas($("camp-gr"));
+    barras($("camp-ind"),c.ind,ponte&&ponte.url?"Ainda sem mensagens individuais neste mês.":"Conecte a ponte oficial em Ajustes para ver as individuais.",x=>abreInfo(x.nome,x.msgs+" mensagens individuais em "+nomeMes(m)+(x.min?"\nTempo de conversa: "+fmtHM(x.min):""))); medalhas($("camp-ind"));
+    const h=$("camp-hist"); h.textContent=""; ms.slice().reverse().forEach(mm=>{ const cc=campeoes(mm); if(!cc.gr.length&&!cc.ind.length) return;
+      const r=el("div","pn-q"); r.style.cssText="cursor:pointer;flex-direction:column;gap:2px"; r.appendChild(el("b",null,nomeMes(mm)));
+      r.appendChild(el("span","pn-meta","🏆 Grupos: "+(cc.gr[0]?cc.gr[0].nome+" ("+cc.gr[0].msgs+")":"—")+" · Individuais: "+(cc.ind[0]?cc.ind[0].nome+" ("+cc.ind[0].msgs+")":"—")));
+      r.onclick=()=>{ S.campMes=mm; renderCamp(); $("camp-mes").scrollIntoView({behavior:"smooth",block:"center"}); }; h.appendChild(r); });
+    if(!h.childNodes.length) h.appendChild(el("div","pn-empty","O histórico mês a mês aparece aqui.")); }
+  $("camp-prev").addEventListener("click",()=>{ navMes("campMes",-1); renderCamp(); });
+  $("camp-next").addEventListener("click",()=>{ navMes("campMes",1); renderCamp(); });
+  const nPess=x=>Array.isArray(x.pessoas)?x.pessoas.length:(+x.pessoas||0);
+  function reunioes(m){ const sn=(mesesSnap()[m]||{}).reunioes;
+    const lista=[]; relDoMes(m).forEach(r=>(r.reunioes||[]).forEach(x=>{ if((x.min||0)>10) lista.push({grupo:r.grupo,data:x.data||String(r.geradoEm).slice(0,10),...x}); }));
+    const vivoMin=lista.reduce((a,x)=>a+x.min,0);
+    if(sn&&((sn.total||{}).min||0)>=vivoMin) return {lista:sn.lista||[],grupos:sn.grupos||[],total:sn.total||{},obs:sn.obs||""};
+    const G={}; lista.forEach(x=>{ const k=nG(x.grupo); const g=G[k]=G[k]||{grupo:x.grupo,qtd:0,min:0,maior:0,pessoaMin:0}; g.qtd++; g.min+=x.min; g.maior=Math.max(g.maior,x.min); g.pessoaMin+=x.min*nPess(x); });
+    const grupos=Object.values(G).sort((a,b)=>b.min-a.min);
+    return {lista,grupos,total:{qtd:lista.length,min:vivoMin,pessoaMin:grupos.reduce((a,g)=>a+g.pessoaMin,0)},obs:""}; }
+  function renderReu(){ if(!$("reu-gr")) return; const m=S.reuMes||mesAtual(); const ms=mesesDisp(); const R=reunioes(m);
+    $("reu-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("reu-prev").disabled=ms.indexOf(m)<=0; $("reu-next").disabled=ms.indexOf(m)>=ms.length-1;
+    const k=$("reu-kpi"); k.textContent=""; [[String(R.total.qtd||0),"reuniões"],[fmtHM(R.total.min||0),"tempo perdido"],[R.total.pessoaMin?fmtHM(R.total.pessoaMin):"—","horas-pessoa medidas"],[String(R.grupos.length),"grupos"]].forEach(([v,t])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,t)); k.appendChild(d); });
+    const g=$("reu-gr"); g.textContent=""; if(!R.grupos.length) g.appendChild(el("div","pn-empty","Nenhum debate de mais de 10 minutos neste mês."));
+    const max=Math.max(1,...R.grupos.map(x=>x.min)); R.grupos.forEach((x,i)=>{ const r=el("div","pn-fal"); r.style.cursor="pointer"; r.appendChild(el("span","n",String(i+1)));
+      const n=el("span","nm",x.grupo); n.title=x.grupo; r.appendChild(n); const b=el("div","bar"); const ii=el("i"); ii.style.width=Math.max(4,Math.round(100*x.min/max))+"%"; ii.style.background="linear-gradient(90deg,var(--gold),var(--coral))"; b.appendChild(ii); r.appendChild(b);
+      const q=el("span","q",x.qtd+"× · "+fmtHM(x.min)); q.style.minWidth="96px"; r.appendChild(q);
+      r.onclick=()=>abreInfo(x.grupo,x.qtd+" reunião(ões) pelo WhatsApp em "+nomeMes(m)+"\nTempo perdido: "+fmtHM(x.min)+"\nMaior reunião: "+fmtHM(x.maior)+(x.pessoaMin?"\nHoras-pessoa (medidas): "+fmtHM(x.pessoaMin):"")+"\n\nSugestão: se o assunto pede mais de 10 minutos de debate, marque uma ligação curta com pauta e registre só a decisão no grupo.");
+      g.appendChild(r); });
+    const L=$("reu-lista"); L.textContent=""; const ls=R.lista.slice().sort((a,b)=>String(b.data+(b.inicio||"")).localeCompare(String(a.data+(a.inicio||""))));
+    if(!ls.length) L.appendChild(el("div","pn-empty","Sem reuniões registradas."));
+    ls.slice(0,60).forEach(x=>{ const r=el("div","pn-q"); r.style.cursor="pointer"; const a=el("div"); a.appendChild(el("b",null,x.grupo)); a.appendChild(el("div","pn-meta",String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):"")+(x.msgs?" · "+x.msgs+" msgs":"")+(nPess(x)?" · "+nPess(x)+" pessoas":"")));
+      r.appendChild(a); r.appendChild(el("span","pn-tp "+(x.min>30?"r":x.min>20?"a":""),fmtHM(x.min))); r.onclick=()=>abreGrupo(x.grupo); L.appendChild(r); });
+    $("reu-obs").textContent=R.obs||""; }
+  $("reu-prev").addEventListener("click",()=>{ navMes("reuMes",-1); renderReu(); });
+  $("reu-next").addEventListener("click",()=>{ navMes("reuMes",1); renderReu(); });
+  function tabsReuCamp(){ const out=[];
+    mesesDisp().slice().reverse().forEach(m=>{ const c=campeoes(m); for(let i=0;i<10;i++){ const g=c.gr[i], d=c.ind[i]; if(!g&&!d) break; out.push({"Mês":nomeMes(m),"#":i+1,"Grupos · pessoa":g?g.nome:"","Grupos · mensagens":g?g.msgs:"","Individuais · contato":d?d.nome:"","Individuais · mensagens":d?d.msgs:""}); } });
+    const reu=[]; mesesDisp().slice().reverse().forEach(m=>reunioes(m).lista.forEach(x=>reu.push({"Mês":nomeMes(m),"Grupo":x.grupo,"Data":x.data||"","Início":x.inicio||"","Fim":x.fim||"","Duração (min)":x.min,"Mensagens":x.msgs||"","Pessoas":nPess(x)||""})));
+    const reuG=[]; mesesDisp().slice().reverse().forEach(m=>reunioes(m).grupos.forEach(x=>reuG.push({"Mês":nomeMes(m),"Grupo":x.grupo,"Reuniões":x.qtd,"Tempo perdido":fmtHM(x.min),"Maior reunião":fmtHM(x.maior),"Horas-pessoa (medidas)":x.pessoaMin?fmtHM(x.pessoaMin):""})));
+    return [["Campeões do mês",out],["Reuniões por grupo",reuG],["Reuniões no Whats",reu]]; }
+  $("reu-xlsx").addEventListener("click",()=>bancoXLSX(tabsReuCamp().slice(1),"Peneira - reunioes no WhatsApp"));
+  $("reu-pdf").addEventListener("click",()=>bancoPDF(tabsReuCamp().slice(1),"Peneira - reunioes no WhatsApp","Reuniões por WhatsApp (debates de mais de 10 min)"));
   function tabelasBanco(){
     const f=S.falantes||{falantes:[]};
     return [
@@ -2470,6 +2552,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
       ["Tempo por grupo",tempoGrupos().map((x,i)=>({"#":i+1,"Grupo":x.nome,"Tempo ativo":fmtHM(x.ativo),"Maior conversa sem parar":fmtHM(x.maior),"Conversas":x.sessoes,"Mensagens":x.msgs}))],
       ["Falantes em grupos",falGrupos().map((x,i)=>({"#":i+1,"Pessoa":x.nome,"Mensagens":x.msgs,"Tempo de conversa":x.min!=null?fmtHM(x.min):"","Grupos":x.grupos.join(", "),"Líder":x.lider?"Sim":"Não"}))],
       ["Relatórios",(S.relatorios||[]).map(r=>({"Título":r.titulo||"","Gerado em":r.geradoEm?fmt(r.geradoEm):"","Resumo":r.resumo||"","Mensagens":(r.numeros||{}).mensagens||"","Importantes":(r.numeros||{}).importantes||"","Minutos economizados":(r.numeros||{}).minutosEconomizados||""}))],
+      ...tabsReuCamp(),
       ["Prevenção",((S.gestao||{}).problemas||[]).map(p=>({"Tema":p.tema,"Ocorrências":p.ocorrencias||"","Tendência":p.tendencia||"","Causa provável":p.causa||"","Ação preventiva":p.acaoPreventiva||"","Responsável":p.responsavel||""}))]
     ];
   }
@@ -2507,7 +2590,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   }
   $("bd-xlsx").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoXLSX(tabelasBanco(),"Peneira - banco de dados"); salvoOk(b,"✓ Excel"); });
   $("bd-pdf").addEventListener("click",async e=>{ const b=e.currentTarget; await carregaFalantes(); await bancoPDF(tabelasBanco(),"Peneira - banco de dados","Banco de dados"); salvoOk(b,"✓ PDF"); });
-  const tabsFal=()=>tabelasBanco().filter(([n])=>["Grupos","Falantes individuais","Tempo por grupo","Falantes em grupos"].includes(n));
+  const tabsFal=()=>tabelasBanco().filter(([n])=>["Campeões do mês","Grupos","Falantes individuais","Tempo por grupo","Falantes em grupos"].includes(n));
   $("fal-xlsx").addEventListener("click",()=>bancoXLSX(tabsFal(),"Peneira - cadastro e mais falantes"));
   $("fal-pdf").addEventListener("click",()=>bancoPDF(tabsFal(),"Peneira - cadastro e mais falantes","Cadastro dos grupos e mais falantes"));
   $("rg-busca").addEventListener("input",renderTodosGrupos);
