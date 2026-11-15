@@ -721,6 +721,28 @@ button.ub-row{cursor:pointer}
 #varr-card .pn-scan-c{pointer-events:none}
 #varr-card .pn-scan-c b,#varr-card .pn-scan-c span{display:none}
 #varr-card .pn-scan.ativo .pn-scan-c b{display:flex;font:700 15px ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;text-shadow:0 0 6px var(--rd-c);background:rgba(0,0,0,.55);border-radius:6px;padding:1px 5px}
+/* ===== v4.17 · Varrer agora em destaque, no topo do cartão ===== */
+#varr-card .pn-scan-btn.ub-varrer{grid-row:1;grid-column:1/-1;margin:0 0 6px}
+#varr-card .pn-scan-nx{grid-row:2;margin:0 0 16px}
+#varr-card .pn-scan-ring,#varr-card .pn-scan-info{grid-row:3}
+#varr-card .pn-scan-cont{grid-row:4}
+#varr-card{padding-top:14px}
+.pn .pn-scan-btn.ub-varrer{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:14px;text-align:left;
+  min-height:72px;padding:12px 16px 12px 12px;border-radius:22px;border:0;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,#5ce89a 0%,rgba(92,232,154,0) 55%),linear-gradient(135deg,#2fd27a 0%,#16a85b 55%,#0e8a4a 100%);
+  box-shadow:0 12px 28px -12px rgba(22,168,91,.85),0 2px 0 rgba(255,255,255,.22) inset,0 -2px 0 rgba(0,0,0,.12) inset}
+.ub-varrer .vi{flex:none;width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.22);box-shadow:0 1px 0 rgba(255,255,255,.3) inset}
+.ub-varrer .vi .pn-ico svg{width:24px;height:24px;stroke-width:2.6;color:#fff}
+.ub-varrer .vx{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ub-varrer .vt{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.ub-varrer .vx small{font-size:12.5px;font-weight:500;opacity:.88;line-height:1.25}
+.ub-varrer .va{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:#0e8a4a;font-size:24px;font-weight:700;line-height:1;padding-bottom:3px;box-sizing:border-box}
+.ub-varrer::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);animation:ubBrilho 4.5s ease-in-out infinite;pointer-events:none}
+@keyframes ubBrilho{0%,70%{left:-60%}100%{left:130%}}
+.pn .pn-scan-btn.ub-varrer:active{transform:scale(.98);filter:brightness(.95)}
+.pn .pn-scan-btn.ub-varrer.gira .vi .pn-ico svg{animation:pnRadar 1s linear infinite}
+.pn .pn-scan-btn.ub-varrer:disabled{opacity:.8}
+@media (prefers-reduced-motion:reduce){.ub-varrer::after{animation:none;display:none}}
 </style>
 </head>
 <body>
@@ -830,7 +852,7 @@ button.ub-row{cursor:pointer}
           <button type="button" data-k="sc-mant"><b id="sc-mant">0</b><span>Não lidas</span></button>
           <button type="button" data-k="sc-imp"><b id="sc-imp">0</b><span>Importantes</span></button>
         </div>
-        <button class="pn-btn pri pn-scan-btn" type="button" id="varr-agora"><span data-ico="refresh"></span>Varrer agora</button>
+        <button class="pn-btn pri pn-scan-btn ub-varrer" type="button" id="varr-agora"><span class="vi"><span data-ico="refresh"></span></span><span class="vx"><b class="vt">Varrer agora</b><small>Peneirar grupos e conversas neste instante</small></span><span class="va" aria-hidden="true">›</span></button>
         <div class="pn-scan-nx" id="varr-agora-st">Varredura automática</div>
       </div>
       <details class="ub-cfg" id="varr-cfg"><summary><span data-ico="gear"></span><b>Ajustes da varredura</b><small id="varr-cfg-sub"></small></summary>
@@ -1928,8 +1950,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.16";
+  const VERSAO="4.17";
   const VERSOES=[
+    {v:"4.17",data:"15/11/2026",itens:["Varrer agora em destaque no topo do cartão de varredura, acima do radar: botão maior, com ícone, frase de apoio e brilho"]},
     {v:"4.16",data:"15/11/2026",itens:["Radar realista: tela de fósforo com moldura, anéis de distância, marcas de grau, feixe com rastro e alvos que acendem quando o feixe passa (amarelos = importantes pendentes)","Cor do radar mostra o estado: verde em dia, azul quando você pede, laranja atrasada, cinza desligada"]},
     {v:"4.15",data:"15/11/2026",itens:["Início novo, no estilo Uber e iFood: saudação grande, busca em destaque e atalhos para Importantes, Agenda, VIPs e Relatórios","Varredura num cartão compacto, com Varrer agora sempre à vista e os ajustes recolhidos","Para agir agora: pendentes, prioridade alta, prazos e agenda em cartões que deslizam para o lado","Status coerente: se a automática atrasar, o radar fica laranja e avisa, em vez de mostrar Protegido"]},
     {v:"4.14",data:"15/11/2026",itens:["Relatórios → Estatísticas: importantes do período (7 dias, 30 dias, mês ou tudo), % tratadas, pendentes, tempo economizado e varreduras","Gráficos de importantes por dia e por horário, ranking de assuntos e de quem mais gera importantes, e de onde vem cada um; tudo abre o detalhe ao tocar"]},
@@ -3071,8 +3094,8 @@ button.ub-row{cursor:pointer}
   /* ---------- feedback de toque e "Salvo ✓" ---------- */
   document.addEventListener("pointerdown",e=>{ const b=e.target.closest("button,.pn-chip,a.pn-btn,.pn-tag"); if(!b) return;
     b.classList.add("pn-press"); try{ if(navigator.vibrate) navigator.vibrate(8); }catch(err){} setTimeout(()=>b.classList.remove("pn-press"),260); },{passive:true});
-  function salvoOk(b,txt){ if(!b) return; const old=b.dataset.txt||b.textContent; b.dataset.txt=old; b.classList.add("pn-ok"); b.textContent=txt||"✓ Salvo";
-    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove("pn-ok"); b.textContent=b.dataset.txt; },1600); }
+  function salvoOk(b,txt){ if(!b) return; const a=b.querySelector(".vt")||b; const old=b.dataset.txt||a.textContent; b.dataset.txt=old; b.classList.add("pn-ok"); a.textContent=txt||"✓ Salvo";
+    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove("pn-ok"); a.textContent=b.dataset.txt; },1600); }
   document.addEventListener("submit",e=>{ const b=e.target.querySelector('button[type=submit]'); if(b && e.target.checkValidity()) setTimeout(()=>salvoOk(b, e.target.id==="onb-form"?"✓ Pronto":"✓ Salvo"),50); },true);
   ["ra-salvar","h-salvar"].forEach(id=>{ const b=$(id); if(b) b.addEventListener("click",()=>setTimeout(()=>salvoOk(b),50)); });
   /* ---------- tema (preferência deste aparelho) ---------- */
