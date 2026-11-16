@@ -859,6 +859,7 @@ button.ub-row-main{cursor:pointer}
       <button class="pn-dn" type="button" id="btn-busca" aria-label="Pesquisar no app" title="Pesquisar (Ctrl+K)"><span data-ico="search"></span></button>
       <button class="pn-dn" type="button" id="btn-hub" aria-label="Alertas e central: novidades, atualizações e mais"><span data-ico="bell"></span><span class="pn-badge" id="hub-dot" style="position:absolute;top:-4px;right:-4px;min-width:10px;height:10px;padding:0"></span></button>
       <button class="pn-dn" type="button" id="btn-dn" aria-label="Alternar dia e noite"><span id="dn-ico"></span><span id="dn-txt">Noite</span></button>
+      <button class="pn-dn" type="button" id="btn-perfil" aria-label="Meu cadastro" title="Meu cadastro" style="overflow:hidden"><span data-ico="user"></span></button>
     </div>
   </header>
 
@@ -1275,7 +1276,13 @@ button.ub-row-main{cursor:pointer}
     <button class="pn-cta" type="button" data-go="acoes" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
       <span><b>Ações e respostas automáticas</b><br><span class="pn-meta">Silenciar grupos, ausência, saudação</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="perfil" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
-      <span><b>Meu cadastro e Face ID</b><br><span class="pn-meta" id="aj-perfil">Seus dados e bloqueio do app</span></span><span>→</span></button>
+      <span><b>Meu cadastro</b><br><span class="pn-meta" id="aj-perfil">Seus dados cadastrais</span></span><span>→</span></button>
+    <div class="pn-h2">Segurança do app</div>
+    <div class="pn-card">
+      <div class="pn-switch"><div><b>Abrir com Face ID</b><div class="pn-meta" id="fid-status">Pede Face ID (ou digital) toda vez que o app abrir.</div></div>
+      <button class="pn-tg" type="button" role="switch" aria-checked="false" id="fid-tg" aria-label="Abrir com Face ID"></button></div>
+    </div>
+    <button class="pn-btn no" type="button" id="perfil-apagar" style="width:100%;margin:0 0 14px">Apagar meu cadastro deste aparelho</button>
     <button class="pn-cta" type="button" data-go="assistente" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
       <span><b>Sugestões</b><br><span class="pn-meta">Conte o que quer ver no Peneira — a Peneirinha guarda e eu aprendo</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="politica" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
@@ -1397,12 +1404,6 @@ button.ub-row-main{cursor:pointer}
   <section class="pn-view" id="perfil">
     <div class="pn-h2">Meu cadastro</div>
     <div class="pn-card" id="perfil-box"></div>
-    <div class="pn-h2">Segurança do app</div>
-    <div class="pn-card">
-      <div class="pn-switch"><div><b>Abrir com Face ID</b><div class="pn-meta" id="fid-status">Pede Face ID (ou digital) toda vez que o app abrir.</div></div>
-      <button class="pn-tg" type="button" role="switch" aria-checked="false" id="fid-tg" aria-label="Abrir com Face ID"></button></div>
-    </div>
-    <button class="pn-btn no" type="button" id="perfil-apagar" style="width:100%;margin-top:14px">Apagar meu cadastro deste aparelho</button>
   </section>
 
   <!-- ========== CRITÉRIOS ========== -->
@@ -2117,8 +2118,8 @@ button.ub-row-main{cursor:pointer}
       }catch(e){ aviso("Não consegui processar essa foto."); } };
       img.src=rd.result; };
     rd.readAsDataURL(file); }
-  function renderPerfil(){
-    const P=S.perfil, B=$("perfil-box"); B.textContent="";
+  function renderPerfil(forcar){
+    const P=S.perfil, B=$("perfil-box"); const aberto=B.querySelector("form"); if(forcar!==true && aberto && !aberto.hidden) return; B.textContent="";
     if(P){ const topo=el("div"); topo.style.cssText="display:flex;align-items:flex-start;gap:16px;margin-bottom:14px";
       const col1=el("div"); col1.style.cssText="display:flex;flex-direction:column;align-items:center;gap:7px;flex:none";
       const pic=el("div"); pic.style.cssText="width:76px;height:76px;border-radius:50%;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(16,24,20,.1),0 3px 9px rgba(16,24,20,.08)";
@@ -2132,16 +2133,31 @@ button.ub-row-main{cursor:pointer}
       topo.appendChild(col1);
       const col2=el("div"); col2.style.cssText="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding-top:6px";
       const nm=el("b",null,P.nome||""); nm.style.cssText="font-size:18px;line-height:1.25;word-break:break-word"; col2.appendChild(nm);
-      if(P.apelido) col2.appendChild(el("span","pn-meta","Chamado(a) de "+P.apelido));
+      const sub=[P.cargo,P.empresa].filter(Boolean).join(" · "); if(sub) col2.appendChild(el("span","pn-meta",sub));
       if(P.whatsapp) col2.appendChild(el("span","pn-meta",P.whatsapp));
       if(P.email) col2.appendChild(el("span","pn-meta",P.email));
       topo.appendChild(col2);
       B.appendChild(topo); }
     if(!P){ B.appendChild(el("div","pn-meta","Sem cadastro ainda.")); }
-    else if(P.aceitouPoliticaEm){ const r=el("div","pn-q"); r.appendChild(el("span","pn-meta","Aceitou a política")); r.appendChild(el("b",null,fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")")); B.appendChild(r); }
-    $("aj-perfil").textContent = P ? (P.apelido||P.nome)+(temFid()?" · Face ID ligado":"") : "Seus dados e bloqueio do app";
+    else {
+      const CAMPOS=[["nome","Nome completo","name"],["apelido","Como prefere ser chamado","nickname"],["whatsapp","Telefone (WhatsApp)","tel"],["email","E-mail","email"],["endereco","Endereço","street-address"],["empresa","Empresa","organization"],["cargo","Cargo","organization-title"]];
+      CAMPOS.forEach(([k,rot])=>{ const r=el("div","pn-q"); r.appendChild(el("span","pn-meta",rot)); const v=el("b",null,P[k]||"Não informado"); v.style.cssText="text-align:right;word-break:break-word"+(P[k]?"":";font-weight:400;color:var(--ink-3)"); r.appendChild(v); B.appendChild(r); });
+      if(P.aceitouPoliticaEm){ const r=el("div","pn-q"); r.appendChild(el("span","pn-meta","Aceitou a política")); r.appendChild(el("b",null,fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")")); B.appendChild(r); }
+      const ed=el("button","pn-btn pri","Editar cadastro"); ed.type="button"; ed.style.cssText="width:100%;margin-top:12px"; B.appendChild(ed);
+      const f=el("form","pn-form"); f.hidden=true; f.style.marginTop="12px";
+      CAMPOS.forEach(([k,rot,ac])=>{ const l=el("label",null,rot); l.htmlFor="pf-"+k; const i=el("input"); i.id="pf-"+k; i.value=P[k]||""; i.autocomplete=ac; if(k==="email") i.type="email"; if(k==="whatsapp") i.inputMode="tel"; f.appendChild(l); f.appendChild(i); });
+      const ok=el("button","pn-btn pri","Salvar"); ok.type="submit"; ok.style.cssText="width:100%;margin-top:6px"; f.appendChild(ok);
+      const ca=el("button","pn-btn","Cancelar"); ca.type="button"; ca.style.cssText="width:100%;margin-top:8px"; f.appendChild(ca);
+      const er=el("div","pn-meta"); er.style.cssText="color:var(--coral);margin-top:6px"; f.appendChild(er);
+      ed.onclick=()=>{ f.hidden=false; ed.hidden=true; f.querySelector("input").focus(); };
+      ca.onclick=()=>{ renderPerfil(true); };
+      f.addEventListener("submit",async e=>{ e.preventDefault(); const n={...S.perfil}; CAMPOS.forEach(([k])=>{ n[k]=f.querySelector("#pf-"+k).value.trim(); }); if(!n.nome){ er.textContent="Informe seu nome."; return; } await salvaPerfil(n); renderPerfil(true); });
+      B.appendChild(f); }
+    const bp=$("btn-perfil"); if(bp){ bp.textContent=""; if(P&&P.foto){ const im=el("img"); im.src=P.foto; im.alt=""; im.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:50%"; bp.appendChild(im); } else bp.appendChild(ico("user")); }
+    $("aj-perfil").textContent = P ? (P.apelido||P.nome) : "Seus dados cadastrais";
     $("fid-tg").setAttribute("aria-checked",temFid()?"true":"false");
   }
+  $("btn-perfil").addEventListener("click",()=>go("perfil"));
   $("fid-tg").addEventListener("click",async()=>{
     if(temFid()){ try{ localStorage.removeItem("peneira-fid"); }catch(e){} renderPerfil(); return; }
     if(!(await fidDisponivel())){ aviso("Este aparelho ou navegador não oferece Face ID para o app. Instale na tela de início e tente de novo."); return; }
