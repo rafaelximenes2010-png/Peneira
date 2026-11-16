@@ -2116,18 +2116,26 @@ button.ub-row-main{cursor:pointer}
     rd.readAsDataURL(file); }
   function renderPerfil(){
     const P=S.perfil, B=$("perfil-box"); B.textContent="";
-    if(P){ const av=el("div"); av.style.cssText="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap";
-      const pic=el("div"); pic.style.cssText="width:64px;height:64px;border-radius:50%;flex:none;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(16,24,20,.1),0 3px 9px rgba(16,24,20,.08)";
+    if(P){ const topo=el("div"); topo.style.cssText="display:flex;align-items:flex-start;gap:16px;margin-bottom:14px";
+      const col1=el("div"); col1.style.cssText="display:flex;flex-direction:column;align-items:center;gap:7px;flex:none";
+      const pic=el("div"); pic.style.cssText="width:76px;height:76px;border-radius:50%;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(16,24,20,.1),0 3px 9px rgba(16,24,20,.08)";
       if(P.foto){ const img=el("img"); img.src=P.foto; img.alt=""; img.style.cssText="width:100%;height:100%;object-fit:cover"; pic.appendChild(img); }
-      else { const ic=ico("user"); ic.querySelector("svg").style.cssText="width:28px;height:28px;color:var(--ink-3)"; pic.appendChild(ic); }
-      av.appendChild(pic);
-      const lab=el("label","pn-btn",null); lab.style.cssText="cursor:pointer;padding:9px 14px;font-size:13.5px"; lab.textContent=P.foto?"Trocar foto":"Adicionar foto";
-      const inp=el("input"); inp.type="file"; inp.accept="image/*"; inp.hidden=true; lab.appendChild(inp); av.appendChild(lab);
+      else { const ic=ico("user"); ic.querySelector("svg").style.cssText="width:32px;height:32px;color:var(--ink-3)"; pic.appendChild(ic); }
+      col1.appendChild(pic);
+      const lab=el("label","pn-btn",null); lab.style.cssText="cursor:pointer;padding:6px 10px;font-size:12px;white-space:nowrap"; lab.textContent=P.foto?"Trocar foto":"Adicionar foto";
+      const inp=el("input"); inp.type="file"; inp.accept="image/*"; inp.hidden=true; lab.appendChild(inp); col1.appendChild(lab);
       inp.addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(f) fotoPerfil(f); e.target.value=""; });
-      if(P.foto){ const rm=el("button","pn-btn","Remover"); rm.type="button"; rm.style.cssText="padding:9px 12px;font-size:13.5px"; rm.onclick=()=>salvaPerfil({...S.perfil,foto:null}); av.appendChild(rm); }
-      B.appendChild(av); }
+      if(P.foto){ const rm=el("button","pn-btn",null); rm.type="button"; rm.textContent="Remover"; rm.style.cssText="padding:5px 10px;font-size:11.5px;color:var(--coral)"; rm.onclick=()=>salvaPerfil({...S.perfil,foto:null}); col1.appendChild(rm); }
+      topo.appendChild(col1);
+      const col2=el("div"); col2.style.cssText="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding-top:6px";
+      const nm=el("b",null,P.nome||""); nm.style.cssText="font-size:18px;line-height:1.25;word-break:break-word"; col2.appendChild(nm);
+      if(P.apelido) col2.appendChild(el("span","pn-meta","Chamado(a) de "+P.apelido));
+      if(P.whatsapp) col2.appendChild(el("span","pn-meta",P.whatsapp));
+      if(P.email) col2.appendChild(el("span","pn-meta",P.email));
+      topo.appendChild(col2);
+      B.appendChild(topo); }
     if(!P){ B.appendChild(el("div","pn-meta","Sem cadastro ainda.")); }
-    else [["Nome",P.nome],["Como prefere ser chamado",P.apelido],["WhatsApp",P.whatsapp],["E-mail",P.email],["Aceitou a política",P.aceitouPoliticaEm?fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")":""]].forEach(([k,v])=>{ if(!v) return; const r=el("div","pn-q"); r.appendChild(el("span","pn-meta",k)); r.appendChild(el("b",null,v)); B.appendChild(r); });
+    else if(P.aceitouPoliticaEm){ const r=el("div","pn-q"); r.appendChild(el("span","pn-meta","Aceitou a política")); r.appendChild(el("b",null,fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")")); B.appendChild(r); }
     $("aj-perfil").textContent = P ? (P.apelido||P.nome)+(temFid()?" · Face ID ligado":"") : "Seus dados e bloqueio do app";
     $("fid-tg").setAttribute("aria-checked",temFid()?"true":"false");
   }
@@ -2816,7 +2824,7 @@ button.ub-row-main{cursor:pointer}
   $("varr-tg").addEventListener("click",()=>{ if(!S.canWrite) return; const on=!(S.varredura&&S.varredura.ativa); salvaVarr({ativa:on, [on?"ativadaEm":"desativadaEm"]:new Date().toISOString()}); });
 
   /* ---------- Varrer agora: dispara a tarefa agendada na hora ---------- */
-  const TRIG_VARR="trig_01CEV7D2jx9WN6Mmwf6WKzUW";
+  const TRIG_VARR="trig_0194LCBP6kEjSAFW8K4ZvwED";
   $("varr-agora").addEventListener("click",async()=>{
     const b=$("varr-agora"), st=$("varr-agora-st"); st.dataset.fixo="1"; setTimeout(()=>{ delete st.dataset.fixo; },120000);
     if(!S.canWrite) return;
