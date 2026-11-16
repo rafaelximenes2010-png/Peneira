@@ -55,6 +55,33 @@ export default {
   async scheduled(ev, env, ctx) { ctx.waitUntil(lembretesAgenda(env)); }
 };
 
+// ---------- bloco de 30s por pessoa (reduz gravações no KV) ----------
+// Em vez de gravar no KV a cada mensagem, cada remetente tem um "Buffer" próprio
+// (Durable Object, gratuito, com limite bem mais alto que o KV). Toda nova mensagem
+// reinicia um alarme de 30s; quando a pessoa para de mandar mensagem por 30s seguidos,
+// o bloco inteiro é processado de uma vez (1 classificação + poucas gravações no KV,
+// em vez de uma gravação por mensagem). Isso é o que resolve o "KV put() limit exceeded".
+export class Buffer {
+  constructor(state, env) {
+    this.state = state;
+    this.env = env;
+  }
+  async fetch(req) {
+    const msg = await req.json();
+    const atual = (await this.state.storage.get("msgs")) || [];
+    atual.push(msg);
+    await this.state.storage.put("msgs", atual);
+    await this.state.storage.setAlarm(Date.now() + 30000); // reinicia o contador de 30s
+    return new Response("ok");
+  }
+  async alarm() {
+    const msgs = (await this.state.storage.get("msgs")) || [];
+    await this.state.storage.delete("msgs");
+    if (!msgs.length) return;
+    await processaBloco(msgs, this.env);
+  }
+}
+
 // ---------- verificação do webhook (Meta → GET) ----------
 function verifica(url, env) {
   const p = url.searchParams;
@@ -143,11 +170,23 @@ async function guardaRecebida(m, perfis, cfg, env) {
   const nome = nomeAgenda || perfis[m.from] || ("+" + de);
   const texto = textoDe(m);
   const quando = new Date((Number(m.timestamp) || Date.now() / 1000) * 1000).toISOString();
-  await env.KV.put("ult:" + de, quando, { expirationTtl: RETEM });
-  if (texto) await env.KV.put("ultTxt:" + de, JSON.stringify({ t: texto.slice(0, 300), nome: nomeAgenda || perfis[m.from] || "", salvo: !!nomeAgenda }), { expirationTtl: 7 * DIA });
+
+  // Não grava direto no KV: manda pro "Buffer" dessa pessoa (Durable Object).
+  // Se a pessoa mandar várias mensagens seguidas, tudo é agrupado em 1 bloco e
+  // só grava no KV quando ela ficar 30s sem mandar nada — bem menos gravações.
+  if (env.BUFFER) {
+    const stub = env.BUFFER.get(env.BUFFER.idFromName(de));
+    await stub.fetch("https://buffer/add", {
+      method: "POST",
+      body: JSON.stringify({ de, nome, salvo: !!nomeAgenda, texto, tipo: m.type, quando, msgId: m.id })
+    });
+    if (env.MARCAR_LIDAS === "sim") await marcaLida(m.id, env);
+    return;
+  }
+
+  // Sem o binding BUFFER configurado ainda, cai no comportamento antigo (1 gravação por mensagem).
   await contaDia(env, "mensagens");
   await contaFalante(env, nome, quando);
-
   const c = await classifica({ nome, salvo: !!nomeAgenda, texto, tipo: m.type }, cfg, env);
   if (!c.importante) {
     await contaDia(env, "descartadas");
@@ -156,14 +195,44 @@ async function guardaRecebida(m, perfis, cfg, env) {
   }
   const item = {
     id: "api-" + m.id.replace(/[^A-Za-z0-9]/g, "").slice(-40),
-    contato: nome, // não guardamos o número de telefone
-    grupo: "", mencao: false, origem: "api",
+    contato: nome, grupo: "", mencao: false, origem: "api",
     categoria: c.categoria, prioridade: c.prioridade,
     resumo: c.resumo, acao: c.acao, prazo: c.prazo || "",
     alerta: c.alerta || "", favoritado: false, status: "pendente", recebidoEm: quando, de: hash(de)
   };
   await env.KV.put("item:" + quando + ":" + item.id, JSON.stringify(item), { expirationTtl: RETEM });
   await contaDia(env, "importantes");
+  await registraAlerta(env, { id: item.id, cor: corFarol(item, cfg), titulo: item.contato, texto: item.resumo, url: "./#importantes" });
+}
+
+// Processa um bloco inteiro (1 ou várias mensagens da mesma pessoa, juntadas em até 30s)
+// de uma vez só: 1 classificação (a "IA" do Peneira) e poucas gravações no KV.
+async function processaBloco(msgs, env) {
+  const cfg = (await env.KV.get("cfg", "json")) || { vips: [], criterios: [] };
+  const de = msgs[0].de;
+  const nome = msgs[msgs.length - 1].nome || msgs[0].nome;
+  const salvo = msgs.some(m => m.salvo);
+  const quando = msgs[msgs.length - 1].quando;
+  const texto = msgs.map(m => m.texto).filter(Boolean).join("\n");
+  const tipo = (msgs.find(m => m.texto) || msgs[0]).tipo;
+
+  await env.KV.put("ult:" + de, quando, { expirationTtl: RETEM });
+  if (texto) await env.KV.put("ultTxt:" + de, JSON.stringify({ t: texto.slice(0, 300), nome: salvo ? nome : "", salvo }), { expirationTtl: 7 * DIA });
+  await contaDiaN(env, "mensagens", msgs.length);
+  await contaFalanteBloco(env, nome, quando, msgs.length);
+
+  const c = await classifica({ nome, salvo, texto, tipo }, cfg, env);
+  if (!c.importante) { await contaDiaN(env, "descartadas", 1); return; }
+
+  const item = {
+    id: "blk-" + de + "-" + Date.parse(quando),
+    contato: nome, grupo: "", mencao: false, origem: "api",
+    categoria: c.categoria, prioridade: c.prioridade,
+    resumo: c.resumo, acao: c.acao, prazo: c.prazo || "",
+    alerta: c.alerta || "", favoritado: false, status: "pendente", recebidoEm: quando, de: hash(de)
+  };
+  await env.KV.put("item:" + quando + ":" + item.id, JSON.stringify(item), { expirationTtl: RETEM });
+  await contaDiaN(env, "importantes", 1);
   await registraAlerta(env, { id: item.id, cor: corFarol(item, cfg), titulo: item.contato, texto: item.resumo, url: "./#importantes" });
 }
 
@@ -473,12 +542,27 @@ async function falantes(env, mes) {
 }
 
 // ---------- utilidades ----------
-async function contaDia(env, campo) {
+async function contaDia(env, campo) { return contaDiaN(env, campo, 1); }
+async function contaDiaN(env, campo, n) {
   const k = "dia:" + hoje();
   const d = (await env.KV.get(k, "json")) || {};
-  d[campo] = (d[campo] || 0) + 1;
+  d[campo] = (d[campo] || 0) + n;
   if (campo === "mensagens") d.ultima = new Date().toISOString();
   await env.KV.put(k, JSON.stringify(d), { expirationTtl: RETEM });
+}
+// Mesma lógica do contaFalante, mas aplicando um bloco inteiro (N mensagens) numa única gravação.
+async function contaFalanteBloco(env, nome, quando, n) {
+  const k = "fal:" + hoje().slice(0, 7);
+  const d = (await env.KV.get(k, "json")) || {};
+  const t = Date.parse(quando) || Date.now();
+  let x = d[nome]; if (typeof x === "number") x = { msgs: x, min: 0 };
+  x = x || { msgs: 0, min: 0, maiorSeq: 0 };
+  x.msgs += n;
+  if (x.ult && t - x.ult > 0 && t - x.ult < 15 * 60000) { const add = (t - x.ult) / 60000; x.min += add; x.seq = (x.seq || 1) + add; }
+  else { x.min += 1; x.seq = 1; x.sessoes = (x.sessoes || 0) + 1; }
+  x.maiorSeq = Math.max(x.maiorSeq || 0, x.seq); x.ult = Math.max(x.ult || 0, t);
+  d[nome] = x;
+  await env.KV.put(k, JSON.stringify(d), { expirationTtl: 400 * DIA });
 }
 function textoDe(m) {
   if (m.type === "text") return (m.text && m.text.body) || "";

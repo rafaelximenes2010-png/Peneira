@@ -25,3 +25,14 @@ GRAPH_VERSION = "v23.0"
 # Lembretes da agenda (Farol): confere a cada 5 minutos. Plano grátis da Cloudflare aceita.
 [triggers]
 crons = ["*/5 * * * *"]
+
+# Buffer de 30s por pessoa (Durable Object) — agrupa mensagens seguidas antes de gravar no KV.
+# Gratuito (não precisa do plano pago). Se publicar pelo painel em vez do wrangler, crie esse
+# binding manualmente em Settings → Bindings → Durable Object Namespace (ver instruções à parte).
+[[durable_objects.bindings]]
+name = "BUFFER"
+class_name = "Buffer"
+
+[[migrations]]
+tag = "v1-buffer"
+new_sqlite_classes = ["Buffer"]
