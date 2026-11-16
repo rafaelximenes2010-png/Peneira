@@ -3325,11 +3325,15 @@ button.ub-row-main{cursor:pointer}
   const nPess=x=>Array.isArray(x.pessoas)?x.pessoas.length:(+x.pessoas||0);
   function reunioes(m){ const sn=(mesesSnap()[m]||{}).reunioes;
     const lista=[]; relDoMes(m).forEach(r=>(r.reunioes||[]).forEach(x=>{ if((x.min||0)>10) lista.push({grupo:r.grupo,data:x.data||String(r.geradoEm).slice(0,10),...x}); }));
-    const vivoMin=lista.reduce((a,x)=>a+x.min,0);
-    if(sn&&((sn.total||{}).min||0)>=vivoMin) return {lista:sn.lista||[],grupos:sn.grupos||[],total:sn.total||{},obs:sn.obs||""};
-    const G={}; lista.forEach(x=>{ const k=nG(x.grupo); const g=G[k]=G[k]||{grupo:x.grupo,qtd:0,min:0,maior:0,pessoaMin:0}; g.qtd++; g.min+=x.min; g.maior=Math.max(g.maior,x.min); g.pessoaMin+=x.min*nPess(x); });
+    // une o snapshot salvo com o que já está sincronizado agora (nunca escolhe um OU outro — isso escondia dias novos,
+    // como domingo/segunda, quando o snapshot antigo "parecia" maior em minutos totais).
+    const chave=x=>nG(x.grupo)+"|"+(x.data||"")+"|"+(x.inicio||"");
+    const vistos=new Set(); const uniao=[];
+    (sn&&sn.lista||[]).concat(lista).forEach(x=>{ const k=chave(x); if(vistos.has(k)) return; vistos.add(k); uniao.push(x); });
+    const totMin=uniao.reduce((a,x)=>a+(x.min||0),0);
+    const G={}; uniao.forEach(x=>{ const k=nG(x.grupo); const g=G[k]=G[k]||{grupo:x.grupo,qtd:0,min:0,maior:0,pessoaMin:0}; g.qtd++; g.min+=x.min; g.maior=Math.max(g.maior,x.min); g.pessoaMin+=x.min*nPess(x); });
     const grupos=Object.values(G).sort((a,b)=>b.min-a.min);
-    return {lista,grupos,total:{qtd:lista.length,min:vivoMin,pessoaMin:grupos.reduce((a,g)=>a+g.pessoaMin,0)},obs:""}; }
+    return {lista:uniao,grupos,total:{qtd:uniao.length,min:totMin,pessoaMin:grupos.reduce((a,g)=>a+g.pessoaMin,0)},obs:(sn&&sn.obs)||""}; }
   function renderReu(){ if(!$("reu-gr")) return; const m=S.reuMes||mesAtual(); const ms=mesesDisp(); const R=reunioes(m);
     $("reu-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("reu-prev").disabled=ms.indexOf(m)<=0; $("reu-next").disabled=ms.indexOf(m)>=ms.length-1;
     const k=$("reu-kpi"); k.textContent=""; [[String(R.total.qtd||0),"reuniões"],[fmtHM(R.total.min||0),"tempo perdido"],[R.total.pessoaMin?fmtHM(R.total.pessoaMin):"—","horas-pessoa medidas"],[String(R.grupos.length),"grupos"]].forEach(([v,t])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,t)); k.appendChild(d); });
