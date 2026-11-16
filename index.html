@@ -566,6 +566,7 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 button.ub-row{cursor:pointer}
 .ub-row:last-child{border-bottom:0}
 .ub-n{flex:none;min-width:34px;height:34px;border-radius:10px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--ink)}
+.ub-n.alerta{background:var(--coral-soft);color:var(--coral)}
 .ub-txt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
 .ub-txt b{font-size:15.5px;font-weight:650;color:var(--ink);white-space:normal;line-height:1.3}
 .ub-txt small{font-size:13px;color:var(--ink-3);line-height:1.35}
@@ -2259,7 +2260,7 @@ button.ub-row{cursor:pointer}
     if(o.acao){ const b=el("button","pn-btn pri ub-cta",o.acao[0]); b.type="button"; b.onclick=o.acao[1]; B.appendChild(b); }
     $("drill").hidden=false; }
   function ubRow(r){ const d=el(r.on?"button":"div","ub-row"); if(r.on){ d.type="button"; d.onclick=r.on; }
-    if(r.n!=null) d.appendChild(el("span","ub-n",String(r.n)));
+    if(r.n!=null) d.appendChild(el("span","ub-n"+(r.nCls?" "+r.nCls:""),String(r.n)));
     const a=el("div","ub-txt"); a.appendChild(el("b",null,r.t||"")); if(r.s) a.appendChild(el("small",null,r.s)); d.appendChild(a);
     if(r.v!=null) d.appendChild(el("span","ub-v",String(r.v))); if(r.on) d.appendChild(el("i","ub-chev","›")); return d; }
   function ubHero(box,big,txt,tiles){ box.textContent=""; box.appendChild(el("div","ub-big",big)); box.appendChild(el("div","ub-cap",txt));
@@ -2280,15 +2281,15 @@ button.ub-row{cursor:pointer}
         .concat(ag.slice(0,5).map(a=>({t:"Agenda · "+(a.titulo||""),s:String(a.quando).slice(11,16)+(a.contato?" · "+a.contato:""),on:()=>{ fechaDrill(); go("agenda"); }})))
         .concat(dest.slice(0,6).map(d=>({t:"Destaque",s:d}))),
       nota:pend.length?"Comece pelos "+Math.min(3,pend.length)+" primeiros: são os de maior prioridade.":"Nada pendente hoje. Bom trabalho!"}); }
-  function highlights(){ const H=[]; const add=(tipo,txt,grupo,quando,extra)=>{ if(txt) H.push({tipo,txt:typeof txt==="string"?txt:(txt.texto||""),grupo,quando,extra}); };
+  function highlights(){ const H=[]; const add=(tipo,txt,grupo,quando,extra,qtd)=>{ if(txt) H.push({tipo,txt:typeof txt==="string"?txt:(txt.texto||""),grupo,quando,extra,qtd}); };
     rel24().forEach(r=>{ (r.contextoWeb||[]).forEach(x=>add("📰 Checado na web",x,r.grupo,r.geradoEm,x.fonte)); (r.preocupacoes||[]).forEach(x=>add("⚠️ Preocupação",x,r.grupo,r.geradoEm)); (r.reclamacoes||[]).forEach(x=>add("😤 Reclamação",x,r.grupo,r.geradoEm));
       (r.metas||[]).forEach(x=>add("🎯 Meta",x,r.grupo,r.geradoEm,x.quem)); (r.assuntos||[]).slice(0,2).forEach(x=>add("💬 Assunto",x,r.grupo,r.geradoEm)); });
     (S.itens||[]).filter(i=>i.verificacao&&Date.now()-Date.parse(i.recebidoEm||0)<72*3600e3).forEach(i=>add(/golpe|falso/i.test(i.verificacao.veredito)?"🛑 "+i.verificacao.veredito:"✅ "+i.verificacao.veredito,i.verificacao.resumo||i.resumo,i.grupo||i.contato,i.recebidoEm,i.verificacao.fonte));
-    ((S.gestao||{}).problemas||[]).filter(p=>String(p.tendencia||"").includes("↑")).slice(0,3).forEach(p=>add("📈 Problema subindo",p.tema+" ("+p.ocorrencias+"×)",(p.grupos||[]).join(", "),null,p.acaoPreventiva));
+    ((S.gestao||{}).problemas||[]).filter(p=>String(p.tendencia||"").includes("↑")).sort((a,b)=>(b.ocorrencias||0)-(a.ocorrencias||0)).slice(0,3).forEach(p=>add("📈 Problema subindo",p.tema,(p.grupos||[]).join(", "),null,p.acaoPreventiva,p.ocorrencias));
     return H; }
   function fichaHigh(){ const H=highlights(); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
     ficha("Highlights","Aprendido nas últimas leituras (36h)",{tiles:[[String(H.length),"destaques"],[String(rel24().length),"leituras de grupos"]],
-      rowsTit:"Destaques",rows:H.slice(0,40).map(h=>({t:h.tipo+(h.grupo?" · "+h.grupo:""),s:h.txt+(h.extra?" — "+h.extra:"")+(h.quando?" · "+fmt(h.quando):""),on:h.grupo&&!h.grupo.includes(",")?()=>{ fechaDrill(); abreGrupo(h.grupo); }:null})),
+      rowsTit:"Destaques",rows:H.slice(0,40).map(h=>({n:h.qtd?h.qtd+"×":null,nCls:h.qtd?"alerta":null,t:h.tipo+(h.grupo?" · "+h.grupo:""),s:h.txt+(h.extra?" — "+h.extra:"")+(h.quando?" · "+fmt(h.quando):""),on:h.grupo&&!h.grupo.includes(",")?()=>{ fechaDrill(); abreGrupo(h.grupo); }:null})),
       nota:H.length?"Toque num destaque para abrir o grupo de onde ele veio.":"Os highlights aparecem depois da próxima leitura dos grupos.",acao:["Perguntar ao Assistente",()=>{ fechaDrill(); go("assistente"); }]}); }
   function compromissos(){ const C=[]; (S.relGrupos||[]).filter(r=>Date.now()-Date.parse(r.geradoEm||0)<7*86400e3).forEach(r=>(r.compromissos||[]).forEach(c=>C.push({texto:c.texto||String(c),quem:c.quem||"",prazo:c.prazo||"",grupo:r.grupo,em:r.geradoEm})));
     const vis={}; return C.filter(c=>{ const k=norm(c.texto); if(vis[k]) return false; vis[k]=1; return true; }).sort((a,b)=>String(a.prazo||"9").localeCompare(String(b.prazo||"9"))); }
