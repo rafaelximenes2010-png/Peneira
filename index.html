@@ -3348,18 +3348,13 @@ button.ub-row-main{cursor:pointer}
   $("camp-next").addEventListener("click",()=>{ navMes("campMes",1); renderCamp(); });
   const nPess=x=>Array.isArray(x.pessoas)?x.pessoas.length:(+x.pessoas||0);
   function reunioes(m){ const sn=(mesesSnap()[m]||{}).reunioes;
-    // Cada relatório de S.relGrupos já É uma "reunião" (uma sessão de debate naquele grupo) —
-    // não existe (nunca existiu) um array ".reunioes" dentro de cada relatório. Por causa disso,
-    // essa parte sempre devolvia lista vazia, e a tela só mostrava o snapshot estático salvo uma
-    // vez (que parava no dia em que foi gerado) — por isso domingo/segunda nunca apareciam, não
-    // importa o que se fizesse com a lógica de "unir com o snapshot" abaixo.
-    const lista=[]; relDoMes(m).forEach(r=>{ const min=r.tempoAtivoMin||r.min||0; if(min>10)
-      lista.push({grupo:r.grupo,data:r.data||String(r.geradoEm||"").slice(0,10),min,inicio:r.inicio||"",fim:r.fim||"",msgs:r.mensagens||r.msgs||0,pessoas:Array.isArray(r.participantes)?r.participantes.length:(r.pessoas||0)}); });
-    // une o snapshot salvo (congelado em 14/11) com o que os relatórios de verdade trazem — nunca
-    // escolhe um OU outro, pra não esconder dias novos como domingo/segunda.
-    const chave=x=>nG(x.grupo)+"|"+(x.data||"")+"|"+(x.inicio||"");
-    const vistos=new Set(); const uniao=[];
-    (sn&&sn.lista||[]).concat(lista).forEach(x=>{ const k=chave(x); if(vistos.has(k)) return; vistos.add(k); uniao.push(x); });
+    // O snapshot salvo (S.gestao.meses[m].reunioes) cobre os dias em que foi medido. Para os dias que ele
+    // NÃO cobre, a reunião sai direto de cada leitura de grupo: maior sequência sem parar acima de 10 min
+    // (mesmo critério do snapshot). Dias já cobertos pelo snapshot não entram de novo, para não contar em dobro.
+    const diasSnap=new Set((sn&&sn.lista||[]).map(x=>x.data));
+    const lista=[]; relDoMes(m).forEach(r=>{ const min=r.maiorSequenciaMin||0, data=r.data||String(r.geradoEm||"").slice(0,10); if(min>10 && !diasSnap.has(data))
+      lista.push({grupo:r.grupo,data,min,inicio:r.inicio||"",fim:r.fim||"",msgs:r.mensagens||0,pessoas:Array.isArray(r.participantes)?r.participantes.length:0}); });
+    const uniao=(sn&&sn.lista||[]).concat(lista);
     const totMin=uniao.reduce((a,x)=>a+(x.min||0),0);
     const G={}; uniao.forEach(x=>{ const k=nG(x.grupo); const g=G[k]=G[k]||{grupo:x.grupo,qtd:0,min:0,maior:0,pessoaMin:0}; g.qtd++; g.min+=x.min; g.maior=Math.max(g.maior,x.min); g.pessoaMin+=x.min*nPess(x); });
     const grupos=Object.values(G).sort((a,b)=>b.min-a.min);
