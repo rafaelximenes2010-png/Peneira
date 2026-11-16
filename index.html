@@ -1228,6 +1228,7 @@ button.ub-row-main{cursor:pointer}
     <div class="pn-card pn-form" id="ponte-card">
       <p class="pn-meta" style="margin:0 0 10px">Recebe as conversas individuais do WhatsApp Business em tempo real pela API oficial da Meta, sem Chrome e sem notebook. Grupos continuam na varredura automática.</p>
       <div id="ponte-st" class="pn-meta" style="margin:0 0 10px;font-weight:600">Não conectada.</div>
+      <div id="ponte-diag" class="pn-meta" style="margin:0 0 10px" hidden></div>
       <label for="ponte-url">Endereço da ponte</label><input id="ponte-url" placeholder="https://peneira-ponte.SEU-NOME.workers.dev" autocomplete="off" inputmode="url">
       <label for="ponte-tok">Senha da ponte</label><input id="ponte-tok" type="password" placeholder="a mesma do PENEIRA_TOKEN" autocomplete="off">
       <button class="pn-btn pri" type="button" id="ponte-ok">Conectar e testar</button>
@@ -3016,6 +3017,14 @@ button.ub-row-main{cursor:pointer}
   let ponte=null; try{ ponte=JSON.parse(localStorage.getItem(PONTE_KEY)); }catch(e){}
   let ponteCfgHash="", ponteTimer=null;
   function ponteMostra(t,ok){ const e=$("ponte-st"); if(!e) return; e.textContent=t; e.style.color=ok===true?"var(--ok,#1a8f5a)":ok===false?"#c0392b":""; }
+  // Diagnóstico visível no próprio app: dá pra saber se o problema é a Meta/Kapso nem estar
+  // chegando na ponte (nenhum "último webhook") ou se está chegando e falhando por dentro
+  // (último erro) — sem precisar abrir o painel da Cloudflare.
+  function ponteDiag(st){ const e=$("ponte-diag"); if(!e) return;
+    if(!st){ e.hidden=true; return; }
+    if(st.ultimoErro){ e.hidden=false; e.style.color="#c0392b"; e.textContent="Último erro na ponte: "+st.ultimoErro; return; }
+    if(!st.ultimoWebhookEm){ e.hidden=false; e.style.color="#c0392b"; e.textContent="Nenhum aviso (webhook) chegou na ponte ainda. Confira a assinatura do webhook no painel da Meta/Kapso."; return; }
+    e.hidden=false; e.style.color=""; e.textContent="Último aviso recebido pela ponte: "+fmt(st.ultimoWebhookEm)+"."; }
   async function ponteReq(caminho,op){ const r=await fetch(ponte.url.replace(/\/+$/,"")+caminho,{...(op||{}),headers:{authorization:"Bearer "+ponte.tok,"content-type":"application/json"}}); if(!r.ok) throw new Error(r.status===401?"senha":"http "+r.status); return r.json(); }
   function juntaDados(dd){
     const junta=(chave,lista,manter)=>{ if(!Array.isArray(lista)) return; const m=new Map((S[chave]||[]).map(x=>[x.id,x]));
@@ -3054,6 +3063,7 @@ button.ub-row-main{cursor:pointer}
       if(S.demo && novos){ demoSave(); checaVips(); render(); }
       if(S.demo){ try{ const dd=await ponteReq("/dados"); ponte.vistoEm=new Date().toISOString(); if(dd && dd.em && dd.em!==ponte.dadosEm){ juntaDados(dd); ponte.dadosEm=dd.em; } localStorage.setItem(PONTE_KEY,JSON.stringify(ponte)); }catch(e){} }
       let st=null; try{ st=await ponteReq("/status"); }catch(e){} S.ponteSt=st?{...st,em:new Date().toISOString()}:null; try{ render(); }catch(e){} try{ renderUlt(); }catch(e){}
+      ponteDiag(st);
       ponteMostra("Conectada · "+(st?st.mensagens+" msgs hoje, "+st.importantes+" importantes"+(st.tempoMedioRespostaMin!=null?", resposta média "+st.tempoMedioRespostaMin+" min":""):"ok")+(novos?" · "+novos+" novas agora":""),true);
     }catch(e){ ponteMostra(e.message==="senha"?"Senha da ponte inválida.":"Não consegui falar com a ponte agora. Confira o endereço.",false); }
   }

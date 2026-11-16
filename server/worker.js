@@ -94,14 +94,26 @@ function verifica(url, env) {
 }
 
 // ---------- avisos da Meta (POST) ----------
+// Importante: isto roda em ctx.waitUntil, fora do que a resposta HTTP espera. Se "processa"
+// der erro aqui dentro sem alguém pegar, a Meta/Kapso recebe "ok" (200) mesmo assim e nunca
+// reenvia — a mensagem se perde pra sempre, sem deixar rastro nenhum. Por isso guardamos
+// sempre (mesmo quando a assinatura falha) um registro de "chegou um webhook agora" e,
+// se der erro, o texto do erro — pra dar pra enxergar isso de dentro do próprio app,
+// sem precisar abrir o painel da Cloudflare.
 async function recebe(req, env, ctx) {
   const corpo = await req.text();
+  ctx.waitUntil(env.KV.put("ultimoWebhookEm", new Date().toISOString()).catch(() => {}));
   const chaveOk = !!env.WEBHOOK_KEY && (new URL(req.url).searchParams.get("k") === env.WEBHOOK_KEY || req.headers.get("x-peneira-key") === env.WEBHOOK_KEY);
-  if (!chaveOk && !(await assinaturaOk(corpo, req.headers.get("x-hub-signature-256"), env.APP_SECRET)))
+  if (!chaveOk && !(await assinaturaOk(corpo, req.headers.get("x-hub-signature-256"), env.APP_SECRET))) {
+    ctx.waitUntil(registraErro(env, "assinatura inválida (confira WEBHOOK_KEY/APP_SECRET)"));
     return new Response("assinatura inválida", { status: 401 });
+  }
   let dados; try { dados = JSON.parse(corpo); } catch { return new Response("ok"); }
-  ctx.waitUntil(processa(dados, env));
+  ctx.waitUntil(processa(dados, env).catch(e => registraErro(env, String((e && e.stack) || e))));
   return new Response("ok"); // responde rápido; a Meta reenvia se demorar
+}
+async function registraErro(env, msg) {
+  try { await env.KV.put("ultimoErro", msg.slice(0, 500) + " @ " + new Date().toISOString()); } catch (e) {}
 }
 
 // Formato da Kapso (webhooks "kapso", v2): { message, conversation } ou lote { batch:true, data:[...] }
@@ -178,13 +190,20 @@ async function guardaRecebida(m, perfis, cfg, env) {
   // Se a pessoa mandar várias mensagens seguidas, tudo é agrupado em 1 bloco e
   // só grava no KV quando ela ficar 30s sem mandar nada — bem menos gravações.
   if (env.BUFFER) {
-    const stub = env.BUFFER.get(env.BUFFER.idFromName(de));
-    await stub.fetch("https://buffer/add", {
-      method: "POST",
-      body: JSON.stringify({ de, nome, salvo: !!nomeAgenda, texto, tipo: m.type, quando, msgId: m.id })
-    });
-    if (env.MARCAR_LIDAS === "sim") await marcaLida(m.id, env);
-    return;
+    try {
+      const stub = env.BUFFER.get(env.BUFFER.idFromName(de));
+      await stub.fetch("https://buffer/add", {
+        method: "POST",
+        body: JSON.stringify({ de, nome, salvo: !!nomeAgenda, texto, tipo: m.type, quando, msgId: m.id })
+      });
+      if (env.MARCAR_LIDAS === "sim") await marcaLida(m.id, env);
+      return;
+    } catch (e) {
+      // Binding do Durable Object presente mas quebrado (ex.: publicado pelo painel da
+      // Cloudflare sem criar o binding manualmente, ou migração não aplicada) — em vez de
+      // perder a mensagem calada, registra o erro e cai no caminho direto abaixo.
+      await registraErro(env, "Buffer (Durable Object) falhou: " + String((e && e.message) || e));
+    }
   }
 
   // Sem o binding BUFFER configurado ainda, cai no comportamento antigo (1 gravação por mensagem).
@@ -354,11 +373,17 @@ async function status(env) {
   const d = (await env.KV.get("dia:" + hoje(), "json")) || {};
   const r = (await env.KV.get("resp:" + hoje(), "json")) || { qtd: 0, soma: 0 };
   const minEcon = Math.round(((d.descartadas || 0) * 5 + (d.mensagens || 0) * 3) / 60);
+  // Diagnóstico: "chegou algum webhook" é diferente de "deu certo processar". Separados aqui
+  // pra dar pra saber, de dentro do app, se o problema é a Meta/Kapso nem estar batendo na
+  // ponte (ultimoWebhookEm nunca muda) ou se está chegando mas falhando por dentro (ultimoErro).
+  const ultimoWebhookEm = await env.KV.get("ultimoWebhookEm").catch(() => null);
+  const ultimoErro = await env.KV.get("ultimoErro").catch(() => null);
   return {
     ok: true, hoje: hoje(), mensagens: d.mensagens || 0, importantes: d.importantes || 0,
     descartadas: d.descartadas || 0, minutosEconomizados: minEcon,
     respostas: r.qtd, tempoMedioRespostaMin: r.qtd ? Math.round(r.soma / r.qtd) : null,
-    ultimaMensagem: d.ultima || null, marcaLidas: env.MARCAR_LIDAS === "sim", ia: !!env.ANTHROPIC_API_KEY
+    ultimaMensagem: d.ultima || null, marcaLidas: env.MARCAR_LIDAS === "sim", ia: !!env.ANTHROPIC_API_KEY,
+    ultimoWebhookEm: ultimoWebhookEm || null, ultimoErro: ultimoErro || null
   };
 }
 
