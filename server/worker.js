@@ -42,6 +42,9 @@ export default {
       if (url.pathname === "/alertas") return cors(json(await alertas(env)));
       if (url.pathname === "/sync" && req.method === "POST") return cors(json(await recebeSync(req, env)));
       if (url.pathname === "/estilo") return cors(json(await estilo(env)));
+      if (url.pathname === "/chat" && req.method === "POST") return cors(json(await chatPost(env, await req.json())));
+      if (url.pathname === "/chat") return cors(json(await chatGet(env)));
+      if (url.pathname === "/treino" && req.method === "POST") return cors(json(await treinoPost(env, await req.json())));
       if (url.pathname === "/dados") return cors(json(await dados(env)));
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
       if (url.pathname === "/itens") return cors(json(await itens(env, url.searchParams.get("desde"))));
@@ -184,6 +187,71 @@ async function guardaAmostra(env, tel, texto, ts) {
 async function estilo(env) {
   const lista = (await env.KV.get("estilo:amostras", "json")) || [];
   return { total: lista.length, amostras: lista.slice(-200), perfil: await env.KV.get("d:estilo", "json") };
+}
+
+// ---------- Assistente: chat com a IA + aprendizados (treino) ----------
+async function chatGet(env) {
+  return { hist: (await env.KV.get("chat:hist", "json")) || [], treino: (await env.KV.get("chat:treino", "json")) || [], ia: !!env.ANTHROPIC_API_KEY };
+}
+async function guardaChat(env, msg) {
+  const h = (await env.KV.get("chat:hist", "json")) || [];
+  h.push(msg); while (h.length > 120) h.shift();
+  await env.KV.put("chat:hist", JSON.stringify(h));
+}
+async function addTreino(env, texto, origem) {
+  if (!texto) return null;
+  const t = (await env.KV.get("chat:treino", "json")) || [];
+  const it = { id: "t" + Date.now().toString(36), texto: String(texto).slice(0, 300), origem, status: "novo", em: new Date().toISOString() };
+  t.push(it); while (t.length > 200) t.shift();
+  await env.KV.put("chat:treino", JSON.stringify(t));
+  return it;
+}
+async function treinoPost(env, b) {
+  const t = (await env.KV.get("chat:treino", "json")) || [];
+  for (const u of (b.atualiza || [])) { const x = t.find(y => y.id === u.id); if (x) { x.status = u.status || x.status; if (u.nota) x.nota = String(u.nota).slice(0, 200); x.em2 = new Date().toISOString(); } }
+  if (b.novo) await addTreino(env, b.novo, b.origem || "app");
+  else await env.KV.put("chat:treino", JSON.stringify(t));
+  return { ok: true, treino: (await env.KV.get("chat:treino", "json")) || [] };
+}
+async function chatPost(env, b) {
+  const texto = String(b.texto || "").trim().slice(0, 1500);
+  if (!texto) return { ok: false };
+  const agora = new Date().toISOString();
+  if (b.de === "ia") { await guardaChat(env, { de: "ia", t: texto, em: agora, origem: "varredura" }); return { ok: true }; }
+  await guardaChat(env, { de: "rafael", t: texto, em: agora });
+  if (!env.ANTHROPIC_API_KEY) {
+    return { ok: true, ia: false, resposta: null };
+  }
+  // contexto enxuto
+  const [estiloP, gestao, rels, itensIdx, treino, hist] = await Promise.all([
+    env.KV.get("d:estilo", "json"), env.KV.get("d:gestao", "json"), env.KV.get("d:relatorios", "json"),
+    env.KV.get("d:itens", "json"), env.KV.get("chat:treino", "json"), env.KV.get("chat:hist", "json")]);
+  const pend = (itensIdx || []).filter(i => (i.status || "pendente") === "pendente").slice(-15).map(i => `- ${i.grupo ? i.grupo + " / " : ""}${i.contato || ""}: ${i.resumo || ""}`).join("\n");
+  const ultRels = (rels || []).sort((a, b) => String(b.geradoEm).localeCompare(String(a.geradoEm))).slice(0, 4).map(r => `- ${r.titulo || ""}: ${r.resumo || ""}`).join("\n");
+  const probs = ((gestao || {}).problemas || []).slice(0, 6).map(p => `- ${p.tema} (${p.ocorrencias}x)`).join("\n");
+  const regras = (treino || []).filter(x => x.status !== "recusado").slice(-25).map(x => "- " + x.texto).join("\n");
+  const sys = `Você é o assistente do app Peneira (Central do WhatsApp) do Rafael Ximenes, gerente nacional de operações do Grupo LOS (logística, frota de caminhões). Responda em português do Brasil, curto e direto (até 6 linhas), em tom profissional e amigo. Você NUNCA envia mensagens no WhatsApp; só orienta, resume e aprende.
+Quando o Rafael ensinar uma preferência (o que é ou não importante, como ele quer respostas, quem é VIP, quando avisar), devolva também um "aprendizado": uma regra curta e objetiva para a varredura aplicar. Se não houver regra nova, aprendizado = null.
+Responda SÓ com JSON: {"resposta":"...","aprendizado":"..." ou null}.
+Estilo do Rafael: ${estiloP ? JSON.stringify({ tom: estiloP.tom, regras: estiloP.regras, expressoes: estiloP.expressoes }).slice(0, 800) : "ainda aprendendo"}
+Regras já ensinadas:\n${regras || "(nenhuma)"}
+Pendentes agora:\n${pend || "(nenhum)"}
+Últimos relatórios:\n${ultRels || "(nenhum)"}
+Problemas recorrentes:\n${probs || "(nenhum)"}`;
+  const msgs = (hist || []).slice(-12).map(m => ({ role: m.de === "rafael" ? "user" : "assistant", content: m.t }));
+  while (msgs.length && msgs[0].role !== "user") msgs.shift();
+  let resposta = "Não consegui falar com a IA agora. Anotei e respondo na próxima varredura.", apr = null;
+  try {
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST",
+      headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({ model: "claude-haiku-5-5", max_tokens: 500, system: sys, messages: msgs.length ? msgs : [{ role: "user", content: texto }] }) });
+    const j = await r.json(); const out = (j.content && j.content[0] && j.content[0].text) || "";
+    const mm = out.match(/\{[\s\S]*\}/); const o = mm ? JSON.parse(mm[0]) : { resposta: out };
+    resposta = String(o.resposta || out || resposta).slice(0, 1500); apr = o.aprendizado || null;
+  } catch (e) {}
+  await guardaChat(env, { de: "ia", t: resposta, em: new Date().toISOString(), origem: "ia" });
+  const it = apr ? await addTreino(env, apr, "chat") : null;
+  return { ok: true, ia: true, resposta, aprendizado: it };
 }
 
 async function registraResposta(m, env) {

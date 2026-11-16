@@ -760,6 +760,25 @@ button.ub-row{cursor:pointer}
 .ub-varrer .vt{font-size:16px;font-weight:700;letter-spacing:-.01em}
 .ub-varrer .vx small,.ub-varrer .va{display:none}
 .ub-varrer::after{display:none}
+/* ===== v4.19 · Assistente ===== */
+.ub-atalhos em{display:none}
+.ia-head{display:flex;align-items:center;gap:12px;margin:2px 0 12px}
+.ia-av{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#30d158,#0a84ff);color:#fff}
+.ia-av svg{width:22px;height:22px}
+.ia-head b{display:block;font-size:17px} .ia-head small{font-size:13px;color:var(--ink-3)}
+.ia-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 10px;padding-bottom:2px} .ia-chips::-webkit-scrollbar{display:none}
+.ia-chips .pn-chip{flex:none;border:0;background:var(--surface-2);font-weight:600}
+.ia-log{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;padding:12px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+.ia-msg{max-width:84%;padding:10px 13px;border-radius:18px;font-size:15px;line-height:1.42}
+.ia-msg p{margin:0;white-space:pre-wrap} .ia-msg small{display:block;margin-top:4px;font-size:11px;opacity:.6}
+.ia-msg.eu{align-self:flex-end;background:var(--accent,#30d158);color:#04210f;border-bottom-right-radius:6px}
+.ia-msg.ia{align-self:flex-start;background:var(--surface-2);color:var(--ink);border-bottom-left-radius:6px}
+.ia-dig p{animation:pnPing 1.2s infinite}
+.ia-aviso{align-self:center;font-size:12.5px;color:var(--ink-3);text-align:center;padding:4px 8px}
+.ia-form{display:flex;gap:8px;align-items:flex-end;margin-top:10px;position:sticky;bottom:calc(env(safe-area-inset-bottom) + 78px)}
+.ia-form textarea{flex:1;resize:none;border:0;border-radius:22px;padding:12px 16px;font:16px var(--font-ui);background:var(--surface-2);color:var(--ink);max-height:140px}
+.ia-send{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--accent,#30d158);color:#04210f;display:flex;align-items:center;justify-content:center}
+.ia-send svg{width:20px;height:20px;transform:rotate(-90deg)}
 </style>
 </head>
 <body>
@@ -836,10 +855,10 @@ button.ub-row{cursor:pointer}
     <button type="button" class="ub-busca" id="ub-busca"><span data-ico="search"></span><span>Buscar pessoa, grupo ou assunto</span></button>
 
     <div class="ub-atalhos" id="ub-atalhos">
-      <button type="button" data-go="importantes"><i class="c1"><span data-ico="star"></span><em data-badge="b-imp"></em></i><span>Importantes</span></button>
-      <button type="button" data-go="agenda"><i class="c2"><span data-ico="calendar"></span><em data-badge="b-ag"></em></i><span>Agenda</span></button>
-      <button type="button" data-go="vips"><i class="c3"><span data-ico="user"></span></i><span>VIPs</span></button>
-      <button type="button" data-go="relatorios"><i class="c4"><span data-ico="doc"></span></i><span>Relatórios</span></button>
+      <button type="button" data-at="hoje"><i class="c1"><span data-ico="sun"></span><em id="at-hoje"></em></i><span>Hoje</span></button>
+      <button type="button" data-at="high"><i class="c4"><span data-ico="sparkle"></span><em id="at-high"></em></i><span>Highlights</span></button>
+      <button type="button" data-at="comp"><i class="c2"><span data-ico="clipboard"></span><em id="at-comp"></em></i><span>Compromissos</span></button>
+      <button type="button" data-at="ia"><i class="c3"><span data-ico="chat"></span><em id="at-ia"></em></i><span>Assistente</span></button>
     </div>
 
     <div class="pn-card" id="varr-card" style="margin-bottom:14px">
@@ -1219,6 +1238,15 @@ button.ub-row{cursor:pointer}
   </section>
 
   <!-- ========== POLÍTICA ========== -->
+  <section class="pn-view" id="assistente">
+    <div class="ia-head"><div class="ia-av"><span data-ico="sparkle"></span></div><div><b>Assistente do Peneira</b><small id="ia-modo">Conectando…</small></div></div>
+    <div class="ia-chips" id="ia-chips"></div>
+    <div class="ia-log" id="ia-log"></div>
+    <form class="ia-form" id="ia-form"><textarea id="ia-txt" rows="1" placeholder="Pergunte ou ensine algo ao Peneira…"></textarea><button type="submit" class="ia-send" aria-label="Enviar"><span data-ico="arrow"></span></button></form>
+    <div class="pn-h2" style="margin-top:18px">O que o Peneira aprendeu com você</div>
+    <div class="pn-card ub-list" id="ia-treino"></div>
+    <p class="pn-meta" style="margin:8px 4px">Cada regra ensinada aqui é aplicada pela varredura: o que é ou não importante, VIPs, horários de aviso e o jeito das respostas sugeridas. Toque numa regra para desligar.</p>
+  </section>
   <section class="pn-view" id="politica">
     <div class="pn-card pn-pol" style="margin-top:12px"><h1>Política de Privacidade do Peneira</h1>
 <p class="pn-meta">Versão 1.1 · vigente desde 13 de novembro de 2026</p>
@@ -1529,7 +1557,7 @@ button.ub-row{cursor:pointer}
   buildNav($("nav-topo")); buildNav($("nav-baixo"));
   const pilha=[];
   function go(id, push, voltando){
-    const OCULTAS=["criterios","sobre","acoes","politica","perfil"];
+    const OCULTAS=["criterios","sobre","acoes","politica","perfil","assistente"];
     const atual=(document.querySelector(".pn-view.on")||{}).id;
     if(!voltando && atual && atual!==id) pilha.push(atual);
     if(pilha.length>30) pilha.shift();
@@ -1541,8 +1569,9 @@ button.ub-row{cursor:pointer}
     window.scrollTo(0,0);
     const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
     const br=$("pn-brand"); if(br) br.style.display = (id==="inicio") ? "" : "none";
-    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
+    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro",assistente:"Assistente"};
     const tt=$("pn-titulo"); if(tt){ tt.textContent=TIT[id]||"Peneira"; tt.hidden=(id==="inicio"); }
+    if(id==="assistente") try{ abreAssistente(); }catch(e){}
   }
   $("btn-voltar").addEventListener("click",()=>{ let prev=pilha.pop(); while(prev && prev===((document.querySelector(".pn-view.on")||{}).id)) prev=pilha.pop(); go(prev||"inicio",true,true); });
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
@@ -1967,8 +1996,9 @@ button.ub-row{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.18";
+  const VERSAO="4.19";
   const VERSOES=[
+    {v:"4.19",data:"16/11/2026",itens:["Atalhos novos no Início: Hoje (o que importa no dia), Highlights (aprendido nas últimas leituras), Compromissos (promessas feitas nos grupos) e Assistente","Assistente: chat com a IA dentro do app. Pergunte sobre grupos e pendências e ensine regras (o que é importante, VIPs, horários, jeito das respostas), que a varredura passa a aplicar"]},
     {v:"4.18",data:"15/11/2026",itens:["Radar grande no centro do cartão","Botão Varrer agora menor e discreto, embaixo dos números"]},
     {v:"4.17",data:"15/11/2026",itens:["Varrer agora em destaque no topo do cartão de varredura, acima do radar: botão maior, com ícone, frase de apoio e brilho"]},
     {v:"4.16",data:"15/11/2026",itens:["Radar realista: tela de fósforo com moldura, anéis de distância, marcas de grau, feixe com rastro e alvos que acendem quando o feixe passa (amarelos = importantes pendentes)","Cor do radar mostra o estado: verde em dia, azul quando você pede, laranja atrasada, cinza desligada"]},
@@ -2191,6 +2221,73 @@ button.ub-row{cursor:pointer}
   function ubHero(box,big,txt,tiles){ box.textContent=""; box.appendChild(el("div","ub-big",big)); box.appendChild(el("div","ub-cap",txt));
     if(tiles){ const T=el("div","ub-tiles"); tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); box.appendChild(T); } }
 
+
+  /* ---------- v4.19 · atalhos novos (Hoje, Highlights, Compromissos) e Assistente ---------- */
+  const hojeStr=()=>new Date().toDateString();
+  const ehHoje=iso=>{ const d=new Date(iso); return !isNaN(d)&&d.toDateString()===hojeStr(); };
+  const rel24=()=>(S.relGrupos||[]).filter(r=>Date.now()-Date.parse(r.geradoEm||0)<36*3600e3).sort((a,b)=>String(b.geradoEm).localeCompare(String(a.geradoEm)));
+  function fichaHoje(){ const its=(S.itens||[]).filter(i=>ehHoje(i.recebidoEm)); const pend=its.filter(i=>(i.status||"pendente")==="pendente");
+    const rels=(S.relatorios||[]).filter(r=>ehHoje(r.geradoEm)).sort((a,b)=>String(b.geradoEm).localeCompare(String(a.geradoEm)));
+    const econ=rels.reduce((a,r)=>a+((r.numeros||{}).minutosEconomizados||0),0), msgs=rels.reduce((a,r)=>a+((r.numeros||{}).mensagens||0),0);
+    const ag=(S.agenda||[]).filter(a=>!a.feito&&a.quando&&String(a.quando).slice(0,10)===new Date().toISOString().slice(0,10));
+    const dest=[]; rels.forEach(r=>(r.destaques||[]).forEach(d=>dest.push(typeof d==="string"?d:(d.texto||""))));
+    ficha("Hoje",new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}),{tiles:[[String(its.length),"importantes hoje"],[String(pend.length),"ainda pendentes"],[msgs?String(msgs):"—","mensagens lidas"],[econ?fmtHM(econ):"—","tempo economizado"]],
+      rowsTit:"O que tratar primeiro",rows:pend.slice().sort(ordena).slice(0,8).map(i=>({t:(i.grupo?i.grupo+" · ":"")+(i.contato||""),s:i.resumo,v:catGrupo(i).split(" ")[0],on:()=>abreItem(i)}))
+        .concat(ag.slice(0,5).map(a=>({t:"Agenda · "+(a.titulo||""),s:String(a.quando).slice(11,16)+(a.contato?" · "+a.contato:""),on:()=>{ fechaDrill(); go("agenda"); }})))
+        .concat(dest.slice(0,6).map(d=>({t:"Destaque",s:d}))),
+      nota:pend.length?"Comece pelos "+Math.min(3,pend.length)+" primeiros: são os de maior prioridade.":"Nada pendente hoje. Bom trabalho!"}); }
+  function highlights(){ const H=[]; const add=(tipo,txt,grupo,quando,extra)=>{ if(txt) H.push({tipo,txt:typeof txt==="string"?txt:(txt.texto||""),grupo,quando,extra}); };
+    rel24().forEach(r=>{ (r.contextoWeb||[]).forEach(x=>add("📰 Checado na web",x,r.grupo,r.geradoEm,x.fonte)); (r.preocupacoes||[]).forEach(x=>add("⚠️ Preocupação",x,r.grupo,r.geradoEm)); (r.reclamacoes||[]).forEach(x=>add("😤 Reclamação",x,r.grupo,r.geradoEm));
+      (r.metas||[]).forEach(x=>add("🎯 Meta",x,r.grupo,r.geradoEm,x.quem)); (r.assuntos||[]).slice(0,2).forEach(x=>add("💬 Assunto",x,r.grupo,r.geradoEm)); });
+    (S.itens||[]).filter(i=>i.verificacao&&Date.now()-Date.parse(i.recebidoEm||0)<72*3600e3).forEach(i=>add(/golpe|falso/i.test(i.verificacao.veredito)?"🛑 "+i.verificacao.veredito:"✅ "+i.verificacao.veredito,i.verificacao.resumo||i.resumo,i.grupo||i.contato,i.recebidoEm,i.verificacao.fonte));
+    ((S.gestao||{}).problemas||[]).filter(p=>String(p.tendencia||"").includes("↑")).slice(0,3).forEach(p=>add("📈 Problema subindo",p.tema+" ("+p.ocorrencias+"×)",(p.grupos||[]).join(", "),null,p.acaoPreventiva));
+    return H; }
+  function fichaHigh(){ const H=highlights(); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
+    ficha("Highlights","Aprendido nas últimas leituras (36h)",{tiles:[[String(H.length),"destaques"],[String(rel24().length),"leituras de grupos"]],
+      rowsTit:"Destaques",rows:H.slice(0,40).map(h=>({t:h.tipo+(h.grupo?" · "+h.grupo:""),s:h.txt+(h.extra?" — "+h.extra:"")+(h.quando?" · "+fmt(h.quando):""),on:h.grupo&&!h.grupo.includes(",")?()=>{ fechaDrill(); abreGrupo(h.grupo); }:null})),
+      nota:H.length?"Toque num destaque para abrir o grupo de onde ele veio.":"Os highlights aparecem depois da próxima leitura dos grupos.",acao:["Perguntar ao Assistente",()=>{ fechaDrill(); go("assistente"); }]}); }
+  function compromissos(){ const C=[]; (S.relGrupos||[]).filter(r=>Date.now()-Date.parse(r.geradoEm||0)<7*86400e3).forEach(r=>(r.compromissos||[]).forEach(c=>C.push({texto:c.texto||String(c),quem:c.quem||"",prazo:c.prazo||"",grupo:r.grupo,em:r.geradoEm})));
+    const vis={}; return C.filter(c=>{ const k=norm(c.texto); if(vis[k]) return false; vis[k]=1; return true; }).sort((a,b)=>String(a.prazo||"9").localeCompare(String(b.prazo||"9"))); }
+  function fichaComp(){ const C=compromissos(); const hoje=new Date().toISOString().slice(0,10); const venc=C.filter(c=>c.prazo&&c.prazo<hoje).length, hj=C.filter(c=>c.prazo===hoje).length;
+    ficha("Compromissos","Promessas feitas nos grupos · últimos 7 dias",{tiles:[[String(C.length),"compromissos"],[String(hj),"vencem hoje"],[String(venc),"já venceram"],[String(new Set(C.map(c=>c.quem).filter(Boolean)).size),"pessoas"]],
+      rowsTit:"Quem prometeu o quê",rows:C.map(c=>({t:c.texto,s:[c.quem,c.grupo].filter(Boolean).join(" · "),v:c.prazo?(c.prazo<hoje?"⚠ ":"")+c.prazo.split("-").reverse().slice(0,2).join("/"):"",on:()=>{ fechaDrill(); abreGrupo(c.grupo); }})),
+      nota:"Use para cobrar no dia certo: leve à Agenda o que for seu acompanhar."}); }
+  function atualizaAtalhos(){ try{ const b=(id,n)=>{ const e=$(id); if(!e) return; e.textContent=n?String(n):""; e.style.display=n?"block":"none"; };
+    b("at-hoje",(S.itens||[]).filter(i=>ehHoje(i.recebidoEm)&&(i.status||"pendente")==="pendente").length); b("at-high",highlights().length);
+    const hoje=new Date().toISOString().slice(0,10); b("at-comp",compromissos().filter(c=>c.prazo&&c.prazo<=hoje).length); b("at-ia",(S.iaNovas||0)); }catch(e){} }
+  setInterval(atualizaAtalhos,20000); setTimeout(atualizaAtalhos,1500);
+
+  // ----- Assistente (chat) -----
+  const IA={hist:[],treino:[],ia:false,carregado:0,enviando:false};
+  const IA_CHIPS=["Resumo de hoje","O que está pendente?","Qual grupo mais me cobra?","Isso não é importante: …","Responda mais curto","Me avise só de clientes à noite"];
+  async function iaCarrega(){ if(!ponte||!ponte.url){ $("ia-modo").textContent="Conecte a Ponte em Ajustes para usar o Assistente"; return; }
+    try{ const d=await ponteReq("/chat"); IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; IA.carregado=Date.now();
+      try{ localStorage.setItem("peneira-ia-visto",String(IA.hist.length)); }catch(e){} S.iaNovas=0; atualizaAtalhos(); }catch(e){ $("ia-modo").textContent="Sem conexão com a Ponte agora"; }
+    iaRender(); }
+  function iaRender(){ $("ia-modo").textContent=IA.ia?"IA ao vivo · aprende com você":"Modo recado · respondo e aprendo na próxima varredura";
+    const L=$("ia-log"); L.textContent="";
+    if(!IA.hist.length){ const b=el("div","ia-msg ia"); b.appendChild(el("p",null,"Oi, Rafael! Pergunte sobre seus grupos e pendências, ou me ensine: \"isso não é importante\", \"fulano é VIP\", \"responda mais curto\". Tudo que você ensinar vira regra da varredura.")); L.appendChild(b); }
+    IA.hist.forEach(m=>{ const b=el("div","ia-msg "+(m.de==="rafael"?"eu":"ia")); b.appendChild(el("p",null,m.t)); b.appendChild(el("small",null,fmt(m.em)+(m.origem==="varredura"?" · pela varredura":""))); L.appendChild(b); });
+    if(IA.enviando){ const b=el("div","ia-msg ia ia-dig"); b.appendChild(el("p",null,"…")); L.appendChild(b); }
+    const pend=IA.hist.length&&IA.hist[IA.hist.length-1].de==="rafael"&&!IA.enviando&&!IA.ia; if(pend){ L.appendChild(el("div","ia-aviso","📩 Recado guardado. A próxima varredura responde aqui e aplica o que você ensinou.")); }
+    const C=$("ia-chips"); if(!C.childNodes.length) IA_CHIPS.forEach(t=>{ const b=el("button","pn-chip",t); b.type="button"; b.onclick=()=>{ const x=$("ia-txt"); x.value=t.replace(" …",""); x.focus(); if(!t.endsWith("…")) $("ia-form").requestSubmit(); }; C.appendChild(b); });
+    const T=$("ia-treino"); T.textContent=""; const tr=IA.treino.slice().reverse();
+    tr.forEach(x=>T.appendChild(ubRow({t:x.texto,s:(x.status==="aplicado"?"✓ Aplicado na varredura":x.status==="recusado"?"Desligada":"Nova · entra na próxima varredura")+" · "+fmt(x.em)+(x.nota?" · "+x.nota:""),v:x.status==="recusado"?"Off":"",on:async()=>{ const novo=x.status==="recusado"?"novo":"recusado"; try{ const r=await ponteReq("/treino",{method:"POST",body:JSON.stringify({atualiza:[{id:x.id,status:novo}]})}); IA.treino=r.treino||IA.treino; iaRender(); }catch(e){} }})));
+    if(!tr.length) T.appendChild(el("div","pn-empty","Ainda nada. Ensine pelo chat, por exemplo: \"mensagem de bom dia em grupo não é importante\"."));
+    setTimeout(()=>{ L.scrollTop=L.scrollHeight; },30); }
+  function abreAssistente(){ iaRender(); if(Date.now()-IA.carregado>20000) iaCarrega(); }
+  $("ia-txt").addEventListener("input",e=>{ const t=e.target; t.style.height="auto"; t.style.height=Math.min(140,t.scrollHeight)+"px"; });
+  $("ia-txt").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!/iPhone|iPad|Android/.test(navigator.userAgent)){ e.preventDefault(); $("ia-form").requestSubmit(); } });
+  $("ia-form").addEventListener("submit",async e=>{ e.preventDefault(); const x=$("ia-txt"); const t=x.value.trim(); if(!t||IA.enviando) return;
+    if(!ponte||!ponte.url){ aviso("Conecte a Ponte em Ajustes para conversar com o Assistente."); return; }
+    x.value=""; x.style.height="auto"; IA.hist.push({de:"rafael",t,em:new Date().toISOString()}); IA.enviando=true; iaRender();
+    try{ const r=await ponteReq("/chat",{method:"POST",body:JSON.stringify({texto:t})}); IA.enviando=false; IA.ia=!!r.ia;
+      if(r.resposta) IA.hist.push({de:"ia",t:r.resposta,em:new Date().toISOString()}); if(r.aprendizado){ IA.treino.push(r.aprendizado); aviso("Aprendi: "+r.aprendizado.texto); } }
+    catch(err){ IA.enviando=false; IA.hist.push({de:"ia",t:"Não consegui enviar agora. Tente de novo em instantes.",em:new Date().toISOString()}); }
+    iaRender(); });
+  async function iaChecaNovas(){ if(!ponte||!ponte.url) return; try{ const d=await ponteReq("/chat"); const visto=Number(localStorage.getItem("peneira-ia-visto")||0); const novas=(d.hist||[]).slice(visto).filter(m=>m.de==="ia").length;
+    if(document.querySelector("#assistente.on")){ IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; localStorage.setItem("peneira-ia-visto",String(IA.hist.length)); S.iaNovas=0; iaRender(); } else S.iaNovas=novas; atualizaAtalhos(); }catch(e){} }
+  setInterval(iaChecaNovas,120000); setTimeout(iaChecaNovas,4000);
 
   // ----- Estatísticas de uso -----
   const USO_P=[["7","7 dias"],["30","30 dias"],["mes","Este mês"],["tudo","Tudo"]];
@@ -2744,7 +2841,8 @@ button.ub-row{cursor:pointer}
     if(!lista.length) L.appendChild(el("div","pn-empty",S.vips.length?"Nenhum nome encontrado.":"Nenhum VIP cadastrado ainda."));
   }
   $("ub-busca").addEventListener("click",()=>$("btn-busca").click());
-  $("ub-atalhos").addEventListener("click",e=>{ const b=e.target.closest("button[data-go]"); if(!b) return; const g=b.dataset.go; if(g==="vips") return $("btn-viplista").click(); go(g); });
+  $("ub-atalhos").addEventListener("click",e=>{ const b=e.target.closest("button[data-at]"); if(!b) return; const a=b.dataset.at;
+    if(a==="hoje") return fichaHoje(); if(a==="high") return fichaHigh(); if(a==="comp") return fichaComp(); if(a==="ia") return go("assistente"); });
   $("btn-viplista").addEventListener("click",()=>{ $("vs-busca").value=""; renderVipLista(); $("vip-sheet").hidden=false; });
   $("vs-busca").addEventListener("input",renderVipLista);
   $("vs-x").addEventListener("click",()=>{ $("vip-sheet").hidden=true; });
