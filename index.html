@@ -631,6 +631,9 @@ button.ub-row{cursor:pointer}
 .ub-as-acts{display:flex;align-items:flex-end;gap:14px;flex-shrink:0}
 .ub-hub-acts{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px}
 .ub-hub-acts .pn-btn{flex:1;min-width:120px;font-size:13px;padding:8px 10px;min-height:auto}
+#imp-filtros-extra{display:flex;flex-wrap:wrap;gap:8px 10px;margin:0 0 10px}
+.imp-fe-f{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--ink-3)}
+.imp-fe-f select{font:inherit;font-size:13px;padding:7px 8px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--ink);min-width:118px}
 .ub-hist{background:var(--surface);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow)}
 .ub-hist summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:700;font-size:15px;display:flex;justify-content:space-between}
 .ub-hist summary::after{content:"›";color:var(--ink-3);transition:transform .2s} .ub-hist[open] summary::after{transform:rotate(90deg)}
@@ -971,6 +974,7 @@ button.ub-row{cursor:pointer}
   <section class="pn-view" id="importantes">
     <div class="pn-h2" style="margin-top:4px">Importantes</div>
     <div class="pn-chips" id="filtros"></div>
+    <div id="imp-filtros-extra"></div>
     <div id="lista-itens"></div>
   </section>
 
@@ -1054,7 +1058,11 @@ button.ub-row{cursor:pointer}
       <div style="display:flex;gap:8px;margin-top:12px"><button class="pn-btn" type="button" id="reu-pdf" style="flex:1">PDF</button><button class="pn-btn pri" type="button" id="reu-xlsx" style="flex:1">Excel</button></div>
     </div>
     <div id="rel-uso" hidden>
-      <div class="ub-seg pn-chips" id="uso-per" style="margin:2px 0 10px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:2px 0 4px">
+        <div class="ub-seg pn-chips" id="uso-per" style="margin:0"></div>
+        <button class="pn-btn" type="button" id="uso-atualizar" style="flex:0 0 auto">↻ Atualizar estatísticas</button>
+      </div>
+      <div class="pn-meta" id="uso-att-em" style="margin:0 4px 10px"></div>
       <div class="ub-hero" id="uso-hero"></div>
       <div class="pn-h2">Importantes por dia</div>
       <div class="pn-card"><div class="ub-bars" id="uso-dias"></div></div>
@@ -1682,33 +1690,54 @@ button.ub-row{cursor:pointer}
     top3.forEach(i=>ag.appendChild(cardItem(i)));
 
     // Filtros + lista
+    // Filtros extras (prioridade, período, status) — aplicados antes do agrupamento por assunto
+    renderFiltrosExtra();
+    const filtraExtra=i=>{
+      if(S.filtroPrioridade==="alta"&&(i.prioridade||"")!=="alta") return false;
+      if(S.filtroPrioridade==="normal"&&(i.prioridade||"")==="alta") return false;
+      if(S.filtroPeriodo&&S.filtroPeriodo!=="sempre"){ const d=new Date(i.recebidoEm||i.feitoEm||0); if(isNaN(d)||d<desdeFiltro(S.filtroPeriodo)) return false; }
+      return true;
+    };
+    const baseItensImp = S.itens.filter(filtraExtra);
+    const statusSel = S.filtroStatusSel||"ativo";
     // Importantes por ASSUNTO: abas com pendentes + histórico completo (nada some)
-    const porG={}; S.itens.forEach(i=>{ const g=catGrupo(i); (porG[g]=porG[g]||{pend:[],hist:[]})[(i.status||"pendente")==="pendente"?"pend":"hist"].push(i); });
+    const porG={}; baseItensImp.forEach(i=>{ const g=catGrupo(i); (porG[g]=porG[g]||{pend:[],hist:[]})[(i.status||"pendente")==="pendente"?"pend":"hist"].push(i); });
     const gruposOn=CAT_G.filter(g=>porG[g]);
     if(S.filtro==="concluídos") S.filtro="todos"; if(S.filtro!=="todos"&&!gruposOn.includes(S.filtro)) S.filtro="todos";
     const f=$("filtros"); f.textContent=""; f.classList.add("ub-seg");
-    const totPend=S.itens.filter(i=>(i.status||"pendente")==="pendente").length;
+    const totPend=baseItensImp.filter(i=>(i.status||"pendente")==="pendente").length;
     const chip=(k,txt,np,nt)=>{ const b=el("button","pn-chip"); b.type="button"; b.appendChild(el("span",null,txt)); const e=el("em",null,np?String(np):String(nt)); if(np) e.classList.add("pend"); b.appendChild(e); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
-    chip("todos","Todos",totPend,S.itens.length); gruposOn.forEach(g=>chip(g,g,porG[g].pend.length,porG[g].pend.length+porG[g].hist.length));
+    chip("todos","Todos",totPend,baseItensImp.length); gruposOn.forEach(g=>chip(g,g,porG[g].pend.length,porG[g].pend.length+porG[g].hist.length));
     const L=$("lista-itens"); L.textContent="";
     if(!S.itens.length) L.appendChild(el("div","pn-empty","Ainda não há mensagens. Depois da primeira leitura, os importantes aparecem aqui, separados por assunto."));
+    else if(!baseItensImp.length) L.appendChild(el("div","pn-empty","Nada encontrado com esses filtros."));
     const quando=i=>String(i.recebidoEm||i.feitoEm||"");
-    const secao=(g,aberto)=>{ const d=porG[g]; const box=el("section","ub-assunto");
-      const h=el("div","ub-as-h"); const ht=el("div"); ht.appendChild(el("b",null,g)); ht.appendChild(el("small",null,(d.pend.length?d.pend.length+" pendente"+(d.pend.length>1?"s":""):"nenhum pendente")+" · "+d.hist.length+" no histórico")); h.appendChild(ht);
+    const secao=(g,aberto)=>{ const d=porG[g];
+      const pendShow = (statusSel==="feito"||statusSel==="ignorado") ? [] : d.pend;
+      const histShow = statusSel==="pendente" ? [] : statusSel==="ativo" ? d.hist : d.hist.filter(i=>(i.status||"")===statusSel);
+      const histOpen = aberto || statusSel==="feito" || statusSel==="ignorado";
+      if(!aberto && !pendShow.length && !histShow.length) return;
+      const box=el("section","ub-assunto");
+      const h=el("div","ub-as-h"); const ht=el("div"); ht.appendChild(el("b",null,g)); ht.appendChild(el("small",null,(pendShow.length?pendShow.length+" pendente"+(pendShow.length>1?"s":""):"nenhum pendente")+" · "+histShow.length+" no histórico")); h.appendChild(ht);
       const acts=el("div","ub-as-acts");
-      if(d.pend.length){ const rt=el("button","ub-as-ver","Resolver tudo"); rt.type="button"; rt.disabled=!S.canWrite; rt.onclick=()=>resolverTudo(d.pend,g); acts.appendChild(rt); }
+      if(pendShow.length){ const rt=el("button","ub-as-ver","Resolver tudo"); rt.type="button"; rt.disabled=!S.canWrite; rt.onclick=()=>resolverTudo(pendShow,g); acts.appendChild(rt); }
       if(S.filtro==="todos"){ const ver=el("button","ub-as-ver","Ver tudo ›"); ver.type="button"; ver.onclick=()=>{ S.filtro=g; render(); window.scrollTo({top:0,behavior:"smooth"}); }; acts.appendChild(ver); }
       if(acts.childNodes.length) h.appendChild(acts);
       box.appendChild(h);
-      d.pend.slice().sort(ordena).forEach(i=>box.appendChild(cardItem(i)));
-      if(d.hist.length){ const det=document.createElement("details"); det.className="ub-hist"; if(aberto) det.open=true;
-        const sm=document.createElement("summary"); sm.textContent="Histórico · "+d.hist.length; det.appendChild(sm);
-        const lst=el("div","ub-list"); d.hist.slice().sort((x,y)=>quando(y).localeCompare(quando(x))).slice(0,aberto?200:8).forEach(i=>{
+      if(!pendShow.length && !histShow.length) box.appendChild(el("div","pn-empty","Nada por aqui com esse filtro."));
+      pendShow.slice().sort(ordena).forEach(i=>box.appendChild(cardItem(i)));
+      if(histShow.length){ const det=document.createElement("details"); det.className="ub-hist"; if(histOpen) det.open=true;
+        const sm=document.createElement("summary"); sm.textContent="Histórico · "+histShow.length; det.appendChild(sm);
+        const lst=el("div","ub-list"); histShow.slice().sort((x,y)=>quando(y).localeCompare(quando(x))).slice(0,histOpen?200:8).forEach(i=>{
           lst.appendChild(ubRow({t:(i.grupo?i.grupo+" · ":"")+(i.contato||""),s:(i.resumo||"")+(i.recebidoEm?" · "+fmt(i.recebidoEm):""),v:i.status==="ignorado"?"Ignorado":"✓ Resolvido",on:()=>abreItem(i)})); });
-        if(!aberto&&d.hist.length>8){ const mais=el("button","ub-as-ver","Ver os "+d.hist.length+" do histórico ›"); mais.type="button"; mais.onclick=()=>{ S.filtro=g; render(); }; lst.appendChild(mais); }
+        if(!histOpen&&histShow.length>8){ const mais=el("button","ub-as-ver","Ver os "+histShow.length+" do histórico ›"); mais.type="button"; mais.onclick=()=>{ S.filtro=g; render(); }; lst.appendChild(mais); }
         det.appendChild(lst); box.appendChild(det); }
       L.appendChild(box); };
-    if(S.filtro==="todos") gruposOn.slice().sort((x,y)=>porG[y].pend.length-porG[x].pend.length||CAT_G.indexOf(x)-CAT_G.indexOf(y)).forEach(g=>secao(g,false));
+    if(S.filtro==="todos"){
+      const antes=L.childNodes.length;
+      gruposOn.slice().sort((x,y)=>porG[y].pend.length-porG[x].pend.length||CAT_G.indexOf(x)-CAT_G.indexOf(y)).forEach(g=>secao(g,false));
+      if(baseItensImp.length && L.childNodes.length===antes) L.appendChild(el("div","pn-empty","Nada encontrado com esses filtros."));
+    }
     else secao(S.filtro,true);
 
     // Critérios
@@ -2106,6 +2135,14 @@ button.ub-row{cursor:pointer}
     renderHub();
     if(btn){ btn.disabled=false; btn.textContent=btn.dataset.txtOrig; salvoOk(btn,"✓ Atualizado"); }
   }
+  async function atualizarEstatisticas(btn){
+    if(btn){ btn.disabled=true; btn.dataset.txtOrig=btn.textContent; btn.textContent="Atualizando…"; }
+    try{ if(typeof ponte!=="undefined" && ponte) ponte.dadosEm=""; await ponteSync(); }catch(e){}
+    try{ renderUlt(); }catch(e){}
+    try{ renderUso(); }catch(e){}
+    if(btn){ btn.disabled=false; btn.textContent=btn.dataset.txtOrig; salvoOk(btn,"✓ Atualizado"); }
+  }
+  if($("uso-atualizar")) $("uso-atualizar").addEventListener("click",()=>atualizarEstatisticas($("uso-atualizar")));
   function renderHub(){
     const G=$("hub-grid"); if(!G) return; G.textContent=""; $("hub-ver").textContent="v"+VERSAO;
     const novaVersao = visto()!==VERSAO;
@@ -2243,6 +2280,29 @@ button.ub-row{cursor:pointer}
   }
 
 
+  // ----- Filtros extras de Importantes (prioridade, período, status) -----
+  function desdeFiltro(p){ if(p==="hoje"){ const d=new Date(); d.setHours(0,0,0,0); return d; } if(p==="7"||p==="30"||p==="mes") return usoDesde(p); return new Date(0); }
+  function renderFiltrosExtra(){
+    const box=$("imp-filtros-extra"); if(!box) return;
+    if(!box.dataset.built){
+      box.dataset.built="1"; box.textContent="";
+      const mk=(id,lbl,opts)=>{ const wrap=el("label","imp-fe-f"); wrap.appendChild(el("span",null,lbl));
+        const s=document.createElement("select"); s.id=id;
+        opts.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; s.appendChild(o); });
+        wrap.appendChild(s); box.appendChild(wrap); return s; };
+      const selP=mk("imp-f-prioridade","Prioridade",[["todas","Todas"],["alta","Alta"],["normal","Normal"]]);
+      const selPer=mk("imp-f-periodo","Período",[["sempre","Sempre"],["hoje","Hoje"],["7","7 dias"],["30","30 dias"],["mes","Este mês"]]);
+      const selSt=mk("imp-f-status","Status",[["ativo","Pendentes + histórico"],["pendente","Só pendentes"],["feito","Só resolvidos"],["ignorado","Só ignorados"]]);
+      selP.addEventListener("change",()=>{ S.filtroPrioridade=selP.value; render(); });
+      selPer.addEventListener("change",()=>{ S.filtroPeriodo=selPer.value; render(); });
+      selSt.addEventListener("change",()=>{ S.filtroStatusSel=selSt.value; render(); });
+    }
+    const sp=$("imp-f-prioridade"), spe=$("imp-f-periodo"), ss=$("imp-f-status");
+    if(sp) sp.value=S.filtroPrioridade||"todas";
+    if(spe) spe.value=S.filtroPeriodo||"sempre";
+    if(ss) ss.value=S.filtroStatusSel||"ativo";
+  }
+
   /* ---------- v4.12 · fichas estilo Uber, dias da semana, meu estilo ---------- */
   const DSEM=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"], DSEM_L=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"], ORD=[1,2,3,4,5,6,0];
   function diaSem(d){ if(!d) return null; const m=String(d).match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m) return null; if(String(d).length>10){ const x=new Date(d); return isNaN(x)?null:x.getDay(); } return new Date(+m[1],+m[2]-1,+m[3]).getDay(); }
@@ -2347,6 +2407,7 @@ button.ub-row{cursor:pointer}
   function listaItensFicha(tit,sub,arr){ ficha(tit,sub,{tiles:[[String(arr.length),"importantes"],[String(arr.filter(i=>(i.status||"pendente")==="pendente").length),"pendentes"]],rowsTit:"Mensagens",rows:arr.slice().sort((a,b)=>String(b.recebidoEm||"").localeCompare(String(a.recebidoEm||""))).map(i=>({t:(i.grupo?i.grupo+" · ":"")+(i.contato||""),s:(i.resumo||"")+(i.recebidoEm?" · "+fmt(i.recebidoEm):""),v:(i.status||"pendente")==="pendente"?"Pendente":i.status==="ignorado"?"Ignorado":"✓",on:()=>abreItem(i)}))}); }
   function renderUso(){ if(!$("uso-hero")) return; const P=S.usoPer||"30"; const desde=usoDesde(P);
     const per=$("uso-per"); per.textContent=""; USO_P.forEach(([k,t])=>{ const b=el("button","pn-chip",t); b.type="button"; b.setAttribute("aria-pressed",P===k?"true":"false"); b.onclick=()=>{ S.usoPer=k; renderUso(); }; per.appendChild(b); });
+    const att=$("uso-att-em"); if(att){ const em=(typeof ponte!=="undefined"&&ponte&&ponte.dadosEm)?ponte.dadosEm:(S.meta&&S.meta.ultimaMensagem); att.textContent = em ? "Dados atualizados até "+fmt(em)+"." : ""; }
     const dt=i=>{ const d=new Date(i.recebidoEm||i.criadoEm||0); return isNaN(d)?null:d; };
     const its=(S.itens||[]).filter(i=>{ const d=dt(i); return d&&d>=desde; });
     const rels=(S.relatorios||[]).filter(r=>{ const d=new Date(r.geradoEm||r.data||0); return !isNaN(d)&&d>=desde; });
