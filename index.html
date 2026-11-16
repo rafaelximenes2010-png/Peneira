@@ -1067,6 +1067,7 @@ button.ub-row-main{cursor:pointer}
       <div class="pn-h2" style="margin-top:4px">Reuniões por WhatsApp</div>
       <p class="pn-meta" style="margin:-4px 0 10px">Todo debate de grupo com <b>mais de 10 minutos seguidos</b> (mensagens com menos de 15 min entre si) conta como uma reunião pelo WhatsApp. Tempo perdido = duração da reunião; horas-pessoa = duração × pessoas que escreveram.</p>
       <div class="pn-cal-top" style="margin:0 0 8px"><button class="pn-btn" type="button" id="reu-prev" aria-label="Mês anterior">‹</button><b id="reu-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="reu-next" aria-label="Próximo mês">›</button></div>
+      <button class="pn-btn" type="button" id="reu-att" style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px"><span class="pn-ico" data-ico="refresh"></span><span id="reu-att-txt">Atualizar</span></button>
       <div class="ub-tiles" id="reu-kpi" style="margin-bottom:10px"></div>
       <button type="button" class="ub-link" id="reu-ir-sem"><span><b>Dias da semana</b><small>Que dia tem mais reunião e os campeões de cada dia</small></span><i>›</i></button>
       <div class="pn-h2">Grupos que fazem reunião pelo Whats</div>
@@ -1097,6 +1098,7 @@ button.ub-row-main{cursor:pointer}
     </div>
     <div id="rel-sem" hidden>
       <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
+      <button class="pn-btn" type="button" id="sem-att" style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px"><span class="pn-ico" data-ico="refresh"></span><span id="sem-att-txt">Atualizar</span></button>
       <div class="ub-hero" id="sem-hero"></div>
       <div class="pn-h2">Reuniões por dia da semana</div>
       <div class="pn-card"><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
@@ -2656,6 +2658,10 @@ button.ub-row-main{cursor:pointer}
       C.appendChild(ubRow({n:DSEM[w],t:r1?r1.nome:"Sem dados ainda",s:r1?(r2?"2º "+r2.nome+" ("+r2.msgs+")":"")+(d.qtd?(r2?" · ":"")+d.qtd+" reuniões":""):"",v:r1?r1.msgs+" msgs":"",on:()=>abreDia(m,w,D)})); }); }
   $("sem-prev").addEventListener("click",()=>{ navMes("semMes",-1); renderSem(); });
   $("sem-next").addEventListener("click",()=>{ navMes("semMes",1); renderSem(); });
+  $("sem-att").addEventListener("click",async()=>{ const b=$("sem-att"), tx=$("sem-att-txt"); b.disabled=true; tx.textContent="Atualizando…";
+    try{ if(ponte&&ponte.url){ ponte.dadosEm=""; await ponteSync(); } renderSem(); tx.textContent="✓ Atualizado"; }
+    catch(e){ tx.textContent="Não consegui atualizar"; }
+    setTimeout(()=>{ b.disabled=false; tx.textContent="Atualizar"; },2500); });
   $("reu-ir-sem").addEventListener("click",()=>{ const b=document.querySelector('#rel-abas [data-aba="sem"]'); if(b){ b.click(); b.scrollIntoView({inline:"center",block:"nearest"}); } });
 
   // ----- Meu estilo -----
@@ -3342,9 +3348,15 @@ button.ub-row-main{cursor:pointer}
   $("camp-next").addEventListener("click",()=>{ navMes("campMes",1); renderCamp(); });
   const nPess=x=>Array.isArray(x.pessoas)?x.pessoas.length:(+x.pessoas||0);
   function reunioes(m){ const sn=(mesesSnap()[m]||{}).reunioes;
-    const lista=[]; relDoMes(m).forEach(r=>(r.reunioes||[]).forEach(x=>{ if((x.min||0)>10) lista.push({grupo:r.grupo,data:x.data||String(r.geradoEm).slice(0,10),...x}); }));
-    // une o snapshot salvo com o que já está sincronizado agora (nunca escolhe um OU outro — isso escondia dias novos,
-    // como domingo/segunda, quando o snapshot antigo "parecia" maior em minutos totais).
+    // Cada relatório de S.relGrupos já É uma "reunião" (uma sessão de debate naquele grupo) —
+    // não existe (nunca existiu) um array ".reunioes" dentro de cada relatório. Por causa disso,
+    // essa parte sempre devolvia lista vazia, e a tela só mostrava o snapshot estático salvo uma
+    // vez (que parava no dia em que foi gerado) — por isso domingo/segunda nunca apareciam, não
+    // importa o que se fizesse com a lógica de "unir com o snapshot" abaixo.
+    const lista=[]; relDoMes(m).forEach(r=>{ const min=r.tempoAtivoMin||r.min||0; if(min>10)
+      lista.push({grupo:r.grupo,data:r.data||String(r.geradoEm||"").slice(0,10),min,inicio:r.inicio||"",fim:r.fim||"",msgs:r.mensagens||r.msgs||0,pessoas:Array.isArray(r.participantes)?r.participantes.length:(r.pessoas||0)}); });
+    // une o snapshot salvo (congelado em 14/11) com o que os relatórios de verdade trazem — nunca
+    // escolhe um OU outro, pra não esconder dias novos como domingo/segunda.
     const chave=x=>nG(x.grupo)+"|"+(x.data||"")+"|"+(x.inicio||"");
     const vistos=new Set(); const uniao=[];
     (sn&&sn.lista||[]).concat(lista).forEach(x=>{ const k=chave(x); if(vistos.has(k)) return; vistos.add(k); uniao.push(x); });
@@ -3371,6 +3383,10 @@ button.ub-row-main{cursor:pointer}
     $("reu-obs").textContent=R.obs||""; }
   $("reu-prev").addEventListener("click",()=>{ navMes("reuMes",-1); renderReu(); });
   $("reu-next").addEventListener("click",()=>{ navMes("reuMes",1); renderReu(); });
+  $("reu-att").addEventListener("click",async()=>{ const b=$("reu-att"), tx=$("reu-att-txt"); b.disabled=true; tx.textContent="Atualizando…";
+    try{ if(ponte&&ponte.url){ ponte.dadosEm=""; await ponteSync(); } renderReu(); tx.textContent="✓ Atualizado"; }
+    catch(e){ tx.textContent="Não consegui atualizar"; }
+    setTimeout(()=>{ b.disabled=false; tx.textContent="Atualizar"; },2500); });
   function tabsReuCamp(){ const out=[];
     mesesDisp().slice().reverse().forEach(m=>{ const c=campeoes(m); for(let i=0;i<10;i++){ const g=c.gr[i], d=c.ind[i]; if(!g&&!d) break; out.push({"Mês":nomeMes(m),"#":i+1,"Grupos · pessoa":g?g.nome:"","Grupos · mensagens":g?g.msgs:"","Individuais · contato":d?d.nome:"","Individuais · mensagens":d?d.msgs:""}); } });
     const reu=[]; mesesDisp().slice().reverse().forEach(m=>reunioes(m).lista.forEach(x=>reu.push({"Mês":nomeMes(m),"Grupo":x.grupo,"Data":x.data||"","Início":x.inicio||"","Fim":x.fim||"","Duração (min)":x.min,"Mensagens":x.msgs||"","Pessoas":nPess(x)||""})));
