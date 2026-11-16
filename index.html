@@ -318,7 +318,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   border-bottom:.5px solid color-mix(in srgb,var(--border) 70%,transparent);min-height:60px}
 .pn-brand svg{width:56px;height:56px;border-radius:15px}
 .pn-brand b{font-size:18px} .pn-brand small{font-size:12px}
-.pn-dn{box-shadow:none;border:0;background:var(--surface-2);width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
+.pn-dn{border:0;background:var(--surface-2);width:42px;height:42px;padding:0;justify-content:center;border-radius:50%;box-shadow:0 1px 2px rgba(16,24,20,.1),0 3px 9px rgba(16,24,20,.08)}
+.pn-dn span[data-ico] svg,.pn-dn .pn-ico svg{width:19px;height:19px}
 #btn-hub{padding:0;font-size:16px}
 #dn-txt{display:none}
 .pn-voltar{border:0;background:none;box-shadow:none;color:var(--accent);font:500 17px var(--font-ui);padding:6px 0;margin:0}
@@ -1234,12 +1235,23 @@ button.ub-row-main{cursor:pointer}
       <a class="pn-meta" href="https://github.com/rafaelximenes2010-png/Peneira/blob/main/docs/PONTE-API.md" target="_blank" rel="noopener" style="display:block;margin-top:10px">Passo a passo para criar a ponte →</a>
     </div>
 
+    <div class="pn-h2">Meus dados e backup</div>
+    <div class="pn-card">
+      <p class="pn-meta" style="margin:0 0 10px">Seus dados ficam só neste aparelho (ou na sua Ponte). Baixe uma cópia quando quiser, ou restaure de um backup salvo.</p>
+      <button class="pn-btn pri" type="button" id="bk-baixar" style="width:100%;margin-bottom:8px">↓ Baixar meus dados (backup)</button>
+      <label class="pn-btn" style="display:flex;align-items:center;justify-content:center;width:100%;padding:11px;cursor:pointer">↑ Restaurar backup<input type="file" id="bk-restaurar" accept="application/json,.json" hidden></label>
+      <p class="pn-meta" id="bk-aviso" style="margin:8px 0 0;min-height:16px"></p>
+      <p class="pn-meta" style="margin:8px 0 0">Pela LGPD, esses dados são seus: você pode baixá-los, corrigi-los ou pedir a exclusão a qualquer momento. Veja como na <a href="#politica" style="color:var(--accent)">Política de Privacidade</a>.</p>
+    </div>
+
     <div class="pn-h2">Aparência</div>
     <div class="pn-card">
       <div class="pn-meta" style="margin-bottom:8px">Tema</div>
       <div class="pn-chips" id="temas" style="margin:0"></div>
       <div class="pn-meta" style="margin:14px 0 8px">Cores do modo dia</div>
       <div class="pn-pal" id="paletas"></div>
+      <div class="pn-meta" style="margin:14px 0 8px">Tamanho do texto e dos ícones</div>
+      <div class="pn-chips" id="tamanhos" style="margin:0"></div>
     </div>
 
     <div class="pn-h2">Notificações no celular</div>
@@ -1261,6 +1273,8 @@ button.ub-row-main{cursor:pointer}
       <span><b>Ações e respostas automáticas</b><br><span class="pn-meta">Silenciar grupos, ausência, saudação</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="perfil" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
       <span><b>Meu cadastro e Face ID</b><br><span class="pn-meta" id="aj-perfil">Seus dados e bloqueio do app</span></span><span>→</span></button>
+    <button class="pn-cta" type="button" data-go="assistente" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
+      <span><b>Sugestões</b><br><span class="pn-meta">Conte o que quer ver no Peneira — a Peneirinha guarda e eu aprendo</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="politica" style="background:var(--surface);border-color:var(--border);color:var(--ink);margin-bottom:10px">
       <span><b>Política de privacidade</b><br><span class="pn-meta">Como seus dados são usados (LGPD)</span></span><span>→</span></button>
     <button class="pn-cta" type="button" data-go="sobre" style="background:var(--surface);border-color:var(--border);color:var(--ink)">
@@ -1454,6 +1468,8 @@ button.ub-row-main{cursor:pointer}
 
   <!-- ========== COMO FUNCIONA ========== -->
   <section class="pn-view" id="sobre">
+    <div class="pn-h2">Sobre o Peneira</div>
+    <div class="pn-card pn-meta" style="font-size:14px">O Peneira é o seu assistente de IA para o WhatsApp: ele lê os grupos e conversas por você, separa o que realmente importa e devolve o seu tempo. A ideia é simples — você não precisa ler tudo para não perder nada, e ainda enxerga quanto tempo isso economiza.</div>
     <div class="pn-h2">Como funciona</div>
     <div class="pn-card">
       <ol class="pn-steps">
@@ -2089,8 +2105,27 @@ button.ub-row-main{cursor:pointer}
     S.perfil=perfil; if(!S.db) return;
     try{ await S.db.doc("config/perfil").set(perfil); }catch(e){ aviso("Não consegui salvar o cadastro agora."); }
   }
+  function fotoPerfil(file){
+    const img=new Image(); const rd=new FileReader();
+    rd.onload=()=>{ img.onload=()=>{ try{
+        const alvo=200, esc=Math.min(1,alvo/Math.max(img.width,img.height)); const w=Math.round(img.width*esc), h=Math.round(img.height*esc);
+        const cv=document.createElement("canvas"); cv.width=w; cv.height=h; cv.getContext("2d").drawImage(img,0,0,w,h);
+        salvaPerfil({...S.perfil, foto:cv.toDataURL("image/jpeg",.82)});
+      }catch(e){ aviso("Não consegui processar essa foto."); } };
+      img.src=rd.result; };
+    rd.readAsDataURL(file); }
   function renderPerfil(){
     const P=S.perfil, B=$("perfil-box"); B.textContent="";
+    if(P){ const av=el("div"); av.style.cssText="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap";
+      const pic=el("div"); pic.style.cssText="width:64px;height:64px;border-radius:50%;flex:none;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(16,24,20,.1),0 3px 9px rgba(16,24,20,.08)";
+      if(P.foto){ const img=el("img"); img.src=P.foto; img.alt=""; img.style.cssText="width:100%;height:100%;object-fit:cover"; pic.appendChild(img); }
+      else { const ic=ico("user"); ic.querySelector("svg").style.cssText="width:28px;height:28px;color:var(--ink-3)"; pic.appendChild(ic); }
+      av.appendChild(pic);
+      const lab=el("label","pn-btn",null); lab.style.cssText="cursor:pointer;padding:9px 14px;font-size:13.5px"; lab.textContent=P.foto?"Trocar foto":"Adicionar foto";
+      const inp=el("input"); inp.type="file"; inp.accept="image/*"; inp.hidden=true; lab.appendChild(inp); av.appendChild(lab);
+      inp.addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(f) fotoPerfil(f); e.target.value=""; });
+      if(P.foto){ const rm=el("button","pn-btn","Remover"); rm.type="button"; rm.style.cssText="padding:9px 12px;font-size:13.5px"; rm.onclick=()=>salvaPerfil({...S.perfil,foto:null}); av.appendChild(rm); }
+      B.appendChild(av); }
     if(!P){ B.appendChild(el("div","pn-meta","Sem cadastro ainda.")); }
     else [["Nome",P.nome],["Como prefere ser chamado",P.apelido],["WhatsApp",P.whatsapp],["E-mail",P.email],["Aceitou a política",P.aceitouPoliticaEm?fmt(P.aceitouPoliticaEm)+" (v"+(P.versaoPolitica||"1.0")+")":""]].forEach(([k,v])=>{ if(!v) return; const r=el("div","pn-q"); r.appendChild(el("span","pn-meta",k)); r.appendChild(el("b",null,v)); B.appendChild(r); });
     $("aj-perfil").textContent = P ? (P.apelido||P.nome)+(temFid()?" · Face ID ligado":"") : "Seus dados e bloqueio do app";
@@ -2464,8 +2499,32 @@ button.ub-row-main{cursor:pointer}
       nota:C.length?"Use para cobrar no dia certo: leve à Agenda o que for seu acompanhar. Toque no ✕ para tirar um já resolvido.":"Nenhum compromisso agora."},semPilha); }
   function atualizaAtalhos(){ try{ const b=(id,n)=>{ const e=$(id); if(!e) return; e.textContent=n?String(n):""; e.style.display=n?"block":"none"; };
     b("at-hoje",(S.itens||[]).filter(i=>ehHoje(i.recebidoEm)&&(i.status||"pendente")==="pendente").length); b("at-high",highlights().length);
-    const hoje=new Date().toISOString().slice(0,10); b("at-comp",compromissos().filter(c=>c.prazo&&c.prazo<=hoje).length); b("at-ia",(S.iaNovas||0)); }catch(e){} }
+    const hoje=new Date().toISOString().slice(0,10); b("at-comp",compromissos().filter(c=>c.prazo&&c.prazo<=hoje).length); b("at-ia",(S.iaNovas||0)); }catch(e){}
+    try{ aprendeDiretorio(); }catch(e){} }
   setInterval(atualizaAtalhos,20000); setTimeout(atualizaAtalhos,1500);
+  /* ---------- diretório de pessoas e grupos: vai aprendendo sozinho a cada leitura ---------- */
+  const DIR_K="peneira-diretorio";
+  function dirCarrega(){ try{ const d=JSON.parse(localStorage.getItem(DIR_K)); if(d&&d.pessoas&&d.grupos) return d; }catch(e){} return {pessoas:{},grupos:{}}; }
+  function dirSalva(d){ try{ localStorage.setItem(DIR_K,JSON.stringify(d)); }catch(e){} }
+  function aprendeDiretorio(){ const d=dirCarrega(); const agora=new Date().toISOString();
+    const pega=(col,k,nome)=>{ const o=col[k]||{nome,vezes:0}; o.nome=nome; o.vezes=(o.vezes||0)+1; o.ultima=agora; col[k]=o; return o; };
+    (S.itens||[]).forEach(i=>{ let g=null,p=null;
+      if(i.grupo) g=pega(d.grupos,norm(i.grupo),i.grupo);
+      if(i.contato) p=pega(d.pessoas,norm(i.contato),i.contato);
+      if(g&&i.contato){ g.pessoas=g.pessoas||{}; g.pessoas[norm(i.contato)]=i.contato; }
+      if(p&&i.grupo){ p.grupos=p.grupos||{}; p.grupos[norm(i.grupo)]=i.grupo; } });
+    (S.relGrupos||[]).forEach(r=>{ if(!r.grupo) return; const g=pega(d.grupos,norm(r.grupo),r.grupo);
+      (r.compromissos||[]).forEach(c=>{ if(!c.quem) return; const p=pega(d.pessoas,norm(c.quem),c.quem);
+        g.pessoas=g.pessoas||{}; g.pessoas[norm(c.quem)]=c.quem; p.grupos=p.grupos||{}; p.grupos[norm(r.grupo)]=r.grupo; }); });
+    (S.contatos||[]).forEach(c=>{ if(!c.nome) return; const p=d.pessoas[norm(c.nome)]; if(p&&c.tel) p.tel=c.tel; else if(c.tel) d.pessoas[norm(c.nome)]={nome:c.nome,vezes:0,tel:c.tel}; });
+    (S.vips||[]).forEach(v=>{ if(!v.nome) return; const col=v.tipo==="grupo"?d.grupos:d.pessoas; const o=col[norm(v.nome)]||{nome:v.nome,vezes:0}; o.nome=v.nome; o.vip=true; col[norm(v.nome)]=o; });
+    dirSalva(d); return d; }
+  function dirPessoa(nome){ const d=dirCarrega(); return d.pessoas[norm(nome)]||null; }
+  function dirGrupo(nome){ const d=dirCarrega(); return d.grupos[norm(nome)]||null; }
+  function descrevePessoa(p){ const ngr=Object.keys(p.grupos||{}).length;
+    return "\""+p.nome+"\""+(p.vip?" é VIP":"")+". Já apareceu "+(p.vezes||1)+" vez"+((p.vezes||1)>1?"es":"")+(ngr?" em "+ngr+" grupo"+(ngr>1?"s":""):"")+(p.tel?". Telefone salvo: "+p.tel:"")+"."; }
+  function descreveGrupo(g){ const np=Object.keys(g.pessoas||{}).length;
+    return "\""+g.nome+"\""+(g.vip?" é um grupo VIP":"")+". Apareceu "+(g.vezes||1)+" vez"+((g.vezes||1)>1?"es":"")+(np?", com "+np+" pessoa(s) já identificada(s)":"")+"."; }
 
   // ----- Assistente (chat) -----
   const IA={hist:[],treino:[],ia:false,carregado:0,enviando:false};
@@ -2483,6 +2542,21 @@ button.ub-row-main{cursor:pointer}
       const porGrupo={}; pend.forEach(i=>{ porGrupo[i.grupo]=(porGrupo[i.grupo]||0)+1; });
       const [top,n]=Object.entries(porGrupo).sort((a,b)=>b[1]-a[1])[0];
       return "\""+top+"\" é o que mais tem pendência agora: "+n+(n>1?" mensagens esperando.":" mensagem esperando."); }
+    if(/quem (é|e) (voc[eê]|tu)\b|seu nome|quem fala/.test(tl))
+      return "Sou a Peneirinha, a assistente de IA do Peneira. Leio seus grupos e conversas do WhatsApp, separo o que realmente importa e te aviso — assim você não precisa ler tudo pra não perder nada.";
+    if(/o que (voc[eê]|vc) (faz|é)|pra que (voc[eê]|vc) serve|sua fun[çc][ãa]o/.test(tl))
+      return "Eu leio o WhatsApp por você: entro nos grupos e conversas não lidas, comparo com seus critérios e separo o que importa, com prazo e próxima ação. Pergunte \"resumo de hoje\", \"o que está pendente\" ou \"qual grupo mais me cobra\" que respondo na hora.";
+    if(/o que [ée] o peneira|sobre o peneira|o que [ée] esse (app|aplicativo)/.test(tl))
+      return "O Peneira é o seu assistente de IA pro WhatsApp: ele lê os grupos e conversas por você, separa o que realmente importa e devolve o seu tempo.";
+    if(/como (voc[eê]|vc) funciona|como funciona o peneira|como (voc[eê]|vc) l[êe]/.test(tl))
+      return "Entro no WhatsApp Web, leio cada conversa não lida e deixo como lida. Comparo com sua lista de critérios; o que for importante eu trago pra cá com prazo e próxima ação. Você resolve por aqui: \"Resolvido\" ou \"Não é importante\".";
+    if(/voc[eê] (responde|manda|envia) mensage|faz pix|pagamento|transfer[êe]ncia/.test(tl))
+      return "Não. Nunca respondo, envio mensagem, abro link/anexo ou faço Pix, pagamento ou transferência. Só leio e separo o que importa — qualquer resposta ou ação é sempre sua.";
+    let m;
+    if((m=/^quem (?:é|e) (?:o |a )?([a-zà-ÿ0-9 .'-]{2,40}?)\??$/i.exec(t.trim())) && !/^(voc[eê]|vc|tu)$/i.test(m[1].trim())){
+      const p=dirPessoa(m[1].trim()); return p?descrevePessoa(p):null; }
+    if((m=/^(?:o que [ée]|quem (?:está|esta|tá|ta) n?o) grupo (.+?)\??$/i.exec(t.trim()))){
+      const g=dirGrupo(m[1].trim()); return g?descreveGrupo(g):null; }
     return null; }
   async function iaCarrega(){ if(!ponte||!ponte.url){ $("ia-modo").textContent="Conecte a Ponte em Ajustes para usar a Peneirinha"; return; }
     try{ const d=await ponteReq("/chat"); IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; IA.carregado=Date.now();
@@ -3462,6 +3536,31 @@ button.ub-row-main{cursor:pointer}
   TEMAS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.t=k; b.onclick=()=>{ tema=k; try{localStorage.setItem("peneira-tema",k);}catch(e){} aplicaTema(); }; $("temas").appendChild(b); });
   $("btn-dn").addEventListener("click",()=>{ tema = escuroAgora() ? "dia" : "noite"; try{localStorage.setItem("peneira-tema",tema);}catch(e){} aplicaTema(); });
   aplicaTema();
+  /* ---------- tamanho do texto e dos ícones (zoom do app, preferência deste aparelho) ---------- */
+  const TAMANHOS=[["1","Padrão"],["1.14","Grande"],["1.28","Extra grande"]];
+  let zoomApp="1"; try{ zoomApp=localStorage.getItem("peneira-zoom")||"1"; }catch(e){}
+  function aplicaZoom(){ document.body.style.zoom=zoomApp; document.querySelectorAll("#tamanhos .pn-chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.z===zoomApp?"true":"false")); }
+  if($("tamanhos")) TAMANHOS.forEach(([k,n])=>{ const b=el("button","pn-chip",n); b.type="button"; b.dataset.z=k; b.onclick=()=>{ zoomApp=k; try{localStorage.setItem("peneira-zoom",k);}catch(e){} aplicaZoom(); }; $("tamanhos").appendChild(b); });
+  aplicaZoom();
+  /* ---------- meus dados: backup e restauração (LGPD · portabilidade) ---------- */
+  function coletaBackup(){ return { app:"Peneira", versao:(typeof VERSAO!=="undefined"?VERSAO:""), exportadoEm:new Date().toISOString(),
+    dados:{gestao:S.gestao,relGrupos:S.relGrupos,bomdia:S.bomdia,varredura:S.varredura,grupos:S.grupos,agenda:S.agenda,vips:S.vips,itens:S.itens,criterios:S.criterios,acoes:S.acoes,ausencia:S.ausencia,notif:S.notif,relatorios:S.relatorios,contatos:S.contatos,meta:S.meta,perfil:S.perfil},
+    preferencias:{tema:tema,paleta:paleta,zoom:zoomApp} }; }
+  function baixaBackup(){ try{ const blob=new Blob([JSON.stringify(coletaBackup(),null,2)],{type:"application/json"});
+      const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="peneira-backup-"+new Date().toISOString().slice(0,10)+".json";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+      const av=$("bk-aviso"); if(av) av.textContent="Backup baixado."; }
+    catch(e){ const av=$("bk-aviso"); if(av) av.textContent="Não consegui gerar o backup agora."; } }
+  function restauraBackup(file){ const r=new FileReader();
+    r.onload=()=>{ const av=$("bk-aviso"); try{ const j=JSON.parse(r.result); const d=j.dados||j;
+        ["gestao","relGrupos","bomdia","varredura","grupos","agenda","vips","itens","criterios","acoes","ausencia","notif","relatorios","contatos","meta"].forEach(k=>{ if(d[k]!==undefined) S[k]=d[k]; });
+        if(d.perfil){ S.perfil=d.perfil; try{ localStorage.setItem("peneira-perfil",JSON.stringify(d.perfil)); }catch(e){} }
+        try{ demoSave(); }catch(e){} try{ render(); }catch(e){}
+        if(av) av.textContent="Backup restaurado."; }
+      catch(e){ if(av) av.textContent="Esse arquivo não parece ser um backup válido do Peneira."; } };
+    r.readAsText(file); }
+  if($("bk-baixar")) $("bk-baixar").addEventListener("click",baixaBackup);
+  if($("bk-restaurar")) $("bk-restaurar").addEventListener("change",e=>{ const f=e.target.files&&e.target.files[0]; if(f) restauraBackup(f); e.target.value=""; });
   document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
 
   /* ---------- notificações + horários ---------- */

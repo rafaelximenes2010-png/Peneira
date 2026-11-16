@@ -391,7 +391,7 @@ async function chatGet(env) {
   return { hist, treino, ia: !!env.ANTHROPIC_API_KEY };
 }
 function ehPergunta(t) {
-  return /\?\s*$/.test(t) || /^(resumo|o que|oque|qual|quais|quant[oa]s?|quando|como|me (conta|diz))\b/i.test(t.trim());
+  return /\?\s*$/.test(t) || /^(resumo|o que|oque|qual|quais|quant[oa]s?|quando|como|quem|voc[eê]|vc|sobre|me (conta|diz))\b/i.test(t.trim());
 }
 async function respostaReal(t, env) {
   const tl = t.toLowerCase();
@@ -416,6 +416,21 @@ async function respostaReal(t, env) {
     for (const i of pend) porGrupo[i.grupo] = (porGrupo[i.grupo] || 0) + 1;
     const [top, n] = Object.entries(porGrupo).sort((a, b) => b[1] - a[1])[0];
     return "\"" + top + "\" é o que mais tem pendência agora: " + n + (n > 1 ? " mensagens esperando." : " mensagem esperando.");
+  }
+  if (/quem (é|e) (voc[eê]|tu)\b|seu nome|quem fala/.test(tl)) {
+    return "Sou a Peneirinha, a assistente de IA do Peneira. Leio seus grupos e conversas do WhatsApp, separo o que realmente importa e te aviso — assim você não precisa ler tudo pra não perder nada.";
+  }
+  if (/o que (voc[eê]|vc) (faz|é)|pra que (voc[eê]|vc) serve|sua fun[çc][ãa]o/.test(tl)) {
+    return "Eu leio o WhatsApp por você: entro nos grupos e conversas não lidas, comparo com seus critérios e separo o que importa, com prazo e próxima ação. Pergunte \"resumo de hoje\", \"o que está pendente\" ou \"qual grupo mais me cobra\" que respondo na hora.";
+  }
+  if (/o que [ée] o peneira|sobre o peneira|o que [ée] esse (app|aplicativo)/.test(tl)) {
+    return "O Peneira é o seu assistente de IA pro WhatsApp: ele lê os grupos e conversas por você, separa o que realmente importa e devolve o seu tempo.";
+  }
+  if (/como (voc[eê]|vc) funciona|como funciona o peneira|como (voc[eê]|vc) l[êe]/.test(tl)) {
+    return "Entro no WhatsApp Web, leio cada conversa não lida e deixo como lida. Comparo com sua lista de critérios; o que for importante eu trago pra cá com prazo e próxima ação. Você resolve por aqui: \"Resolvido\" ou \"Não é importante\".";
+  }
+  if (/voc[eê] (responde|manda|envia) mensage|faz pix|pagamento|transfer[êe]ncia/.test(tl)) {
+    return "Não. Nunca respondo, envio mensagem, abro link/anexo ou faço Pix, pagamento ou transferência. Só leio e separo o que importa — qualquer resposta ou ação é sempre sua.";
   }
   return null; // pergunta que ainda não sei calcular — melhor não responder do que inventar
 }
