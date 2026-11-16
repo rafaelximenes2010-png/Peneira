@@ -61,10 +61,15 @@
    3. TOPO (desktop) + NAVEGAÇÃO
    ========================================================= */
 .pn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.pn-brand{display:flex;align-items:center;gap:10px}
-.pn-brand svg{width:36px;height:36px;border-radius:10px;flex:none}
-.pn-brand b{display:block;font-size:17px;letter-spacing:.01em}
-.pn-brand small{display:block;color:var(--ink-3);font-size:12px}
+.pn-brand{display:flex;align-items:center;gap:10px;position:relative;padding:4px 10px 4px 4px;border-radius:14px;cursor:pointer;background:none;border:0;font:inherit;color:inherit;text-align:left}
+.pn-brand:hover,.pn-brand[aria-expanded="true"]{background:var(--surface-2)}
+.pn-brand svg{width:46px;height:46px;border-radius:13px;flex:none;box-shadow:0 1px 2px rgba(16,24,20,.12),0 3px 10px rgba(16,24,20,.1)}
+.pn-brand b{display:block;font-size:18px;letter-spacing:.01em;font-weight:700}
+.pn-brand small{display:block;color:var(--ink-3);font-size:12.5px}
+.pn-brand-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:230px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 24px rgba(16,24,20,.16);padding:6px;z-index:60}
+.pn-brand-menu button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:11px 12px;border-radius:10px;cursor:pointer;font:inherit;font-size:14.5px;color:var(--ink)}
+.pn-brand-menu button:hover{background:var(--surface-2)}
+.pn-brand-menu i{font-style:normal;font-size:17px;flex:none;width:20px;text-align:center}
 .pn-nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px}
 .pn-nav-btn{border:0;background:none;color:var(--ink-3);padding:7px 12px;border-radius:9px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px}
 .pn-nav-btn[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
@@ -311,8 +316,8 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
   padding:calc(8px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 8px calc(16px + env(safe-area-inset-left));
   background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
   border-bottom:.5px solid color-mix(in srgb,var(--border) 70%,transparent);min-height:44px}
-.pn-brand svg{width:30px;height:30px;border-radius:8px}
-.pn-brand b{font-size:16px} .pn-brand small{font-size:11.5px}
+.pn-brand svg{width:42px;height:42px;border-radius:12px}
+.pn-brand b{font-size:17px} .pn-brand small{font-size:11.5px}
 .pn-dn{box-shadow:none;border:0;background:var(--surface-2);width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
 #btn-hub{padding:0;font-size:16px}
 #dn-txt{display:none}
@@ -572,6 +577,11 @@ button.ub-row{cursor:pointer}
 .ub-txt small{font-size:13px;color:var(--ink-3);line-height:1.35}
 .ub-v{flex:none;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
 .ub-chev{font-style:normal;font-size:22px;color:var(--ink-3);margin-left:-4px}
+.ub-row.ub-row-x{padding:0}
+.ub-row-main{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;flex:1;min-width:0;padding:13px 0;cursor:default}
+button.ub-row-main{cursor:pointer}
+.ub-row-xbtn{all:unset;box-sizing:border-box;flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12px;cursor:pointer;margin-left:2px}
+.ub-row-xbtn:hover,.ub-row-xbtn:active{background:var(--coral-soft);color:var(--coral)}
 .ub-sub{font-size:14px;color:var(--ink-3);margin:-2px 0 4px}
 .ub-sec{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin:16px 0 2px}
 .ub-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:14px;padding:12px 14px;margin-top:14px;font-size:14px;line-height:1.45;color:var(--ink-2)}
@@ -831,9 +841,16 @@ button.ub-row{cursor:pointer}
   <header class="pn-top" id="topo">
     <button class="pn-voltar" type="button" id="btn-voltar" hidden>‹ Voltar</button>
     <div class="pn-live-scan" id="live-scan" hidden><i></i>Varrendo…</div>
-    <div class="pn-brand" id="pn-brand">
+    <button type="button" class="pn-brand" id="pn-brand" aria-haspopup="menu" aria-expanded="false">
       <svg aria-hidden="true"><use href="#pnMark"/></svg>
       <div><b>Peneira</b><small>Central do WhatsApp</small></div>
+    </button>
+    <div class="pn-brand-menu" id="brand-menu" role="menu" hidden>
+      <button type="button" role="menuitem" data-go="ajustes"><i>⚙️</i>Ajustes</button>
+      <button type="button" role="menuitem" data-go="perfil"><i>👤</i>Meu cadastro</button>
+      <button type="button" role="menuitem" data-go="sobre"><i>❓</i>Como funciona</button>
+      <button type="button" role="menuitem" data-go="politica"><i>🔒</i>Política de Privacidade</button>
+      <button type="button" role="menuitem" data-go="termos"><i>📄</i>Termos de Uso</button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
@@ -1317,6 +1334,46 @@ button.ub-row{cursor:pointer}
 <p class="pn-meta">WhatsApp é marca registrada da Meta Platforms, Inc. O Peneira é um projeto independente, sem vínculo com a Meta.</p>
 </div>
   </section>
+  <section class="pn-view" id="termos">
+    <div class="pn-card pn-pol" style="margin-top:12px"><h1>Termos de Uso do Peneira</h1>
+<p class="pn-meta">Versão 1.0 · vigente desde 16 de novembro de 2026</p>
+
+<p>Estes Termos de Uso explicam, em linguagem simples, as condições para usar o <b>Peneira · Central do WhatsApp</b>. Ao usar o app, você concorda com estes termos e com a <b>Política de Privacidade</b>.</p>
+
+<h2>1. O que é o Peneira</h2>
+<p>O Peneira é um projeto pessoal de Rafael Ximenes, ainda em fase de teste (beta). Ele lê suas mensagens do WhatsApp, marca o que não importa como lido e separa o que precisa da sua atenção, além de gerar relatórios, agenda e um assistente de chat (Peneirinha).</p>
+
+<h2>2. Fase de teste</h2>
+<p>Por estar em beta, o app pode mudar, ficar fora do ar por algum tempo ou apresentar erros. Não há garantia de disponibilidade contínua nem de que uma funcionalidade vá continuar exatamente como está.</p>
+
+<h2>3. Uso permitido</h2>
+<ul>
+  <li>O Peneira é de uso pessoal do titular da conta de WhatsApp conectada.</li>
+  <li>Você não deve usar o app para fins ilegais, para assediar terceiros ou para automatizar respostas sem avisar quem está do outro lado.</li>
+  <li>Você é responsável pelas configurações que define (VIPs, critérios, silêncio de grupos) e pelo conteúdo que ensina à Peneirinha.</li>
+</ul>
+
+<h2>4. O que o Peneira não faz</h2>
+<p>O Peneira <b>nunca responde mensagens</b>, <b>nunca abre links, anexos ou arquivos</b> recebidos e <b>nunca faz pagamentos ou transferências</b>. Ele não é um serviço de atendimento automático nem substitui seu julgamento sobre o que é urgente — ele organiza e sugere, a decisão final é sempre sua.</p>
+
+<h2>5. Limitação de responsabilidade</h2>
+<p>O app é oferecido "como está", sem garantias. A classificação de prioridade, os resumos e os alertas são gerados automaticamente e podem conter erros — por isso o Peneira pede sempre que você confira pelo WhatsApp antes de agir em algo importante, especialmente em casos de possível golpe. Rafael Ximenes não se responsabiliza por decisões tomadas só com base nas informações do app, nem por perdas decorrentes de indisponibilidade do serviço.</p>
+
+<h2>6. Conta e acesso</h2>
+<p>Você é responsável por manter o acesso ao seu aparelho e, quando ativado, ao desbloqueio por Face ID/digital. Em caso de uso não autorizado que você perceba, avise o quanto antes pelo canal indicado no app.</p>
+
+<h2>7. Mudanças no app e nestes termos</h2>
+<p>O Peneira pode adicionar, mudar ou remover funcionalidades a qualquer momento, inclusive por causa de limitações técnicas (ex.: provedores de IA, WhatsApp, Cloudflare). Quando estes termos mudarem, a nova versão aparece na <b>Central de novidades</b> do app, com a data.</p>
+
+<h2>8. Encerramento</h2>
+<p>Você pode parar de usar o app quando quiser e pedir a exclusão do seu cadastro em <b>Ajustes → Meu cadastro</b>. O criador do app também pode encerrar o projeto ou a sua versão dele, avisando com antecedência razoável sempre que possível.</p>
+
+<h2>9. Legislação aplicável</h2>
+<p>Estes termos seguem a legislação brasileira, incluindo o Código de Defesa do Consumidor (quando aplicável) e a LGPD. Qualquer questão sobre estes termos pode ser tratada pelo canal de contato indicado no app ou no repositório oficial do projeto.</p>
+
+<p class="pn-meta">WhatsApp é marca registrada da Meta Platforms, Inc. O Peneira é um projeto independente, sem vínculo com a Meta.</p>
+</div>
+  </section>
 
   <!-- ========== MEU CADASTRO ========== -->
   <section class="pn-view" id="perfil">
@@ -1575,7 +1632,7 @@ button.ub-row{cursor:pointer}
   buildNav($("nav-topo")); buildNav($("nav-baixo"));
   const pilha=[];
   function go(id, push, voltando){
-    const OCULTAS=["criterios","sobre","acoes","politica","perfil","assistente"];
+    const OCULTAS=["criterios","sobre","acoes","politica","termos","perfil","assistente"];
     const atual=(document.querySelector(".pn-view.on")||{}).id;
     if(!voltando && atual && atual!==id) pilha.push(atual);
     if(pilha.length>30) pilha.shift();
@@ -1587,12 +1644,20 @@ button.ub-row{cursor:pointer}
     window.scrollTo(0,0);
     const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
     const br=$("pn-brand"); if(br) br.style.display = (id==="inicio") ? "" : "none";
-    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro",assistente:"Peneirinha"};
+    const bm=$("brand-menu"); if(bm){ bm.hidden=true; if(br) br.setAttribute("aria-expanded","false"); }
+    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",termos:"Termos de Uso",perfil:"Meu cadastro",assistente:"Peneirinha"};
     const tt=$("pn-titulo"); if(tt){ tt.textContent=TIT[id]||"Peneira"; tt.hidden=(id==="inicio"); }
     if(id==="assistente") try{ abreAssistente(); }catch(e){}
   }
   $("btn-voltar").addEventListener("click",()=>{ let prev=pilha.pop(); while(prev && prev===((document.querySelector(".pn-view.on")||{}).id)) prev=pilha.pop(); go(prev||"inicio",true,true); });
   window.addEventListener("hashchange",()=>go(location.hash.slice(1),false));
+  // Menu geral (toque no logo/nome "Peneira" no topo)
+  { const bb=$("pn-brand"), bm=$("brand-menu");
+    const brandToggle=open=>{ const show = open!=null?open:bm.hidden; bm.hidden=!show; bb.setAttribute("aria-expanded",String(show)); };
+    bb.addEventListener("click",e=>{ e.stopPropagation(); brandToggle(); });
+    document.addEventListener("click",e=>{ if(!bm.hidden && !e.target.closest("#pn-brand") && !e.target.closest("#brand-menu")) brandToggle(false); });
+    bm.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{ brandToggle(false); go(b.dataset.go); }));
+  }
   $("cta-crit").addEventListener("click",()=>go("criterios"));
   $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
 
@@ -2227,12 +2292,27 @@ button.ub-row{cursor:pointer}
     if(i.prazo) t.appendChild(el("div","pn-meta","Prazo "+fmt(i.prazo)));
     r.appendChild(t); r.appendChild(ico("arrow")); r.onclick=()=>{ fechaDrill(); go(dest); }; return r;
   }
-  function fechaDrill(){ $("drill").hidden=true; }
-  function abreItem(i){ const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=i.contato||"Mensagem"; B.appendChild(el("div","ub-sub",catGrupo(i)+(i.recebidoEm?" · "+fmt(i.recebidoEm):""))); B.appendChild(cardItem(i)); $("drill").hidden=false; }
-  $("drill-x").addEventListener("click",fechaDrill);
+  // Pilha de telas do drill (ficha/info/item/grupo…): cada vez que uma tela abre em cima de
+  // outra já aberta, a anterior entra na pilha; "← Voltar" desempilha em vez de fechar tudo.
+  let drillPilha=[];
+  function drillAbrindo(){
+    const B=$("drill-b");
+    if(!$("drill").hidden && B.childNodes.length){
+      const frag=document.createDocumentFragment();
+      while(B.firstChild) frag.appendChild(B.firstChild);
+      drillPilha.push({tit:$("drill-t").textContent, frag});
+    }
+  }
+  function fechaDrill(){ drillPilha=[]; $("drill").hidden=true; }
+  function drillVoltar(){
+    if(drillPilha.length){ const s=drillPilha.pop(); const B=$("drill-b"); B.textContent=""; B.appendChild(s.frag); $("drill-t").textContent=s.tit; }
+    else fechaDrill();
+  }
+  function abreItem(i){ drillAbrindo(); const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=i.contato||"Mensagem"; B.appendChild(el("div","ub-sub",catGrupo(i)+(i.recebidoEm?" · "+fmt(i.recebidoEm):""))); B.appendChild(cardItem(i)); $("drill").hidden=false; }
+  $("drill-x").addEventListener("click",drillVoltar);
   $("drill").addEventListener("click",e=>{ if(e.target.id==="drill") fechaDrill(); });
   function abreDrill(tipo,dado){
-    const c=contas(), B=$("drill-b"); B.textContent="";
+    drillAbrindo(); const c=contas(), B=$("drill-b"); B.textContent="";
     const num=(n,leg)=>{ const d=el("div","pn-drill-n"); d.appendChild(el("b",null,String(n))); d.appendChild(el("span","pn-meta",leg)); B.appendChild(d); };
     const txt=t=>B.appendChild(el("p","pn-drill-box",t));
     const fonte=()=>B.appendChild(el("div","pn-meta",(S.meta&&S.meta.ultimaVarredura)?"Fonte: leitura do WhatsApp de "+fmt(S.meta.ultimaVarredura)+".":"Fonte: leitura do WhatsApp (ainda não houve leitura)."));
@@ -2312,14 +2392,27 @@ button.ub-row{cursor:pointer}
     if(/famil/.test(c)) return "Família"; if(/cliente|consulta|\bnf\b|nota fiscal|pedido do/.test(c)) return "Clientes";
     if(/prazo|hoje|urgent|venc/.test(c)) return "Prazos e urgências"; if(/vip|trabalho|equipe|operac/.test(c)) return "Trabalho"; return "Outros"; }
   function telDoContato(nome){ const k=norm(nome||""); if(!k) return ""; const c=(S.contatos||[]).find(x=>norm(x.nome)===k&&x.tel); const v=(S.vips||[]).find(x=>norm(x.nome)===k&&x.tel); const t=String((c&&c.tel)||(v&&v.tel)||"").replace(/\D/g,""); return t?(t.length<=11?"55"+t:t):""; }
-  function ficha(tit,sub,o){ o=o||{}; const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=tit;
+  function ficha(tit,sub,o,semPilha){ o=o||{}; if(!semPilha) drillAbrindo(); const B=$("drill-b"); B.textContent=""; $("drill-t").textContent=tit;
     if(sub) B.appendChild(el("div","ub-sub",sub));
     if(o.tiles&&o.tiles.length){ const T=el("div","ub-tiles"); o.tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); B.appendChild(T); }
     if(o.rows&&o.rows.length){ if(o.rowsTit) B.appendChild(el("div","ub-sec",o.rowsTit)); const L=el("div","ub-list"); o.rows.slice(0,40).forEach(r=>L.appendChild(ubRow(r))); B.appendChild(L); }
     if(o.nota){ const n=el("div","ub-note"); n.appendChild(ico("sparkle")); n.appendChild(el("span",null,o.nota)); B.appendChild(n); }
     if(o.acao){ const b=el("button","pn-btn pri ub-cta",o.acao[0]); b.type="button"; b.onclick=o.acao[1]; B.appendChild(b); }
     $("drill").hidden=false; }
-  function ubRow(r){ const d=el(r.on?"button":"div","ub-row"); if(r.on){ d.type="button"; d.onclick=r.on; }
+  function ubRow(r){
+    if(r.x){ // linha com botão de cancelar/remover separado, ao lado da parte tocável
+      const wrap=el("div","ub-row ub-row-x");
+      const main=el(r.on?"button":"div","ub-row-main"); if(r.on){ main.type="button"; main.onclick=r.on; }
+      if(r.n!=null) main.appendChild(el("span","ub-n"+(r.nCls?" "+r.nCls:""),String(r.n)));
+      const a=el("div","ub-txt"); a.appendChild(el("b",null,r.t||"")); if(r.s) a.appendChild(el("small",null,r.s)); main.appendChild(a);
+      if(r.v!=null) main.appendChild(el("span","ub-v",String(r.v))); if(r.on) main.appendChild(el("i","ub-chev","›"));
+      wrap.appendChild(main);
+      const xb=el("button","ub-row-xbtn","✕"); xb.type="button"; xb.setAttribute("aria-label","Cancelar"); xb.title="Cancelar";
+      xb.onclick=ev=>{ ev.stopPropagation(); r.x(); };
+      wrap.appendChild(xb);
+      return wrap;
+    }
+    const d=el(r.on?"button":"div","ub-row"); if(r.on){ d.type="button"; d.onclick=r.on; }
     if(r.n!=null) d.appendChild(el("span","ub-n"+(r.nCls?" "+r.nCls:""),String(r.n)));
     const a=el("div","ub-txt"); a.appendChild(el("b",null,r.t||"")); if(r.s) a.appendChild(el("small",null,r.s)); d.appendChild(a);
     if(r.v!=null) d.appendChild(el("span","ub-v",String(r.v))); if(r.on) d.appendChild(el("i","ub-chev","›")); return d; }
@@ -2350,17 +2443,23 @@ button.ub-row{cursor:pointer}
   function fichaHigh(){ const H=highlights(); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
     ficha("Highlights","Aprendido nas últimas leituras (36h)",{tiles:[[String(H.length),"destaques"],[String(rel24().length),"leituras de grupos"]],
       rowsTit:"Destaques",rows:H.slice(0,40).map(h=>{ const gs=(h.grupo||"").split(",").map(s=>s.trim()).filter(Boolean);
-        const abre = gs.length===1 ? ()=>{ fechaDrill(); abreGrupo(gs[0]); }
-          : gs.length>1 ? ()=>abreInfo(h.tipo.replace(/^\S+\s*/,"")||"Destaque","Esse destaque envolve "+gs.length+" grupos. Toque num deles para abrir:",B=>gs.forEach(g=>B.appendChild(ubRow({t:g,on:()=>{ fechaDrill(); abreGrupo(g); }}))))
+        const abre = gs.length===1 ? ()=>{ abreGrupo(gs[0]); }
+          : gs.length>1 ? ()=>abreInfo(h.tipo.replace(/^\S+\s*/,"")||"Destaque","Esse destaque envolve "+gs.length+" grupos. Toque num deles para abrir:",B=>gs.forEach(g=>B.appendChild(ubRow({t:g,on:()=>{ abreGrupo(g); }}))))
           : null;
         return {n:h.qtd?h.qtd+"×":null,nCls:h.qtd?"alerta":null,t:h.tipo+(h.grupo?" · "+h.grupo:""),s:h.txt+(h.extra?" — "+h.extra:"")+(h.quando?" · "+fmt(h.quando):""),on:abre}; }),
       nota:H.length?"Toque num destaque para abrir o grupo de onde ele veio.":"Os highlights aparecem depois da próxima leitura dos grupos.",acao:["Perguntar à Peneirinha",()=>{ fechaDrill(); go("assistente"); }]}); }
+  // Compromissos são extraídos (não editáveis) dos relatórios de leitura dos grupos — não dá pra
+  // "concluir" um, mas dá pra tirá-lo da lista (ficam escondidos neste aparelho via localStorage).
+  const COMP_OC_K="peneira-comp-ocultos";
+  const compChave=c=>norm(c.texto)+"|"+norm(c.grupo||"");
+  function compOcultos(){ try{ return JSON.parse(localStorage.getItem(COMP_OC_K))||[]; }catch(e){ return []; } }
+  function compCancelar(c){ try{ const o=compOcultos(); const k=compChave(c); if(!o.includes(k)) o.push(k); localStorage.setItem(COMP_OC_K,JSON.stringify(o.slice(-800))); }catch(e){} }
   function compromissos(){ const C=[]; (S.relGrupos||[]).filter(r=>Date.now()-Date.parse(r.geradoEm||0)<7*86400e3).forEach(r=>(r.compromissos||[]).forEach(c=>C.push({texto:c.texto||String(c),quem:c.quem||"",prazo:c.prazo||"",grupo:r.grupo,em:r.geradoEm})));
-    const vis={}; return C.filter(c=>{ const k=norm(c.texto); if(vis[k]) return false; vis[k]=1; return true; }).sort((a,b)=>String(a.prazo||"9").localeCompare(String(b.prazo||"9"))); }
-  function fichaComp(){ const C=compromissos(); const hoje=new Date().toISOString().slice(0,10); const venc=C.filter(c=>c.prazo&&c.prazo<hoje).length, hj=C.filter(c=>c.prazo===hoje).length;
+    const oc=compOcultos(), vis={}; return C.filter(c=>{ const k=norm(c.texto); if(vis[k]) return false; vis[k]=1; return !oc.includes(compChave(c)); }).sort((a,b)=>String(a.prazo||"9").localeCompare(String(b.prazo||"9"))); }
+  function fichaComp(semPilha){ const C=compromissos(); const hoje=new Date().toISOString().slice(0,10); const venc=C.filter(c=>c.prazo&&c.prazo<hoje).length, hj=C.filter(c=>c.prazo===hoje).length;
     ficha("Compromissos","Promessas feitas nos grupos · últimos 7 dias",{tiles:[[String(C.length),"compromissos"],[String(hj),"vencem hoje"],[String(venc),"já venceram"],[String(new Set(C.map(c=>c.quem).filter(Boolean)).size),"pessoas"]],
-      rowsTit:"Quem prometeu o quê",rows:C.map(c=>({t:c.texto,s:[c.quem,c.grupo].filter(Boolean).join(" · "),v:c.prazo?(c.prazo<hoje?"⚠ ":"")+c.prazo.split("-").reverse().slice(0,2).join("/"):"",on:()=>{ fechaDrill(); abreGrupo(c.grupo); }})),
-      nota:"Use para cobrar no dia certo: leve à Agenda o que for seu acompanhar."}); }
+      rowsTit:"Quem prometeu o quê",rows:C.map(c=>({t:c.texto,s:[c.quem,c.grupo].filter(Boolean).join(" · "),v:c.prazo?(c.prazo<hoje?"⚠ ":"")+c.prazo.split("-").reverse().slice(0,2).join("/"):"",on:()=>{ abreGrupo(c.grupo); },x:()=>{ compCancelar(c); fichaComp(true); aviso("Tirado dos compromissos."); }})),
+      nota:C.length?"Use para cobrar no dia certo: leve à Agenda o que for seu acompanhar. Toque no ✕ para tirar um já resolvido.":"Nenhum compromisso agora."},semPilha); }
   function atualizaAtalhos(){ try{ const b=(id,n)=>{ const e=$(id); if(!e) return; e.textContent=n?String(n):""; e.style.display=n?"block":"none"; };
     b("at-hoje",(S.itens||[]).filter(i=>ehHoje(i.recebidoEm)&&(i.status||"pendente")==="pendente").length); b("at-high",highlights().length);
     const hoje=new Date().toISOString().slice(0,10); b("at-comp",compromissos().filter(c=>c.prazo&&c.prazo<=hoje).length); b("at-ia",(S.iaNovas||0)); }catch(e){} }
@@ -2441,7 +2540,7 @@ button.ub-row{cursor:pointer}
   function abreDia(m,w,D){ const d=D[w];
     ficha(DSEM_L[w],nomeMes(m)+" · grupos",{tiles:[[String(d.qtd),"reuniões"],[fmtHM(d.min),"tempo em reunião"],[String(d.msgs),"mensagens nos grupos"],[String(d.rank.length),"pessoas"]],
       rowsTit:"Quem mais fala na "+DSEM_L[w].toLowerCase(), rows:d.rank.slice(0,10).map((x,i)=>({n:i<3?["🥇","🥈","🥉"][i]:i+1,t:x.nome,s:x.min?fmtHM(x.min)+" de conversa":"",v:x.msgs+" msgs"})).concat(
-        d.lista.sort((a,b)=>(b.min||0)-(a.min||0)).map(x=>({t:x.grupo,s:"Reunião "+String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):""),v:fmtHM(x.min),on:()=>{ fechaDrill(); abreGrupo(x.grupo); }}))),
+        d.lista.sort((a,b)=>(b.min||0)-(a.min||0)).map(x=>({t:x.grupo,s:"Reunião "+String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):""),v:fmtHM(x.min),on:()=>{ abreGrupo(x.grupo); }}))),
       nota:d.qtd?"Na "+DSEM_L[w].toLowerCase()+" os grupos somam "+fmtHM(d.min)+" de reunião pelo WhatsApp. Uma ligação de 15 min com pauta, nesse dia, resolve a maior parte.":"Nenhum debate longo neste dia da semana."}); }
   function renderSem(){ if(!$("sem-dias")) return; const m=S.semMes||mesAtual(); const ms=mesesDisp();
     $("sem-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("sem-prev").disabled=ms.indexOf(m)<=0; $("sem-next").disabled=ms.indexOf(m)>=ms.length-1;
@@ -2470,7 +2569,7 @@ button.ub-row{cursor:pointer}
     (P.regras||[]).forEach(r=>E.appendChild(ubRow({t:"Padrão",s:r})));
     if(!E.childNodes.length) E.appendChild(el("div","pn-empty","Ainda aprendendo. A cada mensagem que você responde, o Peneira entende melhor seu jeito de escrever. O primeiro perfil sai depois de umas 10 respostas suas."));
     const G=$("est-grupos"); G.textContent=""; const gs=(S.grupos||[]).filter(g=>g.dinamica).sort((a,b)=>String(a.nome).localeCompare(String(b.nome)));
-    gs.forEach(g=>{ const d=g.dinamica; G.appendChild(ubRow({t:g.nome,s:[d.tom,d.pico?"pico "+d.pico:"",d.quemDecide?"decide: "+d.quemDecide:""].filter(Boolean).join(" · "),on:()=>ficha(g.nome,"Como o grupo funciona",{tiles:[[d.ritmo||"—","ritmo"],[d.pico||"—","horário de pico"]],rows:[{t:"Tom",s:d.tom},{t:"Quem decide",s:d.quemDecide},{t:"Como você atua",s:d.comoRafaelAtua},{t:"Melhor jeito de falar aqui",s:d.dica}].filter(x=>x.s),acao:["Abrir o grupo",()=>{ fechaDrill(); abreGrupo(g.nome); }]})})); });
+    gs.forEach(g=>{ const d=g.dinamica; G.appendChild(ubRow({t:g.nome,s:[d.tom,d.pico?"pico "+d.pico:"",d.quemDecide?"decide: "+d.quemDecide:""].filter(Boolean).join(" · "),on:()=>ficha(g.nome,"Como o grupo funciona",{tiles:[[d.ritmo||"—","ritmo"],[d.pico||"—","horário de pico"]],rows:[{t:"Tom",s:d.tom},{t:"Quem decide",s:d.quemDecide},{t:"Como você atua",s:d.comoRafaelAtua},{t:"Melhor jeito de falar aqui",s:d.dica}].filter(x=>x.s),acao:["Abrir o grupo",()=>{ abreGrupo(g.nome); }]})})); });
     if(!gs.length) G.appendChild(el("div","pn-empty","Na próxima varredura eu descrevo o jeito de cada grupo: tom, horário de pico, quem decide e como você costuma agir ali."));
     const X=$("est-ex"); X.textContent=""; const ex=(P.exemplos&&P.exemplos.length?P.exemplos:((S.estiloP&&S.estiloP.amostras)||[]).slice(-8).reverse().map(a=>({situacao:a.recebida?"“"+a.recebida.slice(0,80)+"”":"Mensagem para "+a.para,resposta:a.resposta})));
     ex.slice(0,8).forEach(e=>X.appendChild(ubRow({t:e.resposta,s:e.situacao||""})));
@@ -2603,7 +2702,7 @@ button.ub-row{cursor:pointer}
     ["instalar","Como colocar o Peneira na tela de início do celular."]
   ];
   function ajuda(t){ const n=norm(t); const h=HELP.find(([k])=>n.startsWith(k)||n.includes(k)); return h?h[1]:null; }
-  function abreInfo(tit,texto,extra){ const B=$("drill-b"); B.textContent=""; B.appendChild(el("p","pn-drill-box",texto)); if(extra) extra(B); $("drill-t").textContent=tit; $("drill").hidden=false; }
+  function abreInfo(tit,texto,extra){ drillAbrindo(); const B=$("drill-b"); B.textContent=""; B.appendChild(el("p","pn-drill-box",texto)); if(extra) extra(B); $("drill-t").textContent=tit; $("drill").hidden=false; }
   function marcaTitulos(){ document.querySelectorAll(".pn-h2").forEach(h=>{ if(h.dataset.inf) return; const t=h.textContent.trim(); if(!ajuda(t)) return; h.dataset.inf="1"; h.appendChild(rotulo("help","","pn-i")); }); }
   document.addEventListener("click",e=>{
     const h=e.target.closest(".pn-h2[data-inf]"); if(h){ const t=h.textContent.trim(); abreInfo(t.split("·")[0].trim(), ajuda(t)); return; }
@@ -2980,7 +3079,7 @@ button.ub-row{cursor:pointer}
   function abreGrupo(nome){
     const hist=(S.relGrupos||[]).filter(r=>norm(r.grupo)===norm(nome)).sort((a,b)=>String(b.geradoEm).localeCompare(String(a.geradoEm)));
     const r=hist[0]; const g=(S.grupos||[]).find(x=>norm(x.nome)===norm(nome))||{}; const pend=(S.itens||[]).filter(i=>norm(i.grupo)===norm(nome));
-    const B=$("drill-b"); B.textContent="";
+    drillAbrindo(); const B=$("drill-b"); B.textContent="";
     const num=(n,l)=>{ const d=el("div","pn-drill-n"); d.appendChild(el("b",null,String(n))); d.appendChild(el("span","pn-meta",l)); B.appendChild(d); };
     num(hist.reduce((a,x)=>a+(x.mensagens||0),0),"mensagens analisadas em "+hist.length+" leitura(s)");
     const tg=tempoGrupos().find(x=>norm(x.nome)===norm(nome)); if(tg){ const k=el("div","pn-bd"); [[fmtHM(tg.ativo),"tempo ativo"],[fmtHM(tg.maior),"maior conversa sem parar"],[String(tg.sessoes),"conversas"],[r&&r.pico?r.pico:"—","horário de pico"]].forEach(([a,b])=>{ const d=el("div"); d.append(el("b",null,a),el("span",null,b)); k.appendChild(d); }); k.style.margin="8px 0"; B.appendChild(k); }
@@ -3150,7 +3249,7 @@ button.ub-row{cursor:pointer}
       r.onclick=()=>{ const lr=R.lista.filter(y=>nG(y.grupo)===nG(x.grupo)); const dd={}; lr.forEach(y=>{ const w=diaSem(y.data); if(w!=null) dd[w]=(dd[w]||0)+(y.min||0); }); const top=Object.entries(dd).sort((a,b)=>b[1]-a[1])[0];
         ficha(x.grupo,"Reuniões pelo WhatsApp · "+nomeMes(m),{tiles:[[String(x.qtd),"reuniões"],[fmtHM(x.min),"tempo perdido"],[fmtHM(x.maior),"maior reunião"],[x.pessoaMin?fmtHM(x.pessoaMin):"—","horas-pessoa"]],
           rows:lr.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))).map(y=>({t:DSEM[diaSem(y.data)]+" · "+String(y.data||"").split("-").reverse().slice(0,2).join("/"),s:(y.inicio?y.inicio+(y.fim?"–"+y.fim:"")+" · ":"")+(y.msgs?y.msgs+" msgs":"")+(nPess(y)?" · "+nPess(y)+" pessoas":""),v:fmtHM(y.min)})),
-          rowsTit:"Reuniões do mês", nota:(top?"Dia com mais reunião neste grupo: "+DSEM_L[top[0]]+". ":"")+"Se o assunto pede mais de 10 minutos de debate, marque uma ligação curta com pauta e registre só a decisão no grupo.", acao:["Abrir o grupo",()=>{ fechaDrill(); abreGrupo(x.grupo); }]}); };
+          rowsTit:"Reuniões do mês", nota:(top?"Dia com mais reunião neste grupo: "+DSEM_L[top[0]]+". ":"")+"Se o assunto pede mais de 10 minutos de debate, marque uma ligação curta com pauta e registre só a decisão no grupo.", acao:["Abrir o grupo",()=>{ abreGrupo(x.grupo); }]}); };
       g.appendChild(r); });
     const L=$("reu-lista"); L.textContent=""; const ls=R.lista.slice().sort((a,b)=>String(b.data+(b.inicio||"")).localeCompare(String(a.data+(a.inicio||""))));
     if(!ls.length) L.appendChild(el("div","pn-empty","Sem reuniões registradas."));
@@ -3185,7 +3284,7 @@ button.ub-row{cursor:pointer}
   function renderBDados(){ const b=$("bd-cont"); if(!b) return; b.textContent=""; if(ponte&&ponte.url&&!S.falantes) carregaFalantes();
     tabelasBanco().forEach(([n,l])=>{ const d=el("div"); d.style.cursor="pointer"; d.appendChild(el("b",null,String(l.length))); d.appendChild(el("span",null,n+" ›")); d.onclick=()=>abreTabela(n,l); b.appendChild(d); }); }
   function abreTabela(n,l){
-    const B=$("drill-b"); B.textContent=""; const cols=Object.keys(l[0]||{}); let q="";
+    drillAbrindo(); const B=$("drill-b"); B.textContent=""; const cols=Object.keys(l[0]||{}); let q="";
     const inp=el("input"); inp.type="search"; inp.placeholder="Buscar em "+n; inp.style.cssText="width:100%;margin:0 0 10px;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--ink);font:inherit"; B.appendChild(inp);
     const R=el("div"); B.appendChild(R);
     const mostra=()=>{ R.textContent=""; const f=l.filter(r=>!q||norm(Object.values(r).join(" ")).includes(norm(q))); R.appendChild(el("div","pn-meta",f.length+" registro(s)"+(f.length>100?" · mostrando 100":"")));
@@ -3432,10 +3531,10 @@ button.ub-row{cursor:pointer}
       setTimeout(()=>alvo.classList.remove("pn-achado"),2600); },120); }
   function achaTexto(raiz,q){ if(!raiz) return null; const w=document.createTreeWalker(raiz,NodeFilter.SHOW_TEXT); let n;
     while((n=w.nextNode())){ if(norm(n.nodeValue).includes(q)) return n.parentElement; } return null; }
-  function abreItemBusca(i){ const B=$("drill-b"); B.textContent=""; B.appendChild(cardItem(i)); $("drill-t").textContent=i.grupo?"Grupo · "+i.grupo:"Importante"; $("drill").hidden=false; }
+  function abreItemBusca(i){ drillAbrindo(); const B=$("drill-b"); B.textContent=""; B.appendChild(cardItem(i)); $("drill-t").textContent=i.grupo?"Grupo · "+i.grupo:"Importante"; $("drill").hidden=false; }
   function abreAgBusca(a){ const q=new Date(a.quando); go("agenda"); if(!isNaN(q)){ calSel=new Date(q); calSel.setHours(0,0,0,0); calRef=new Date(q); calRef.setDate(1); renderCal(); }
     realca(document.querySelector('.pn-ev[data-ev="'+(window.CSS&&CSS.escape?CSS.escape(a.id):a.id)+'"]')); }
-  function abreRelBusca(r){ const B=$("drill-b"); B.textContent=""; B.appendChild(cardRel(r)); $("drill-t").textContent=r.titulo||"Relatório"; $("drill").hidden=false; }
+  function abreRelBusca(r){ drillAbrindo(); const B=$("drill-b"); B.textContent=""; B.appendChild(cardRel(r)); $("drill-t").textContent=r.titulo||"Relatório"; $("drill").hidden=false; }
   function txtDe(x){ if(x==null) return ""; if(typeof x==="string"||typeof x==="number") return String(x); if(Array.isArray(x)) return x.map(txtDe).join(" · "); if(typeof x==="object") return Object.values(x).map(txtDe).join(" "); return ""; }
   function indiceBusca(){
     const R=[]; const add=(g,ico,t,sub,txt,abre,tr)=>R.push({g,ico,t:String(t||"").trim(),sub:sub||"",txt:txt||"",abre,tr});
