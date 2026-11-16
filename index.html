@@ -628,6 +628,8 @@ button.ub-row{cursor:pointer}
 .ub-as-h small{font-size:13px;color:var(--ink-3)}
 .ub-as-ver{all:unset;cursor:pointer;font-size:14px;font-weight:700;color:var(--accent);padding:6px 0}
 .ub-as-acts{display:flex;align-items:flex-end;gap:14px;flex-shrink:0}
+.ub-hub-acts{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 10px}
+.ub-hub-acts .pn-btn{flex:1;min-width:120px;font-size:13px;padding:8px 10px;min-height:auto}
 .ub-hist{background:var(--surface);border-radius:14px;padding:4px 16px;box-shadow:var(--shadow)}
 .ub-hist summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:700;font-size:15px;display:flex;justify-content:space-between}
 .ub-hist summary::after{content:"›";color:var(--ink-3);transition:transform .2s} .ub-hist[open] summary::after{transform:rotate(90deg)}
@@ -1492,6 +1494,12 @@ button.ub-row{cursor:pointer}
 <div class="pn-sheet" id="hub" hidden role="dialog" aria-label="Central">
   <div class="pn-sheet-card" style="max-height:88vh;overflow:auto">
     <div class="pn-row" style="align-items:center"><b style="font-size:17px">Central do Peneira</b><span class="pn-meta" id="hub-ver"></span></div>
+    <div class="pn-meta" id="hub-notif-info" style="margin:-2px 0 10px"></div>
+    <div class="ub-hub-acts">
+      <button class="pn-btn" type="button" id="hub-marcar-lidas">Marcar todas como lidas</button>
+      <button class="pn-btn" type="button" id="hub-zerar">Zerar notificações</button>
+      <button class="pn-btn" type="button" id="hub-atualizar">↻ Atualizar notificações</button>
+    </div>
     <div class="pn-hub" id="hub-grid"></div>
     <div id="hub-det"></div>
     <button class="pn-btn" type="button" id="hub-fechar" style="width:100%;margin-top:10px;position:sticky;bottom:0;background:var(--surface)">← Voltar</button>
@@ -2077,16 +2085,39 @@ button.ub-row{cursor:pointer}
       [["Última leitura do WhatsApp",m.ultimaVarredura?fmt(m.ultimaVarredura):"ainda não houve"],["Último relatório",ult?fmt(ult.geradoEm||ult.data):"ainda não houve"],
        ["Pendentes agora",String(S.itens.filter(i=>(i.status||"pendente")==="pendente").length)],["Na agenda (hoje/atrasados)",String(S.agenda.filter(a=>!a.feito&&["hoje","atr"].includes(grupoAg(a.quando))).length)],["Versão do app",VERSAO]]
        .forEach(([a,b])=>{ const r=el("div","pn-q"); r.appendChild(el("span",null,a)); r.appendChild(el("b",null,b)); box.appendChild(r); }); }
-    if(k==="avisos"){ const av=(S.meta&&Array.isArray(S.meta.avisos))?S.meta.avisos:[];
+    if(k==="avisos"){ const av=avisosVisiveis();
       if(!av.length) box.appendChild(el("div","pn-meta","Nenhum aviso no momento.")); else av.forEach(a=>box.appendChild(el("p",null,"• "+a))); }
     D.appendChild(box);
   }
+  /* ---------- notificações da Central: "não lidas" rastreadas neste aparelho (não mexe em status real) ---------- */
+  const NOTIF_VISTO_K="peneira-notif-visto-em";
+  const notifVistoEm=()=>{ try{ return localStorage.getItem(NOTIF_VISTO_K)||""; }catch(e){ return ""; } };
+  function alertasNovos(){ const desde=notifVistoEm();
+    return S.itens.filter(i=>(i.status||"pendente")==="pendente" && (i.prioridade==="alta"||vipDe(i)) && (!desde || String(i.recebidoEm||"")>desde)).length; }
+  function avisosAtuais(){ return (S.meta&&Array.isArray(S.meta.avisos))?S.meta.avisos:[]; }
+  function avisosVisiveis(){ try{ const oc=JSON.parse(sessionStorage.getItem("peneira-avisos-ocultos"))||[]; return avisosAtuais().filter(a=>!oc.includes(a)); }catch(e){ return avisosAtuais(); } }
+  function marcarNotifLidas(){ try{ localStorage.setItem(NOTIF_VISTO_K,new Date().toISOString()); }catch(e){} try{ zeraBadge(); }catch(e){} renderHub(); }
+  function zerarNotificacoes(){ marcarNotifLidas(); try{ sessionStorage.setItem("peneira-avisos-ocultos",JSON.stringify(avisosAtuais())); }catch(e){} renderHub(); }
+  async function atualizarNotificacoes(btn){
+    if(btn){ btn.disabled=true; btn.dataset.txtOrig=btn.textContent; btn.textContent="Atualizando…"; }
+    try{ if(typeof ponte!=="undefined" && ponte) ponte.dadosEm=""; await ponteSync(); }catch(e){}
+    try{ renderUlt(); }catch(e){}
+    renderHub();
+    if(btn){ btn.disabled=false; btn.textContent=btn.dataset.txtOrig; salvoOk(btn,"✓ Atualizado"); }
+  }
   function renderHub(){
     const G=$("hub-grid"); if(!G) return; G.textContent=""; $("hub-ver").textContent="v"+VERSAO;
-    const novo = visto()!==VERSAO;
+    const novaVersao = visto()!==VERSAO;
+    const nAlertas = alertasNovos();
+    const nAvisos = avisosVisiveis().length;
+    const novo = novaVersao || nAlertas>0 || nAvisos>0;
     $("hub-dot").classList.toggle("on",novo);
+    const info=$("hub-notif-info");
+    if(info){ const tot=nAlertas+nAvisos;
+      info.textContent = tot ? "🔔 "+tot+" notificação"+(tot>1?"ões novas":" nova")+" desde sua última visita." : "Você está em dia com as notificações."; }
     HUB.forEach(([k,ic,nome])=>{ const b=el("button"); b.type="button"; const ii=ico(ic); ii.style.color="var(--accent)"; b.appendChild(ii); b.appendChild(el("span",null,nome));
-      if(k==="novidades"&&novo){ const d=el("span","pn-badge on"); b.appendChild(d); }
+      if(k==="novidades"&&novaVersao){ const d=el("span","pn-badge on"); b.appendChild(d); }
+      if(k==="avisos"&&nAvisos){ const d=el("span","pn-badge on"); b.appendChild(d); }
       if(k==="agenda"){ const n=S.agenda.filter(a=>!a.feito&&["hoje","atr"].includes(grupoAg(a.quando))).length; if(n){ const d=el("span","pn-badge on"); b.appendChild(d); } }
       b.onclick=()=>{
         if(["novidades","atualizacoes","avisos"].includes(k)) return hubDet(k);
@@ -2102,6 +2133,9 @@ button.ub-row{cursor:pointer}
   $("btn-hub").addEventListener("click",()=>{ $("hub-det").textContent=""; renderHub(); $("hub").hidden=false; });
   $("hub-fechar").addEventListener("click",()=>{ $("hub").hidden=true; });
   $("hub").addEventListener("click",e=>{ if(e.target.id==="hub") $("hub").hidden=true; });
+  $("hub-marcar-lidas").addEventListener("click",()=>{ marcarNotifLidas(); salvoOk($("hub-marcar-lidas"),"✓ Lidas"); });
+  $("hub-zerar").addEventListener("click",()=>{ zerarNotificacoes(); salvoOk($("hub-zerar"),"✓ Zeradas"); });
+  $("hub-atualizar").addEventListener("click",()=>atualizarNotificacoes($("hub-atualizar")));
 
 
   /* ---------- status com um toque (resposta automática) ---------- */
