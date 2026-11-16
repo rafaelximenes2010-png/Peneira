@@ -63,7 +63,7 @@
 .pn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .pn-brand{display:flex;align-items:center;gap:10px;position:relative;padding:4px 10px 4px 4px;border-radius:14px;cursor:pointer;background:none;border:0;font:inherit;color:inherit;text-align:left}
 .pn-brand:hover,.pn-brand[aria-expanded="true"]{background:var(--surface-2)}
-.pn-brand svg{width:46px;height:46px;border-radius:13px;flex:none;box-shadow:0 1px 2px rgba(16,24,20,.12),0 3px 10px rgba(16,24,20,.1)}
+.pn-brand svg{width:56px;height:56px;border-radius:15px;flex:none;box-shadow:0 1px 2px rgba(16,24,20,.12),0 4px 14px rgba(16,24,20,.14),0 0 0 1px rgba(16,24,20,.06) inset}
 .pn-brand b{display:block;font-size:18px;letter-spacing:.01em;font-weight:700}
 .pn-brand small{display:block;color:var(--ink-3);font-size:12.5px}
 .pn-brand-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:230px;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 6px 24px rgba(16,24,20,.16);padding:6px;z-index:60}
@@ -315,9 +315,9 @@ button,.pn-nav-btn,nav,svg,img{-webkit-user-select:none;user-select:none;-webkit
 .pn-top{position:sticky;top:0;z-index:40;margin:0 calc(-16px - env(safe-area-inset-right)) 0 calc(-16px - env(safe-area-inset-left));
   padding:calc(8px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 8px calc(16px + env(safe-area-inset-left));
   background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:.5px solid color-mix(in srgb,var(--border) 70%,transparent);min-height:44px}
-.pn-brand svg{width:42px;height:42px;border-radius:12px}
-.pn-brand b{font-size:17px} .pn-brand small{font-size:11.5px}
+  border-bottom:.5px solid color-mix(in srgb,var(--border) 70%,transparent);min-height:60px}
+.pn-brand svg{width:56px;height:56px;border-radius:15px}
+.pn-brand b{font-size:18px} .pn-brand small{font-size:12px}
 .pn-dn{box-shadow:none;border:0;background:var(--surface-2);width:36px;height:36px;padding:0;justify-content:center;border-radius:50%}
 #btn-hub{padding:0;font-size:16px}
 #dn-txt{display:none}
@@ -762,7 +762,7 @@ button.ub-row-main{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.ub-varrer::after{animation:none;display:none}}
 /* ===== v4.18 · radar grande no centro, botão compacto ===== */
 #varr-card .pn-scan{display:flex!important;flex-direction:column;align-items:center;text-align:center;gap:0}
-#varr-card .pn-scan-ring{order:1;width:min(62vw,230px)!important;height:min(62vw,230px)!important;margin:6px auto 18px!important}
+#varr-card .pn-scan-ring{order:1;width:min(40vw,146px)!important;height:min(40vw,146px)!important;margin:4px auto 14px!important}
 #varr-card .pn-scan-info{order:2;align-items:center;text-align:center;width:100%}
 #varr-card .pn-scan-info>b{font-size:24px}
 #varr-card .pn-scan-cont{order:3;width:100%}
@@ -846,11 +846,12 @@ button.ub-row-main{cursor:pointer}
       <div><b>Peneira</b><small>Central do WhatsApp</small></div>
     </button>
     <div class="pn-brand-menu" id="brand-menu" role="menu" hidden>
-      <button type="button" role="menuitem" data-go="ajustes"><i>⚙️</i>Ajustes</button>
-      <button type="button" role="menuitem" data-go="perfil"><i>👤</i>Meu cadastro</button>
-      <button type="button" role="menuitem" data-go="sobre"><i>❓</i>Como funciona</button>
-      <button type="button" role="menuitem" data-go="politica"><i>🔒</i>Política de Privacidade</button>
-      <button type="button" role="menuitem" data-go="termos"><i>📄</i>Termos de Uso</button>
+      <button type="button" role="menuitem" data-go="ajustes"><span data-ico="gear"></span>Ajustes</button>
+      <button type="button" role="menuitem" data-go="perfil"><span data-ico="user"></span>Meu cadastro</button>
+      <button type="button" role="menuitem" id="bm-novidades"><span data-ico="megaphone"></span>Central de novidades</button>
+      <button type="button" role="menuitem" data-go="sobre"><span data-ico="help"></span>Como funciona</button>
+      <button type="button" role="menuitem" data-go="politica"><span data-ico="shield"></span>Política de Privacidade</button>
+      <button type="button" role="menuitem" data-go="termos"><span data-ico="doc"></span>Termos de Uso</button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <nav class="pn-nav" id="nav-topo" aria-label="Seções"></nav>
@@ -1657,6 +1658,7 @@ button.ub-row-main{cursor:pointer}
     bb.addEventListener("click",e=>{ e.stopPropagation(); brandToggle(); });
     document.addEventListener("click",e=>{ if(!bm.hidden && !e.target.closest("#pn-brand") && !e.target.closest("#brand-menu")) brandToggle(false); });
     bm.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{ brandToggle(false); go(b.dataset.go); }));
+    const bn=$("bm-novidades"); if(bn) bn.addEventListener("click",()=>{ brandToggle(false); hubDetDrill(); });
   }
   $("cta-crit").addEventListener("click",()=>go("criterios"));
   $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
@@ -2468,6 +2470,20 @@ button.ub-row-main{cursor:pointer}
   // ----- Assistente (chat) -----
   const IA={hist:[],treino:[],ia:false,carregado:0,enviando:false};
   const IA_CHIPS=["Resumo de hoje","O que está pendente?","Qual grupo mais me cobra?","Isso não é importante: …","Responda mais curto","Me avise só de clientes à noite"];
+  function respostaLocal(t){ const tl=(t||"").toLowerCase();
+    if(/resumo|hoje/.test(tl)){ const ps=S.ponteSt||{}; const pend=(S.itens||[]).filter(i=>(i.status||"pendente")==="pendente").length;
+      if(ps.mensagens==null) return null;
+      return "Hoje: "+ps.mensagens+" mensagens, "+(ps.importantes||0)+" importantes, "+(ps.descartadas||0)+" descartadas."+(pend?" "+pend+" ainda pendente"+(pend>1?"s":"")+".":" Tudo em dia."); }
+    if(/pendente|pendenc/.test(tl)){ const pend=(S.itens||[]).filter(i=>(i.status||"pendente")==="pendente");
+      if(!pend.length) return "Nenhuma pendência agora. Tudo em dia.";
+      const alta=pend.filter(i=>i.prioridade==="alta").length;
+      return pend.length+" pendente"+(pend.length>1?"s":"")+(alta?", sendo "+alta+" de prioridade alta":"")+"."; }
+    if(/grupo.*cobr|mais (me )?cobra|qual grupo/.test(tl)){ const pend=(S.itens||[]).filter(i=>(i.status||"pendente")==="pendente"&&i.grupo);
+      if(!pend.length) return "Nenhum grupo com pendência agora.";
+      const porGrupo={}; pend.forEach(i=>{ porGrupo[i.grupo]=(porGrupo[i.grupo]||0)+1; });
+      const [top,n]=Object.entries(porGrupo).sort((a,b)=>b[1]-a[1])[0];
+      return "\""+top+"\" é o que mais tem pendência agora: "+n+(n>1?" mensagens esperando.":" mensagem esperando."); }
+    return null; }
   async function iaCarrega(){ if(!ponte||!ponte.url){ $("ia-modo").textContent="Conecte a Ponte em Ajustes para usar a Peneirinha"; return; }
     try{ const d=await ponteReq("/chat"); IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; IA.carregado=Date.now();
       try{ localStorage.setItem("peneira-ia-visto",String(IA.hist.length)); }catch(e){} S.iaNovas=0; atualizaAtalhos(); }catch(e){ $("ia-modo").textContent="Sem conexão com a Ponte agora"; }
@@ -2491,7 +2507,8 @@ button.ub-row-main{cursor:pointer}
     x.value=""; x.style.height="auto"; IA.hist.push({de:"rafael",t,em:new Date().toISOString()}); IA.enviando=true; iaRender();
     try{ const r=await ponteReq("/chat",{method:"POST",body:JSON.stringify({texto:t})}); IA.enviando=false; IA.ia=!!r.ia;
       if(r.resposta) IA.hist.push({de:"ia",t:r.resposta,em:new Date().toISOString()}); if(r.aprendizado){ IA.treino.push(r.aprendizado); aviso("Aprendi: "+r.aprendizado.texto); } }
-    catch(err){ IA.enviando=false; IA.hist.push({de:"ia",t:"Não consegui enviar agora. Tente de novo em instantes.",em:new Date().toISOString()}); }
+    catch(err){ IA.enviando=false; const local=respostaLocal(t);
+      IA.hist.push({de:"ia",t:local||"Ainda não consegui falar com o servidor para isso. Pergunte \"resumo de hoje\", \"o que está pendente?\" ou \"qual grupo mais me cobra?\" que respondo na hora com o que já sei.",em:new Date().toISOString()}); }
     iaRender(); });
   async function iaChecaNovas(){ if(!ponte||!ponte.url) return; try{ const d=await ponteReq("/chat"); const visto=Number(localStorage.getItem("peneira-ia-visto")||0); const novas=(d.hist||[]).slice(visto).filter(m=>m.de==="ia").length;
     if(document.querySelector("#assistente.on")){ IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; localStorage.setItem("peneira-ia-visto",String(IA.hist.length)); S.iaNovas=0; iaRender(); } else S.iaNovas=novas; atualizaAtalhos(); }catch(e){} }
