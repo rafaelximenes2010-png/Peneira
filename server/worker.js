@@ -46,6 +46,9 @@ export default {
       if (url.pathname === "/falantes") return cors(json(await falantes(env, url.searchParams.get("mes"))));
       if (url.pathname === "/itens") return cors(json(await itens(env, url.searchParams.get("desde"))));
       if (url.pathname === "/config" && req.method === "POST") return cors(json(await salvaConfig(req, env)));
+      if (url.pathname === "/chat" && req.method === "GET") return cors(json(await chatGet(env)));
+      if (url.pathname === "/chat" && req.method === "POST") return cors(json(await chatPost(req, env)));
+      if (url.pathname === "/treino" && req.method === "POST") return cors(json(await treinoPost(req, env)));
       return cors(json({ erro: "não encontrado" }, 404));
     } catch (e) {
       return cors(json({ erro: "falha interna", detalhe: String((e && e.message) || e) }, 500));
@@ -374,6 +377,79 @@ async function salvaConfig(req, env) {
     return { ok: false, erro: "kv: " + (e && e.message || "falha ao gravar"), vips: cfg.vips.length, criterios: cfg.criterios.length };
   }
   return { ok: true, vips: cfg.vips.length, criterios: cfg.criterios.length };
+}
+
+// ---------- Peneirinha (assistente de chat) ----------
+// "Modo recado": sem IA configurada, guarda a mensagem e só responde de verdade
+// para as perguntas que dá pra calcular com dados reais (sem inventar nada).
+// O resto vira um recado/ensino, que aparece em "O que o Peneira aprendeu com você"
+// até alguém (Rafael ou a próxima varredura) revisar e aplicar.
+const CHAT_MAX = 200, TREINO_MAX = 150;
+async function chatGet(env) {
+  const hist = (await env.KV.get("chat:hist", "json")) || [];
+  const treino = (await env.KV.get("chat:treino", "json")) || [];
+  return { hist, treino, ia: !!env.ANTHROPIC_API_KEY };
+}
+function ehPergunta(t) {
+  return /\?\s*$/.test(t) || /^(resumo|o que|oque|qual|quais|quant[oa]s?|quando|como|me (conta|diz))\b/i.test(t.trim());
+}
+async function respostaReal(t, env) {
+  const tl = t.toLowerCase();
+  if (/resumo|hoje/.test(tl)) {
+    const s = await status(env);
+    return "Hoje: " + s.mensagens + " mensagens, " + s.importantes + " importantes, " + s.descartadas + " descartadas." +
+      (s.respostas ? " Você respondeu " + s.respostas + (s.respostas > 1 ? " vezes" : " vez") +
+        (s.tempoMedioRespostaMin != null ? ", média de " + s.tempoMedioRespostaMin + " min." : ".") : " Ainda sem resposta registrada hoje.");
+  }
+  if (/pendente|pendenc/.test(tl)) {
+    const itens = (await env.KV.get("d:itens", "json")) || [];
+    const pend = itens.filter(i => (i.status || "pendente") === "pendente");
+    if (!pend.length) return "Nenhuma pendência agora. Tudo em dia.";
+    const alta = pend.filter(i => i.prioridade === "alta").length;
+    return pend.length + " pendente" + (pend.length > 1 ? "s" : "") + (alta ? ", sendo " + alta + " de prioridade alta" : "") + ".";
+  }
+  if (/grupo.*cobr|mais (me )?cobra|qual grupo/.test(tl)) {
+    const itens = (await env.KV.get("d:itens", "json")) || [];
+    const pend = itens.filter(i => (i.status || "pendente") === "pendente" && i.grupo);
+    if (!pend.length) return "Nenhum grupo com pendência agora.";
+    const porGrupo = {};
+    for (const i of pend) porGrupo[i.grupo] = (porGrupo[i.grupo] || 0) + 1;
+    const [top, n] = Object.entries(porGrupo).sort((a, b) => b[1] - a[1])[0];
+    return "\"" + top + "\" é o que mais tem pendência agora: " + n + (n > 1 ? " mensagens esperando." : " mensagem esperando.");
+  }
+  return null; // pergunta que ainda não sei calcular — melhor não responder do que inventar
+}
+async function chatPost(req, env) {
+  const b = await req.json().catch(() => ({}));
+  const texto = String(b.texto || "").slice(0, 1000).trim();
+  if (!texto) return { ok: false, erro: "texto vazio" };
+  const hist = (await env.KV.get("chat:hist", "json")) || [];
+  hist.push({ de: "rafael", t: texto, em: new Date().toISOString() });
+  const out = { ia: !!env.ANTHROPIC_API_KEY };
+  if (ehPergunta(texto)) {
+    const resp = await respostaReal(texto, env);
+    if (resp) hist.push({ de: "ia", t: resp, em: new Date().toISOString() });
+    if (resp) out.resposta = resp;
+  } else {
+    const treino = (await env.KV.get("chat:treino", "json")) || [];
+    const item = { id: "tr-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), texto, em: new Date().toISOString(), status: "novo" };
+    treino.push(item);
+    await env.KV.put("chat:treino", JSON.stringify(treino.slice(-TREINO_MAX)));
+    out.aprendizado = item;
+  }
+  await env.KV.put("chat:hist", JSON.stringify(hist.slice(-CHAT_MAX)));
+  return out;
+}
+async function treinoPost(req, env) {
+  const b = await req.json().catch(() => ({}));
+  const atualiza = Array.isArray(b.atualiza) ? b.atualiza : [];
+  const treino = (await env.KV.get("chat:treino", "json")) || [];
+  for (const u of atualiza) {
+    const it = treino.find(x => x.id === u.id);
+    if (it && u.status && ["novo", "aplicado", "recusado"].includes(u.status)) it.status = u.status;
+  }
+  await env.KV.put("chat:treino", JSON.stringify(treino));
+  return { treino };
 }
 
 // contato salvo na agenda do WhatsApp Business (sincronização oficial da Meta) → cadastro com telefone
