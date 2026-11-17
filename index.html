@@ -921,6 +921,17 @@ button.ub-row-main{cursor:pointer}
 #gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #gestao table.gx-t{min-width:480px}
 #gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
+/* ===== Gestão: contador em reais do dia e botões de detalhe ===== */
+#gestao .gx-cont{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;background:linear-gradient(135deg,#1F4E78,#2E5F8A);color:#fff;border-radius:18px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+#gestao .gx-cont-l{display:block;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.85}
+#gestao .gx-cont-l i{font-style:normal;font-weight:500;letter-spacing:0;text-transform:none;opacity:.9}
+#gestao .gx-cont b{display:block;font-size:40px;line-height:1.1;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:6px 0 4px}
+#gestao .gx-cont-s,#gestao .gx-cont-m{display:block;font-size:13px;opacity:.9}
+#gestao .gx-cont-m{margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.22);font-weight:600}
+#gestao #gx-corpo>.gx-cont{grid-column:1/-1}
+#gestao .gx-mais{all:unset;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--surface-2);color:var(--accent);font-size:13.5px;font-weight:650}
+#gestao .gx-card>b{cursor:pointer}
+.ub-n.gx-fr{background:#e5484d;color:#fff}.ub-n.gx-fa{background:#f5b42a;color:#fff}.ub-n.gx-fv{background:#2fb36b;color:#fff}
 /* ===== Início mais compacto: o radar sobe e cabe na primeira tela ===== */
 #inicio .pn-hero{padding:8px 2px 0;margin:0 0 10px}
 #inicio .pn-hero h1{font-size:26px;margin:0 0 2px}
@@ -1374,6 +1385,12 @@ button.ub-row-main{cursor:pointer}
         <button class="pn-luz a" type="button" data-gxf="a"><i></i><div><b id="gx-fa">0</b><span>Acima</span></div></button>
         <button class="pn-luz v" type="button" data-gxf="v"><i></i><div><b id="gx-fv">0</b><span>Na referência</span></div></button>
       </div>
+      <button class="gx-cont" type="button" id="gx-cont" data-gxg="contador">
+        <span class="gx-cont-l">Custo do tempo hoje <i id="gx-cont-data"></i></span>
+        <b id="gx-cont-v">R$ 0,00</b>
+        <span class="gx-cont-s" id="gx-cont-s"></span>
+        <span class="gx-cont-m" id="gx-cont-m"></span>
+      </button>
       <div class="gx-kpis" id="gx-kpis"></div>
       <div class="pn-card gx-card"><b>Dia a dia · tempo em reunião no WhatsApp</b><p class="pn-meta" id="gx-linha-s"></p><div id="gx-linha"></div>
         <div class="gx-leg"><span><i class="c" style="background:#2fb36b"></i>na referência</span><span><i class="c" style="background:#f5b42a"></i>acima</span><span><i class="c" style="background:#e5484d"></i>muito acima (2×)</span><span><i style="background:#f5b42a;opacity:.7"></i>linha tracejada = referência</span></div></div>
@@ -2435,8 +2452,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.27";
+  const VERSAO="4.28";
   const VERSOES=[
+    {v:"4.28",data:"17/11/2026",itens:["Gestão: contador em reais do dia, que sobe a cada varredura, com o acumulado do mês","Gestão: todo gráfico e todo número abre o detalhe, com o que significa, os fatos principais e a lista por dia, grupo ou pessoa"]},
     {v:"4.27",data:"17/11/2026",itens:["O app abre sempre no alto da tela, com a barra do topo à vista","A barra do topo fica presa no alto enquanto a tela rola"]},
     {v:"4.26",data:"17/11/2026",itens:["A barra do topo aparece completa em todas as seções: logo, nome Peneira, busca, alertas e foto; o Voltar fica logo abaixo"]},
     {v:"4.25",data:"17/11/2026",itens:["Início mais compacto: o radar sobe e aparece na primeira tela","O app sempre abre no Início, com a barra do topo completa (nome, busca, alertas e foto)"]},
@@ -4448,6 +4466,61 @@ button.ub-row-main{cursor:pointer}
       rows.forEach((r,i)=>{ const d=el("div","pn-rank"); d.innerHTML='<span class="ub-n" style="min-width:22px">'+(i+1)+'</span><div style="min-width:38%"><b>'+esc(r.t)+'</b>'+(r.s?'<div class="pn-meta">'+esc(r.s)+'</div>':"")+'</div><div class="bar"><i style="width:'+Math.round(100*r.v/mx)+'%"></i></div><b>'+esc(r.l)+'</b>';
         if(on) d.onclick=()=>on(r); box.appendChild(d); });
       if(!rows.length) box.appendChild(el("div","pn-meta","Sem dados no período.")); }
+    /* ---- contador em reais do dia: sobe a cada varredura que traz reuniões novas ---- */
+    let contMostrado=null, contAnim=0;
+    function contador(m){ const hj=ymd(new Date()), mAt=mesAtual(), M=diasDoMes(mAt); let pmH=0, minH=0, qH=0, pmMes=0;
+      Object.keys(M).forEach(d=>{ if(d.slice(0,7)!==mAt||d>hj) return; let pm=0; M[d].reu.forEach(x=>{ pm+=x.min*nPess(x); }); pmMes+=pm; if(d===hj){ pmH=pm; minH=M[d].min||0; qH=M[d].reu.length; } });
+      const alvo=pmH/60*m.hora, mes=pmMes/60*m.hora;
+      $("gx-cont-data").textContent="· "+new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"});
+      $("gx-cont-s").textContent=qH?(qH+" reuni"+(qH>1?"ões":"ão")+" · "+fmtHM(minH)+" · "+num1(pmH/60)+" pessoas-hora · sobe a cada varredura"):"Nenhuma reunião medida hoje até agora · sobe a cada varredura";
+      $("gx-cont-m").textContent="Acumulado em "+nomeMes(mAt)+": "+brl(mes)+" · "+nomeCfg(m.cfg);
+      const V=$("gx-cont-v"); let de=contMostrado; if(de==null){ try{ const g=JSON.parse(sessionStorage.getItem("gx-cont")||"null"); de=g&&g.d===hj?+g.v:0; }catch(e){ de=0; } }
+      cancelAnimationFrame(contAnim); const t0=performance.now(), dur=Math.abs(alvo-de)<0.005?0:900;
+      const passo=t=>{ const k=dur?Math.min(1,(t-t0)/dur):1, e=1-Math.pow(1-k,3), v=de+(alvo-de)*e; V.textContent=brl(v); contMostrado=v; if(k<1) contAnim=requestAnimationFrame(passo); else { contMostrado=alvo; try{ sessionStorage.setItem("gx-cont",JSON.stringify({d:hj,v:alvo})); }catch(e2){} } };
+      contAnim=requestAnimationFrame(passo); }
+    /* ---- drill-down: o que cada gráfico e cada número está dizendo ---- */
+    const abreDia=d=>abreData(d.slice(0,7),d,diasDoMes(d.slice(0,7)));
+    const nomeDia=d=>DSEM_L[d.w]+", "+dm(d.data);
+    const FA={r:"muito acima",a:"acima",v:"na referência"};
+    const linhaDia=(d,v,s)=>({n:"●",nCls:"gx-f"+d.fa,t:nomeDia(d),s:s||(d.qtd+" reuni"+(d.qtd>1?"ões":"ão")+" · "+d.msgs+" mensagens · "+FA[d.fa]),v,on:()=>abreDia(d.data)});
+    const custoDia=(d,m)=>d.pm/60*m.hora;
+    function drillGraf(k){ const m=MODELO; if(!m) return; const D=m.dias, per=m.P.rot, ord=f=>D.slice().sort(f);
+      const maior=D.reduce((a,d)=>d.min>a.min?d:a,D[0]), menor=D.reduce((a,d)=>d.min<a.min?d:a,D[0]);
+      if(k==="contador"){ const mAt=mesAtual(), hj=ymd(new Date()), M=diasDoMes(mAt); let ac=0; const rows=Object.keys(M).filter(d=>d.slice(0,7)===mAt&&d<=hj).sort().map(d=>{ let pm=0; M[d].reu.forEach(x=>{ pm+=x.min*nPess(x); }); const v=pm/60*m.hora; ac+=v; return {d,v,ac,q:M[d].reu.length,min:M[d].min||0}; });
+        const hjR=rows.find(r=>r.d===hj);
+        return ficha("Custo do tempo por dia",nomeMes(mAt)+" · "+nomeCfg(m.cfg),{tiles:[[brl(hjR?hjR.v:0),"hoje"],[brl(ac),"acumulado no mês"],[brl(m.hora),"hora-homem"],[String(rows.length),"dias medidos"]],rowsTit:"Dia a dia, do mais recente ao mais antigo",
+          rows:rows.slice().reverse().map(r=>({n:r.d.slice(8,10),t:DSEM_L[diaSem(r.d)]+", "+dm(r.d),s:r.q+" reuni"+(r.q!==1?"ões":"ão")+" · "+fmtHM(r.min)+" · acumulado "+brl(r.ac),v:brl(r.v),on:()=>abreDia(r.d)})),
+          nota:"O contador de hoje soma, para cada reunião medida, minutos × pessoas na reunião × hora-homem. Ele sobe sempre que uma varredura traz reuniões novas e zera à meia-noite. O valor não é folha de pagamento: é quanto esse tempo vale pela base de salário mínimo escolhida."}); }
+      if(k==="linha"){ const ac=D.filter(d=>d.fa!=="v").length;
+        return ficha("Dia a dia · tempo em reunião",per,{tiles:[[fmtHM(m.totMin),"tempo total"],[fmtHM(m.med),"média por dia"],[fmtHM(m.ref),"referência"],[ac+" de "+D.length,"dias acima da referência"]],rowsTit:"Todos os dias, do mais pesado ao mais leve",rows:ord((a,b)=>b.min-a.min).map(d=>linhaDia(d,fmtHM(d.min))),
+          nota:"O gráfico mostra quanto tempo, em cada dia, os grupos passaram em reunião pelo WhatsApp (debates com mais de 10 minutos seguidos). O dia mais pesado foi "+nomeDia(maior)+", com "+fmtHM(maior.min)+"; o mais leve foi "+nomeDia(menor)+", com "+fmtHM(menor.min)+". "+(ac?ac+" dia"+(ac>1?"s ficaram":" ficou")+" acima da referência de "+fmtHM(m.ref)+".":"Nenhum dia passou da referência de "+fmtHM(m.ref)+".")+" Toque num dia para ver quais grupos puxaram o tempo."}); }
+      if(k==="div"){ const P=ord((a,b)=>b.exc-a.exc).filter(d=>d.exc>0), G=ord((a,b)=>b.gan-a.gan).filter(d=>d.gan>0);
+        return ficha("Tempo perdido × tempo ganho",per,{tiles:[[fmtHM(m.perdMin),"perdido · "+P.length+" dia"+(P.length!==1?"s":"")],[m.perdPM?brl(m.perdBRL):"—","valor do perdido"],[fmtHM(m.ganMin),"ganho · "+G.length+" dia"+(G.length!==1?"s":"")],[m.ganPM?brl(m.ganBRL):"—","valor do ganho"]],rowsTit:"Dias que passaram da referência (perdido) e dias que ficaram abaixo (ganho)",
+          rows:P.map(d=>linhaDia(d,"+"+fmtHM(d.exc),"perdido"+(d.pPM?" · "+brl(d.pPM/60*m.hora):"")+" · total do dia "+fmtHM(d.min))).concat(G.map(d=>linhaDia(d,"−"+fmtHM(d.gan),"ganho"+(d.gPM?" · "+brl(d.gPM/60*m.hora):"")+" · total do dia "+fmtHM(d.min)))),
+          nota:"Cada barra compara o dia com a referência de "+fmtHM(m.ref)+". Barra para cima: minutos acima dela, tratados como tempo perdido. Barra para baixo: minutos abaixo, tratados como tempo ganho."+(P.length?" O dia que mais pesou foi "+nomeDia(P[0])+", com "+fmtHM(P[0].exc)+" acima.":"")+(m.cfg.ref==null?" Como a referência é a média do período, os totais de perdido e ganho se igualam; defina uma referência diária para enxergar o saldo.":"")}); }
+      if(k==="meses"){ const Ms=m.meses; return ficha("Mês a mês","horas de reunião",{tiles:[[String(Ms.length),"meses com medição"],[num1(Ms.reduce((a,x)=>a+x.min,0)/60)+"h","tempo somado"]],rowsTit:"Cada mês",
+          rows:Ms.slice().reverse().map((x,i,arr)=>{ const pv=arr[i+1]; const v=pv&&pv.media>0?Math.round(100*(x.media-pv.media)/pv.media):null; return {n:x.nome.slice(0,3),t:x.nome+(x.parcial?" (em andamento)":""),s:x.qtd+" reuniões · "+x.dias+" dias medidos · média "+fmtHM(x.media)+"/dia"+(v==null?"":" · "+(v>0?"▲ +":v<0?"▼ ":"")+v+"% contra o mês anterior")+(x.pm?" · "+brl(x.custo):""),v:num1(x.min/60)+"h",on:()=>{ modoP="mes"; mesSel=x.m; $("drill").hidden=true; render(); window.scrollTo({top:0,behavior:"smooth"}); }}; }),
+          nota:"Cada barra é o total de horas de reunião do mês. A variação compara a média por dia medido, porque os meses têm quantidades diferentes de dias lidos. Toque num mês para abrir a Gestão nele."}); }
+      if(k==="grupo"){ const tot=m.totMin||1; return ficha("Proporção por grupo",per,{tiles:[[String(m.grupos.length),"grupos com reunião"],[fmtHM(m.totMin),"tempo total"],[m.grupos[0]?Math.round(100*m.grupos[0].min/tot)+"%":"—","do tempo no 1º grupo"],[m.grupos.length>=3?Math.round(100*(m.grupos[0].min+m.grupos[1].min+m.grupos[2].min)/tot)+"%":"—","nos 3 primeiros"]],rowsTit:"Todos os grupos",
+          rows:m.grupos.map((g,i)=>({n:i+1,t:g.grupo,s:g.qtd+" reuni"+(g.qtd>1?"ões":"ão")+" · "+Math.round(100*g.min/tot)+"% do tempo",v:fmtHM(g.min),on:()=>abreGrupo(g.grupo)})),
+          nota:"A rosca divide o tempo total de reunião entre os grupos. Quanto maior a fatia, mais tempo aquele grupo consumiu no período. Toque num grupo para abrir o relatório dele."}); }
+      if(k==="sem"){ const o=[1,2,3,4,5,6,0], tot=m.sem.reduce((a,b)=>a+b,0)||1; const R=o.map(w=>{ const ds=D.filter(d=>d.w===w); return {w,min:m.sem[w],n:ds.length,ds}; }).sort((a,b)=>b.min-a.min);
+        return ficha("Proporção por dia da semana",per,{tiles:[[R[0].min?DSEM_L[R[0].w]:"—","dia mais pesado"],[R[0].min?Math.round(100*R[0].min/tot)+"%":"—","do tempo nesse dia"]],rowsTit:"Cada dia da semana",
+          rows:R.map(x=>({n:DSEM[x.w],t:DSEM_L[x.w],s:x.n?(x.n+" dia"+(x.n>1?"s":"")+" medido"+(x.n>1?"s":"")+" · média "+fmtHM(x.min/x.n)+" · "+Math.round(100*x.min/tot)+"% do tempo"):"sem dia medido no período",v:fmtHM(x.min),on:x.n?()=>ficha(DSEM_L[x.w],per,{rowsTit:"Dias medidos",rows:x.ds.slice().sort((a,b)=>b.min-a.min).map(d=>linhaDia(d,fmtHM(d.min)))}):null})),
+          nota:"Mostra em que dias da semana as reuniões pelo WhatsApp se concentram. A porcentagem é a parte do tempo total do período. Um dia da semana com poucos dias medidos pesa menos na comparação."}); }
+      if(k==="custo") return drillKpi("cus");
+      if(k==="topgr") return drillGraf("grupo");
+      if(k==="topdia") return drillGraf("linha");
+      if(k==="toppes"){ const tot=m.pessoas.reduce((a,p)=>a+p.msgs,0)||1; return ficha("Quem mais escreveu nos grupos",per,{tiles:[[String(m.pessoas.length),"pessoas"],[String(tot),"mensagens"]],rowsTit:"Ranking completo",rows:m.pessoas.slice(0,40).map((p,i)=>({n:i+1,t:p.nome,s:Math.round(100*p.msgs/tot)+"% das mensagens",v:p.msgs+" msgs"})),nota:"Soma das mensagens de texto de cada pessoa em todos os grupos lidos no período."}); }
+    }
+    function drillKpi(k){ const M=MODELO; if(!M) return; const D=M.dias, per=M.P.rot, ord=f=>D.slice().sort(f);
+      if(k==="tot") return drillGraf("linha");
+      if(k==="cus") return ficha("Custo do tempo",per+" · "+nomeCfg(M.cfg),{tiles:[[M.pm?brl(M.custoBRL):"—","custo no período"],[num1(M.pm/60),"pessoas-hora"],[brl(M.hora),"hora-homem"],[num1(M.pmedio),"pessoas por reunião (média)"]],rowsTit:"Custo de cada dia",rows:ord((a,b)=>b.pm-a.pm).map(d=>linhaDia(d,brl(custoDia(d,M)),d.qtd+" reuni"+(d.qtd>1?"ões":"ão")+" · "+fmtHM(d.min)+" · "+num1(d.pm/60)+" pessoas-hora")),
+        nota:"Custo = pessoas-hora × hora-homem. Pessoas-hora é a soma, reunião por reunião, dos minutos × número de participantes. Hora-homem = "+nomeCfg(M.cfg)+" ÷ "+M.cfg.h+" h = "+brl(M.hora)+"."+(M.sp?" "+M.sp+" reunião(ões) sem número de participantes ficaram fora.":"")});
+      if(k==="perd"||k==="gan") return drillGraf("div");
+      if(k==="msg") return ficha("Mensagens nos grupos",per,{tiles:[[String(M.msgs),"mensagens lidas"],[D.length?String(Math.round(M.msgs/D.length)):"—","média por dia"]],rowsTit:"Dias com mais mensagens",rows:ord((a,b)=>b.msgs-a.msgs).map(d=>linhaDia(d,d.msgs+" msgs",d.qtd+" reuni"+(d.qtd>1?"ões":"ão")+" · "+fmtHM(d.min)+" de reunião")),nota:"Mensagens de texto lidas pelas varreduras nos grupos, nos dias medidos. Fotos, áudios e figurinhas não entram."});
+      if(k==="ref") return ficha("Referência diária",per,{tiles:[[fmtHM(M.ref),"referência em uso"],[fmtHM(M.med),"média do período"]],rowsTit:"Como cada dia ficou contra a referência",rows:ord((a,b)=>(b.min-M.ref)-(a.min-M.ref)).map(d=>linhaDia(d,(d.min>=M.ref?"+":"−")+fmtHM(Math.abs(d.min-M.ref)),"total do dia "+fmtHM(d.min)+" · "+FA[d.fa])),
+        nota:(M.cfg.ref!=null?"Você definiu "+fmtHM(M.ref)+" como o tempo aceitável de reunião por dia.":"Sem valor definido, a referência é a média do período.")+" Ela separa tempo perdido (acima) de tempo ganho (abaixo) e define as cores do farol. Para mudar, use o campo Referência diária em Quanto custou o tempo."}); }
     let MODELO=null;
     function render(){
       const m=MODELO=modelo(); const P=m.P, cfg=m.cfg; const vz=!m.dias.length;
@@ -4462,6 +4535,9 @@ button.ub-row-main{cursor:pointer}
       if(document.activeElement.id!=="gx-sm") $("gx-sm").value=cfg.sm; if(document.activeElement.id!=="gx-n") $("gx-n").value=cfg.n; if(document.activeElement.id!=="gx-h") $("gx-h").value=cfg.h; if(document.activeElement.id!=="gx-ref") $("gx-ref").value=cfg.ref!=null?cfg.ref:"";
       $("gx-hora").innerHTML="<b>"+esc(nomeCfg(cfg))+"</b> = "+brl(cfg.sm*cfg.n)+" por mês ÷ "+cfg.h+" h = <b>"+brl(m.hora)+" por hora-homem</b> ("+brl(m.hora/60)+" por minuto)";
       if(vz) return;
+      contador(m);
+      [["gx-linha","linha"],["gx-div","div"],["gx-meses","meses"],["gx-donut","grupo"],["gx-sem","sem"],["gx-top-gr","topgr"],["gx-top-dia","topdia"],["gx-top-pes","toppes"],["gx-hora","custo"]].forEach(([id,k])=>{ const c=$(id)&&$(id).closest(".gx-card"); if(!c||c.querySelector(".gx-mais")) return; c.dataset.gxgCard=k;
+        const b=el("button","gx-mais"); b.type="button"; b.dataset.gxg=k; b.innerHTML="<span>"+(k==="custo"?"Ver o custo dia a dia":k.indexOf("top")===0?"Ver a lista completa e o que significa":"Entender este gráfico")+"</span><span>›</span>"; c.appendChild(b); const t=c.querySelector(":scope>b"); if(t) t.dataset.gxg=k; });
       $("gx-farol-s").textContent=P.rot+" · "+m.dias.length+" dias medidos";
       ["r","a","v"].forEach(k=>{ $("gx-f"+k).textContent=m.F[k].length; document.querySelector('#gx-farol .pn-luz.'+k).classList.toggle("off",!m.F[k].length); });
       const K=$("gx-kpis"); K.textContent="";
@@ -4500,6 +4576,8 @@ button.ub-row-main{cursor:pointer}
       const dp=e.target.closest("[data-gx-dia]"); if(dp){ const d=dp.dataset.gxDia; abreData(d.slice(0,7),d,diasDoMes(d.slice(0,7))); return; }
       const f=e.target.closest("[data-gxf]"); if(f&&MODELO){ const k=f.dataset.gxf, L=MODELO.F[k]; const nm={r:"Muito acima da referência (mais que 2×)",a:"Acima da referência",v:"Na referência ou abaixo"}[k];
         abreInfo("Farol do tempo · "+nm,"Verde: dia com tempo de reunião até a referência ("+fmtHM(MODELO.ref)+"). Amarelo: até 2× a referência. Vermelho: acima disso. Mesma regra do farol de tempo de resposta da Prevenção.",B=>{ L.slice().sort((a,b)=>b.min-a.min).forEach(d=>B.appendChild(linhaReuDia(d))); if(!L.length) B.appendChild(el("div","pn-meta","Nenhum dia nesta faixa.")); }); return; }
+      const gg=e.target.closest("[data-gxg]"); if(gg&&MODELO&&!e.target.closest("[data-gx-dia]")){ drillGraf(gg.dataset.gxg); return; }
+      const kq=e.target.closest("[data-gxk]"); if(kq&&MODELO){ drillKpi(kq.dataset.gxk); return; }
       const kp=e.target.closest("[data-gxk]"); if(kp&&MODELO){ const M=MODELO, k=kp.dataset.gxk;
         const tx={tot:"Soma do tempo em reuniões de grupo no WhatsApp (debates com mais de 10 minutos seguidos) nos dias medidos.",
           cus:"Pessoas-hora × hora-homem ("+brl(M.hora)+"). Pessoas-hora = minutos de cada reunião × número de participantes, somados.",
