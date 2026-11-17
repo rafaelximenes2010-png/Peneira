@@ -917,9 +917,42 @@ button.ub-row-main{cursor:pointer}
 #gestao table.gx-t td{padding:6px;border-top:1px solid var(--border);text-align:right}
 #gestao table.gx-t th:first-child,#gestao table.gx-t td:first-child{text-align:left}
 #gestao .gx-vazio{padding:18px 4px;text-align:center}
+#gestao #gx-modo button{white-space:nowrap}
 #gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #gestao table.gx-t{min-width:480px}
 #gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
+/* ===== Desktop (mouse e tela larga): só vale acima de 640px; o celular não muda ===== */
+@media (min-width:641px){
+  .pn-voltar{white-space:nowrap;flex:none}
+  .pn-brand small{white-space:nowrap}
+  .pn-top .pn-nav{flex-wrap:nowrap}
+  .pn-top .pn-nav-btn{white-space:nowrap;flex:none}
+  .pn-top .pn-nav-btn .pn-badge{position:static;flex:none}
+  .pn-nav-btn:hover{background:var(--surface-2)}
+  .pn-nav-btn[aria-current="page"]:hover{background:var(--accent-soft)}
+  /* fileiras que no celular rolam com o dedo passam a quebrar linha */
+  #rel-abas,.ub-seg,#filtros,.ia-chips{flex-wrap:wrap;overflow:visible;row-gap:8px}
+  .pn-kpis.ub-carr{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;margin:0 0 14px;padding:0}
+  .ub-carr .pn-kpi{flex:none}
+  /* fichas e detalhes abrem como janela no centro */
+  .pn-sheet{align-items:center;padding:24px}
+  .pn-sheet-card{border-radius:16px;max-width:640px;max-height:86vh;box-shadow:0 24px 60px rgba(10,15,30,.28)}
+  button:focus-visible,a:focus-visible,[role="button"]:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .pn-btn:hover,.pn-chip:hover,.ub-row:hover,.pn-rank[onclick]:hover{filter:brightness(.97)}
+  *{scrollbar-width:thin}
+}
+@media (min-width:641px) and (max-width:1099px){
+  .pn-top .pn-nav-btn{padding:7px 9px}
+  .pn-top .pn-nav-btn:not([aria-current="page"])>span:not(.pn-badge){display:none}
+  .pn-brand small{display:none}
+}
+@media (min-width:1100px){
+  .pn-wrap{max-width:1120px}
+  #gestao .gx-kpis{grid-template-columns:repeat(6,1fr)}
+  #gestao .gx-kpis .pn-kpi b{font-size:21px}
+  #gestao #gx-corpo{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;align-items:start}
+  #gestao #gx-corpo>.pn-farol,#gestao #gx-corpo>.gx-kpis,#gestao #gx-corpo>.gx-exp,#gestao #gx-corpo>#gx-nota{grid-column:1/-1}
+}
 </style>
 </head>
 <body>
@@ -2352,8 +2385,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.20";
+  const VERSAO="4.21";
   const VERSOES=[
+    {v:"4.21",data:"17/11/2026",itens:["Versão para computador revisada: menu do topo sem sobreposição, tela mais larga em monitores grandes, abas e filtros que quebram linha em vez de rolar, detalhes abrindo como janela no centro, Esc para fechar e Gestão em duas colunas"]},
     {v:"4.20",data:"17/11/2026",itens:["Nova aba Gestão, na barra principal: tempo em reunião do WhatsApp para a diretoria, com farol de tempo, gráficos dia a dia, mês a mês e proporções, top 10, tempo perdido × ganho e valor em reais pela hora-homem (1 salário mínimo como base, com escolha de 1 a 5 ou outro valor)","Gera PowerPoint (gráficos editáveis) e PDF para apresentação"]},
     {v:"4.19",data:"16/11/2026",itens:["Atalhos novos no Início: Hoje (o que importa no dia), Highlights (aprendido nas últimas leituras), Compromissos (promessas feitas nos grupos) e Assistente","Assistente: chat com a IA dentro do app. Pergunte sobre grupos e pendências e ensine regras (o que é importante, VIPs, horários, jeito das respostas), que a varredura passa a aplicar"]},
     {v:"4.18",data:"15/11/2026",itens:["Radar grande no centro do cartão","Botão Varrer agora menor e discreto, embaixo dos números"]},
@@ -4587,6 +4621,16 @@ button.ub-row-main{cursor:pointer}
   document.addEventListener("touchmove",function(e){if(e.touches.length>1)e.preventDefault();},{passive:false});
   var ult=0;document.addEventListener("touchend",function(e){var a=Date.now();if(a-ult<=300){var t=e.target;if(!(t.closest&&t.closest("input,textarea,select,[contenteditable]")))e.preventDefault();}ult=a;},{passive:false});
   document.addEventListener("dblclick",function(e){e.preventDefault();},{passive:false});
+})();
+</script>
+<script>
+/* Desktop: Esc fecha a janela aberta; roda do mouse rola fileiras horizontais */
+(function(){
+  document.addEventListener("keydown",function(e){ if(e.key!=="Escape") return; var b=document.getElementById("busca"); if(b&&!b.hidden) return;
+    var ab=[].slice.call(document.querySelectorAll(".pn-sheet")).filter(function(x){return !x.hidden&&x.getClientRects().length>0;}); if(!ab.length) return;
+    var t=ab[ab.length-1]; t.click(); if(!t.hidden){ var x=t.querySelector('[aria-label="Fechar"],[id$="-x"],.pn-x'); if(x) x.click(); } });
+  document.addEventListener("wheel",function(e){ if(e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; var el=e.target&&e.target.closest&&e.target.closest(".ia-chips,.ub-seg,#rel-abas,#gx-meses-t,.pn-kpis.ub-carr");
+    if(el&&el.scrollWidth>el.clientWidth+2){ el.scrollLeft+=e.deltaY; e.preventDefault(); } },{passive:false});
 })();
 </script>
 </body>
