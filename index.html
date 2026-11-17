@@ -934,6 +934,19 @@ button.ub-row-main{cursor:pointer}
 #inicio .ub-atalhos button{gap:5px}
 #inicio #varr-card{padding:14px 18px 16px}
 @media (max-width:640px){ .pn-top{min-height:52px} .pn-brand svg{width:44px;height:44px;border-radius:12px} .pn-brand b{font-size:17px} .pn-brand small{font-size:11.5px;white-space:nowrap} }
+/* ===== Barra do topo completa em todas as seções: logo e nome nunca somem ===== */
+#pn-brand{display:flex!important;order:-1}
+@media (max-width:640px){
+  .pn-top{flex-wrap:wrap;row-gap:0}
+  .pn-top #pn-brand{flex:1 1 0;min-width:0}
+  .pn-top #pn-brand>div{min-width:0}
+  .pn-top #pn-brand small{overflow:hidden;text-overflow:ellipsis}
+  .pn-top>div:last-child{flex:none;gap:6px!important}
+  .pn-top .pn-dn{width:38px;height:38px}
+  .pn-top #pn-brand{gap:8px;padding-right:4px}
+  .pn-top #pn-brand small{font-size:11px;letter-spacing:-.01em}
+  .pn-top #btn-voltar{order:9;flex:0 0 100%;justify-content:flex-start;padding:4px 0 0;font-size:16px}
+}
 /* ===== Tela de entrada limpa: só o nome, nas cores do app (menta) ===== */
 .pn-splash{background:#f0f8f5;color:#12302a}
 .pn-sp-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:auto}
@@ -2420,8 +2433,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.25";
+  const VERSAO="4.26";
   const VERSOES=[
+    {v:"4.26",data:"17/11/2026",itens:["A barra do topo aparece completa em todas as seções: logo, nome Peneira, busca, alertas e foto; o Voltar fica logo abaixo"]},
     {v:"4.25",data:"17/11/2026",itens:["Início mais compacto: o radar sobe e aparece na primeira tela","O app sempre abre no Início, com a barra do topo completa (nome, busca, alertas e foto)"]},
     {v:"4.24",data:"17/11/2026",itens:["Tela de entrada fica um pouco mais na tela antes de abrir"]},
     {v:"4.23",data:"17/11/2026",itens:["No computador, a roda do mouse volta a rolar a página; com uma janela aberta, rola só a janela","Dicas ao passar o mouse nos botões de ícone e Enter/Espaço nos itens clicáveis","Tela de entrada nova: só o nome Peneira em verde menta, sem a peneira e sem as letras caindo"]},
