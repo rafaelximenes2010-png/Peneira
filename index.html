@@ -921,6 +921,19 @@ button.ub-row-main{cursor:pointer}
 #gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #gestao table.gx-t{min-width:480px}
 #gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
+/* ===== Início mais compacto: o radar sobe e cabe na primeira tela ===== */
+#inicio .pn-hero{padding:8px 2px 0;margin:0 0 10px}
+#inicio .pn-hero h1{font-size:26px;margin:0 0 2px}
+#inicio .pn-hero p{font-size:13.5px}
+#inicio .pn-hero .pn-hero-l{margin-top:6px}
+#inicio .pn-hero .pn-hero-l span{padding:3px 10px;font-size:12px}
+#inicio .ub-busca{min-height:44px;font-size:15px;margin:0 0 12px}
+#inicio .ub-atalhos{margin:0 0 12px}
+#inicio .ub-atalhos i{max-width:58px;border-radius:16px}
+#inicio .ub-atalhos i .pn-ico svg{width:24px;height:24px}
+#inicio .ub-atalhos button{gap:5px}
+#inicio #varr-card{padding:14px 18px 16px}
+@media (max-width:640px){ .pn-top{min-height:52px} .pn-brand svg{width:44px;height:44px;border-radius:12px} .pn-brand b{font-size:17px} .pn-brand small{font-size:11.5px;white-space:nowrap} }
 /* ===== Tela de entrada limpa: só o nome, nas cores do app (menta) ===== */
 .pn-splash{background:#f0f8f5;color:#12302a}
 .pn-sp-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:auto}
@@ -2407,8 +2420,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.24";
+  const VERSAO="4.25";
   const VERSOES=[
+    {v:"4.25",data:"17/11/2026",itens:["Início mais compacto: o radar sobe e aparece na primeira tela","O app sempre abre no Início, com a barra do topo completa (nome, busca, alertas e foto)"]},
     {v:"4.24",data:"17/11/2026",itens:["Tela de entrada fica um pouco mais na tela antes de abrir"]},
     {v:"4.23",data:"17/11/2026",itens:["No computador, a roda do mouse volta a rolar a página; com uma janela aberta, rola só a janela","Dicas ao passar o mouse nos botões de ícone e Enter/Espaço nos itens clicáveis","Tela de entrada nova: só o nome Peneira em verde menta, sem a peneira e sem as letras caindo"]},
     {v:"4.22",data:"17/11/2026",itens:["Ajustes → Instalar e indicar: QR Code do Peneira para instalar em outro aparelho ou indicar a alguém, com link, WhatsApp, copiar e baixar o QR em imagem; atalho também no menu do logo"]},
@@ -4266,7 +4280,9 @@ button.ub-row-main{cursor:pointer}
   })();
 
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").then(r=>{ try{ r.update(); }catch(e){} }).catch(()=>{}); let recarregou=false; navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(recarregou) return; recarregou=true; location.reload(); }); }catch(e){} }
-  go(location.hash.slice(1)||"inicio", false);
+  /* ao abrir, sempre no Início (com a barra do topo completa); o endereço guardado da última visita não reabre outra seção */
+  try{ if(location.hash&&location.hash!=="#inicio") history.replaceState(null,"","#inicio"); }catch(e){}
+  go("inicio", false);
   render();
 
   (async ()=>{
