@@ -960,6 +960,16 @@ button.ub-row-main{cursor:pointer}
   .pn-top #pn-brand small{font-size:11px;letter-spacing:-.01em}
   .pn-top #btn-voltar{order:9;flex:0 0 100%;justify-content:flex-start;padding:4px 0 0;font-size:16px}
 }
+/* ===== Início no computador: atalhos em cartões proporcionais à largura ===== */
+@media (min-width:641px){
+  #inicio .ub-atalhos{gap:12px;margin:0 0 14px}
+  #inicio .ub-atalhos button{flex-direction:row;justify-content:flex-start;gap:12px;background:var(--surface);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);box-sizing:border-box}
+  #inicio .ub-atalhos button:hover{filter:brightness(.97)}
+  #inicio .ub-atalhos i{width:48px;max-width:48px;flex:none;border-radius:14px}
+  #inicio .ub-atalhos button>span{font-size:15px;font-weight:700}
+  #inicio .ub-busca{min-height:48px}
+  #inicio .pn-hero h1{font-size:30px}
+}
 /* ===== Tela de entrada limpa: só o nome, nas cores do app (menta) ===== */
 .pn-splash{background:#f0f8f5;color:#12302a}
 .pn-sp-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:auto}
@@ -1009,7 +1019,7 @@ button.ub-row-main{cursor:pointer}
   /* painel denso em duas colunas que se encaixam (sem buracos entre cartões de alturas diferentes) */
   #gestao #gx-corpo{display:block;columns:2;column-gap:14px}
   #gestao #gx-corpo>*{break-inside:avoid;-webkit-column-break-inside:avoid}
-  #gestao #gx-corpo>.pn-farol,#gestao #gx-corpo>.gx-cont,#gestao #gx-corpo>.gx-kpis,#gestao #gx-corpo>.gx-exp,#gestao #gx-corpo>#gx-nota{column-span:all}
+  #gestao #gx-corpo>.pn-farol,#gestao #gx-corpo>.gx-cont,#gestao #gx-corpo>.gx-kpis,#gestao #gx-corpo>.gx-exp,#gestao #gx-corpo>#gx-exp-st,#gestao #gx-corpo>#gx-nota{column-span:all}
   #gestao #gx-corpo>.gx-card{display:inline-block;width:100%;margin:0 0 14px;vertical-align:top}
   #gestao .gx-top .pn-rank{padding:5px 0}
 }
@@ -1420,6 +1430,7 @@ button.ub-row-main{cursor:pointer}
         <p class="pn-meta" style="margin:8px 0 0">Salário mínimo nacional vigente em 2026: R$ 1.621,00 (Decreto 12.797/2025). Se mudar, edite o valor acima. Referência diária vazia = média dos dias medidos do período.</p>
       </div>
       <div class="gx-exp"><button class="pn-btn pri" type="button" id="gx-ppt">Gerar PowerPoint</button><button class="pn-btn" type="button" id="gx-pdf">Gerar PDF</button></div>
+      <p class="pn-meta" id="gx-exp-st" style="margin:-6px 4px 12px;min-height:18px"></p>
       <p class="pn-meta" id="gx-nota" style="margin:0 4px 14px"></p>
     </div>
   </section>
@@ -2456,8 +2467,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.30";
+  const VERSAO="4.31";
   const VERSOES=[
+    {v:"4.31",data:"17/11/2026",itens:["Gestão: ao gerar PDF ou PowerPoint aparece Gerando…, depois o nome do arquivo e um link para baixar de novo","Início no computador: atalhos em cartões proporcionais à tela"]},
     {v:"4.30",data:"17/11/2026",itens:["Gestão no computador: cartões encaixados em duas colunas, sem espaços vazios"]},
     {v:"4.29",data:"17/11/2026",itens:["Highlights: depois de abertos e lidos, os destaques saem da lista e o contador zera; só os novos voltam a aparecer. Os já lidos ficam num botão dentro da ficha"]},
     {v:"4.28",data:"17/11/2026",itens:["Gestão: contador em reais do dia, que sobe a cada varredura, com o acumulado do mês","Gestão: todo gráfico e todo número abre o detalhe, com o que significa, os fatos principais e a lista por dia, grupo ou pessoa"]},
@@ -4619,7 +4631,7 @@ button.ub-row-main{cursor:pointer}
     async function logoB64(){ try{ const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"icons/icon-192.png"); const b=await r.blob(); return await new Promise(ok=>{ const f=new FileReader(); f.onload=()=>ok(f.result); f.readAsDataURL(b); }); }catch(e){ return null; } }
     function svgPng(svg,w,h){ return new Promise((ok,er)=>{ const img=new Image(); const u="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg.replace(/^<svg /,'<svg width="'+w+'" height="'+h+'" '));
       img.onload=()=>{ const c=document.createElement("canvas"); c.width=w*2; c.height=h*2; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); ok(c.toDataURL("image/jpeg",.92)); }; img.onerror=()=>er(new Error("svg")); img.src=u; }); }
-    async function exportPPT(){
+    async function exportPPT(salva){ salva=salva||salvarArquivo;
       const m=modelo(); if(!m.dias.length){ aviso("Ainda não há dias medidos no período para gerar a apresentação."); return; }
       try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"); }catch(e){ aviso("Não consegui carregar o gerador de PowerPoint."); return; }
       const P=new window.PptxGenJS(); P.layout="LAYOUT_WIDE"; P.title="Gestão executiva do tempo · "+m.P.rot; P.author="Peneira";
@@ -4687,9 +4699,9 @@ button.ub-row-main{cursor:pointer}
       // 11 metodologia
       { const s=nova("Metodologia e fontes"); s.addText(textoMetodo(m).map(t=>({text:t,options:{bullet:true,breakLine:true}})),{x:0.7,y:1.3,w:11.9,h:5.4,fontSize:14,color:"1B2236",fontFace:"Calibri",valign:"top",paraSpaceAfter:8});
         s.addText("Fonte: leituras de grupos pelo Peneira, "+m.dias.length+" dias medidos de "+dm(m.P.ini)+" a "+dm(m.P.fim)+".",{x:0.7,y:6.6,w:11.9,h:0.4,fontSize:11,color:CZ}); }
-      const blob=await P.write({outputType:"blob"}); await salvarArquivo(nomeArq(m,"pptx"),blob);
+      const blob=await P.write({outputType:"blob"}); await salva(nomeArq(m,"pptx"),blob);
     }
-    async function exportPDF2(){
+    async function exportPDF2(salva){ salva=salva||salvarArquivo;
       const m=modelo(); if(!m.dias.length){ aviso("Ainda não há dias medidos no período para gerar o PDF."); return; }
       try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de PDF."); return; }
       const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4",orientation:"landscape"}); const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); const az=[31,78,120], logo=await logoB64(); const C=CLARO; let pag=0;
@@ -4733,10 +4745,17 @@ button.ub-row-main{cursor:pointer}
         const y=doc.lastAutoTable.finalY+18; doc.autoTable({startY:y,margin:{left:34,right:34},head:[["Indicador ("+nomeCfg(m.cfg)+" · "+brl(m.hora)+"/h)","Tempo","Pessoas-hora","Valor"]],body:[["Tempo total em reunião",fmtHM(m.totMin),m.pm?num1(m.pm/60):"—",m.pm?brl(m.custoBRL):"—"],["Tempo perdido (acima da referência)",fmtHM(m.perdMin),m.perdPM?num1(m.perdPM/60):"—",m.perdPM?brl(m.perdBRL):"—"],["Tempo ganho (abaixo da referência)",fmtHM(m.ganMin),m.ganPM?num1(m.ganPM/60):"—",m.ganPM?brl(m.ganBRL):"—"]],styles:{fontSize:10,cellPadding:5},headStyles:{fillColor:az},theme:"grid"}); }
       // metodologia
       nova("Metodologia e fontes"); { let y=84; doc.setFontSize(11); doc.setTextColor(27,34,54); doc.setFont("helvetica","normal"); textoMetodo(m).forEach(t=>{ const L=doc.splitTextToSize("•  "+t,W-80); doc.text(L,40,y); y+=L.length*14+8; }); doc.setFontSize(9); doc.setTextColor(95,103,121); doc.text("Fonte: leituras de grupos pelo Peneira, "+m.dias.length+" dias medidos de "+dm(m.P.ini)+" a "+dm(m.P.fim)+".",40,y+8); }
-      await salvarArquivo(nomeArq(m,"pdf"),doc.output("blob"));
+      await salva(nomeArq(m,"pdf"),doc.output("blob"));
     }
-    $("gx-ppt").addEventListener("click",async()=>{ const b=$("gx-ppt"); b.disabled=true; try{ await exportPPT(); }catch(e){ aviso("Não consegui gerar o PowerPoint agora."); } b.disabled=false; });
-    $("gx-pdf").addEventListener("click",async()=>{ const b=$("gx-pdf"); b.disabled=true; try{ await exportPDF2(); }catch(e){ aviso("Não consegui gerar o PDF agora."); } b.disabled=false; });
+    /* geração com retorno visível: "Gerando…", depois o nome do arquivo e um link para abrir de novo */
+    let ultimoArq=null; const salvarOrig=salvarArquivo;
+    async function gera(id,rot,fn){ const b=$(id), st=$("gx-exp-st"); b.disabled=true; const txt=b.textContent; b.textContent="Gerando "+rot+"…"; st.textContent="Montando o "+rot+" com os dados do período. Leva alguns segundos."; ultimoArq=null;
+      try{ await fn(); if(ultimoArq){ st.textContent=""; st.append("✓ "+ultimoArq.nome+" gerado. Se o download não apareceu, "); const a=document.createElement("a"); a.href=ultimoArq.url; a.download=ultimoArq.nome; a.target="_blank"; a.rel="noopener"; a.textContent="toque aqui para baixar de novo"; st.append(a); st.append("."); } else st.textContent=""; }
+      catch(e){ st.textContent="Não consegui gerar o "+rot+": "+String(e&&e.message||e).slice(0,120); }
+      b.textContent=txt; b.disabled=false; }
+    const guarda=async(nome,blob)=>{ try{ if(ultimoArq&&ultimoArq.url) URL.revokeObjectURL(ultimoArq.url); ultimoArq={nome,url:URL.createObjectURL(blob)}; }catch(e){} return salvarOrig(nome,blob); };
+    $("gx-ppt").addEventListener("click",()=>gera("gx-ppt","PowerPoint",()=>exportPPT(guarda)));
+    $("gx-pdf").addEventListener("click",()=>gera("gx-pdf","PDF",()=>exportPDF2(guarda)));
     window.__gxModelo=()=>MODELO||modelo(); window.__gx={svgLinha,svgDiv,svgMeses,svgSem,svgDonut,svgHbar,partesGrupo,CLARO,brl,num1,lab,dm,esc,nomeCfg,modelo};
   })();
 })();
