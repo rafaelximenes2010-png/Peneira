@@ -2484,8 +2484,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.35";
+  const VERSAO="4.36";
   const VERSOES=[
+    {v:"4.36",data:"17/11/2026",itens:["Capa do PowerPoint e do PDF exportados passa a usar o logo do Grupo LOS, no lugar do ícone do Peneira"]},
     {v:"4.35",data:"17/11/2026",itens:["Relatórios → Prevenção mostra quando os dados foram medidos e avisa quando estão parados"]},
     {v:"4.34",data:"17/11/2026",itens:["Ajustes → Ponte oficial → Conectar outro aparelho: gera um link que liga o computador (ou outro celular) à mesma Ponte, sem digitar endereço e senha","Varrer agora informa o horário da próxima leitura dos grupos e avisa quando o aparelho não está conectado à Ponte"]},
     {v:"4.33",data:"17/11/2026",itens:["Início e Gestão mostram quanto o Peneira já economizou desde que começou a funcionar: tempo de leitura poupado e o valor em reais, com a conta dia a dia ao tocar"]},
@@ -4688,7 +4689,7 @@ button.ub-row-main{cursor:pointer}
       "Valor do tempo perdido = minutos excedentes × pessoas na reunião × hora-homem. Valor do tempo ganho usa a média de pessoas por reunião do período ("+num1(m.pmedio)+").",
       "Farol: verde até a referência, amarelo até 2× a referência, vermelho acima disso (mesma regra do farol de tempo de resposta).",
       "Dias sem leitura de grupo não entram nas médias. O custo é uma estimativa de oportunidade com base em salário mínimo; não representa folha de pagamento."+(m.sp?" "+m.sp+" reunião(ões) sem número de participantes ficaram fora do cálculo em reais.":"")]; }
-    async function logoB64(){ try{ const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"icons/icon-192.png"); const b=await r.blob(); return await new Promise(ok=>{ const f=new FileReader(); f.onload=()=>ok(f.result); f.readAsDataURL(b); }); }catch(e){ return null; } }
+    async function logoB64(){ try{ const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"icons/logo-los.png"); const b=await r.blob(); return await new Promise(ok=>{ const f=new FileReader(); f.onload=()=>ok(f.result); f.readAsDataURL(b); }); }catch(e){ return null; } }
     function svgPng(svg,w,h){ return new Promise((ok,er)=>{ const img=new Image(); const u="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg.replace(/^<svg /,'<svg width="'+w+'" height="'+h+'" '));
       img.onload=()=>{ const c=document.createElement("canvas"); c.width=w*2; c.height=h*2; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); ok(c.toDataURL("image/jpeg",.92)); }; img.onerror=()=>er(new Error("svg")); img.src=u; }); }
     async function exportPPT(salva){ salva=salva||salvarArquivo;
@@ -4705,7 +4706,7 @@ button.ub-row-main{cursor:pointer}
         s.addText(String(pag),{x:12.2,y:7.1,w:0.7,h:0.3,fontSize:9,color:CZ,align:"right"}); return s; };
       const D=m.dias, lab_=D.map(d=>dm(d.data));
       // 1 capa
-      { const s=P.addSlide(); pag++; s.background={color:AZ}; if(logo) s.addImage({data:logo,x:0.7,y:0.7,w:1.1,h:1.1});
+      { const s=P.addSlide(); pag++; s.background={color:AZ}; if(logo) s.addImage({data:logo,x:0.7,y:0.7,w:2.64,h:0.9});
         s.addText("Gestão executiva do tempo",{x:0.7,y:2.4,w:12,h:1,fontSize:40,bold:true,color:"FFFFFF",fontFace:"Calibri"});
         s.addText("Tempo em reuniões de WhatsApp: perdido, ganho e quanto custa",{x:0.7,y:3.4,w:12,h:0.6,fontSize:20,color:"D4E4F7",fontFace:"Calibri"});
         s.addText(m.P.rot+"  ·  "+dm(m.P.ini)+" a "+dm(m.P.fim)+"  ·  "+m.dias.length+" dias medidos",{x:0.7,y:4.4,w:12,h:0.5,fontSize:16,color:"FFFFFF",fontFace:"Calibri"});
@@ -4772,7 +4773,7 @@ button.ub-row-main{cursor:pointer}
         doc.setTextColor(95,103,121); doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.text("Peneira · Gestão executiva do tempo · "+m.P.rot+" · gerado em "+dataHora(m.gerado),34,H-18); doc.text(String(pag),W-34,H-18,{align:"right"}); doc.setTextColor(27,34,54); };
       const img=async(svg,w,h,x,y,iw)=>{ const png=await svgPng(svg,w,h); doc.addImage(png,"JPEG",x,y,iw,iw*h/w); return iw*h/w; };
       // capa
-      nova("","",true); doc.setFillColor(...az); doc.rect(0,0,W,H,"F"); if(logo) doc.addImage(logo,"PNG",50,50,64,64);
+      nova("","",true); doc.setFillColor(...az); doc.rect(0,0,W,H,"F"); if(logo) doc.addImage(logo,"PNG",50,50,158,54);
       doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(34); doc.text("Gestão executiva do tempo",50,230); doc.setFont("helvetica","normal"); doc.setFontSize(16); doc.setTextColor(212,228,247); doc.text("Tempo em reuniões de WhatsApp: perdido, ganho e quanto custa",50,262);
       doc.setTextColor(255); doc.setFontSize(14); doc.text(m.P.rot+"  ·  "+dm(m.P.ini)+" a "+dm(m.P.fim)+"  ·  "+m.dias.length+" dias medidos",50,300); doc.setFontSize(10); doc.setTextColor(169,196,226); doc.text("Base de custo: "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem  ·  Gerado em "+dataHora(m.gerado),50,H-40);
       // resumo
