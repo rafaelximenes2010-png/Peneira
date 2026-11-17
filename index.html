@@ -921,6 +921,13 @@ button.ub-row-main{cursor:pointer}
 #gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #gestao table.gx-t{min-width:480px}
 #gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
+/* ===== Instalar e indicar (QR Code) ===== */
+.ind-g{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.ind-qr{flex:none;margin:0 auto}
+.ind-qr svg{width:190px;height:190px;background:#fff;border-radius:12px;padding:8px;display:block;box-shadow:0 0 0 1px var(--border)}
+.ind-t{flex:1;min-width:220px}
+.ind-link{display:block;font-size:13px;word-break:break-all;color:var(--accent);margin:0 0 10px}
+.ind-b{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
 /* ===== Desktop (mouse e tela larga): só vale acima de 640px; o celular não muda ===== */
 @media (min-width:641px){
   .pn-voltar{white-space:nowrap;flex:none}
@@ -1006,6 +1013,7 @@ button.ub-row-main{cursor:pointer}
       <button type="button" role="menuitem" data-go="ajustes"><span data-ico="gear"></span>Ajustes</button>
       <button type="button" role="menuitem" data-go="perfil"><span data-ico="user"></span>Meu cadastro</button>
       <button type="button" role="menuitem" id="bm-novidades"><span data-ico="megaphone"></span>Central de novidades</button>
+      <button type="button" role="menuitem" id="bm-indicar"><span data-ico="share"></span>Instalar e indicar (QR Code)</button>
       <button type="button" role="menuitem" data-go="sobre"><span data-ico="help"></span>Como funciona</button>
       <button type="button" role="menuitem" data-go="politica"><span data-ico="shield"></span>Política de Privacidade</button>
       <button type="button" role="menuitem" data-go="termos"><span data-ico="doc"></span>Termos de Uso</button>
@@ -1403,6 +1411,24 @@ button.ub-row-main{cursor:pointer}
       <p class="pn-meta" style="margin:0 0 10px">Manda o link do app para alguém instalar. Cada pessoa faz o próprio cadastro e vê só os próprios dados.</p>
       <a class="pn-btn pri" id="btn-share-wa" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;background:#25a35a;border-color:#25a35a;color:#fff;font-weight:600">Compartilhar por WhatsApp</a>
       <button class="pn-btn" type="button" id="btn-share-copiar" style="width:100%;margin-top:8px">Copiar link</button>
+    </div>
+
+    <div class="pn-h2" id="ind-h">Instalar e indicar</div>
+    <div class="pn-card" id="ind-card">
+      <div class="ind-g">
+        <div class="ind-qr" id="ind-qr" aria-label="QR Code para instalar o Peneira"></div>
+        <div class="ind-t">
+          <b>Aponte a câmera do celular para o QR Code</b>
+          <p class="pn-meta" style="margin:4px 0 8px">Ele abre o Peneira para instalar. Serve para o seu outro aparelho e para indicar a alguém: cada pessoa faz o próprio cadastro e vê só os próprios dados.</p>
+          <a id="ind-link" class="ind-link" target="_blank" rel="noopener"></a>
+          <div class="ind-b">
+            <button class="pn-btn pri" type="button" id="ind-inst">Instalar neste aparelho</button>
+            <button class="pn-btn" type="button" id="ind-wa">Indicar por WhatsApp</button>
+            <button class="pn-btn" type="button" id="ind-copiar">Copiar link</button>
+            <button class="pn-btn" type="button" id="ind-baixar">Baixar QR Code</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="pn-h2" id="vip-h">Contatos VIP · alerta sonoro</div>
@@ -1884,6 +1910,7 @@ button.ub-row-main{cursor:pointer}
     document.addEventListener("click",e=>{ if(!bm.hidden && !e.target.closest("#pn-brand") && !e.target.closest("#brand-menu")) brandToggle(false); });
     bm.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{ brandToggle(false); go(b.dataset.go); }));
     const bn=$("bm-novidades"); if(bn) bn.addEventListener("click",()=>{ brandToggle(false); hubDetDrill(); });
+    const bi=$("bm-indicar"); if(bi) bi.addEventListener("click",()=>{ brandToggle(false); go("ajustes"); setTimeout(()=>{ const h=$("ind-h"); if(h) h.scrollIntoView({behavior:"smooth",block:"start"}); },60); });
   }
   $("cta-crit").addEventListener("click",()=>go("criterios"));
   $("cta-inst").addEventListener("click",()=>$("btn-ver-inst").click());
@@ -2385,8 +2412,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.21";
+  const VERSAO="4.22";
   const VERSOES=[
+    {v:"4.22",data:"17/11/2026",itens:["Ajustes → Instalar e indicar: QR Code do Peneira para instalar em outro aparelho ou indicar a alguém, com link, WhatsApp, copiar e baixar o QR em imagem; atalho também no menu do logo"]},
     {v:"4.21",data:"17/11/2026",itens:["Versão para computador revisada: menu do topo sem sobreposição, tela mais larga em monitores grandes, abas e filtros que quebram linha em vez de rolar, detalhes abrindo como janela no centro, Esc para fechar e Gestão em duas colunas"]},
     {v:"4.20",data:"17/11/2026",itens:["Nova aba Gestão, na barra principal: tempo em reunião do WhatsApp para a diretoria, com farol de tempo, gráficos dia a dia, mês a mês e proporções, top 10, tempo perdido × ganho e valor em reais pela hora-homem (1 salário mínimo como base, com escolha de 1 a 5 ou outro valor)","Gera PowerPoint (gráficos editáveis) e PDF para apresentação"]},
     {v:"4.19",data:"16/11/2026",itens:["Atalhos novos no Início: Hoje (o que importa no dia), Highlights (aprendido nas últimas leituras), Compromissos (promessas feitas nos grupos) e Assistente","Assistente: chat com a IA dentro do app. Pergunte sobre grupos e pendências e ensine regras (o que é importante, VIPs, horários, jeito das respostas), que a varredura passa a aplicar"]},
@@ -4123,6 +4151,19 @@ button.ub-row-main{cursor:pointer}
   ["btn-share-wa","btn-share-wa2"].forEach(id=>{ const a=$(id); a.href="https://wa.me/?text="+encodeURIComponent(TXT_SHARE);
     a.addEventListener("click",async e=>{ if(navigator.share && !window.claude){ e.preventDefault(); try{ await navigator.share({title:"Peneira",text:TXT_SHARE}); }catch(err){} } }); });
   $("btn-share-copiar").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(LINK_PUB); $("btn-share-copiar").textContent="Link copiado ✓"; }catch(e){ $("btn-share-copiar").textContent=LINK_PUB; } setTimeout(()=>$("btn-share-copiar").textContent="Copiar link",3000); });
+
+  /* ---------- instalar e indicar (QR Code) ---------- */
+  (function(){ const Q=$("ind-qr"); if(!Q) return; const orig=document.querySelector("#qr-pub svg"); if(orig){ const c=orig.cloneNode(true); c.removeAttribute("style"); Q.appendChild(c); }
+    const L=$("ind-link"); L.href=LINK_PUB; L.textContent=LINK_PUB;
+    $("ind-inst").addEventListener("click",()=>$("btn-ver-inst").click());
+    $("ind-wa").addEventListener("click",()=>$("btn-share-wa").click());
+    $("ind-copiar").addEventListener("click",async()=>{ const b=$("ind-copiar"); try{ await navigator.clipboard.writeText(LINK_PUB); b.textContent="Link copiado ✓"; }catch(e){ b.textContent="Copie o link acima"; } setTimeout(()=>b.textContent="Copiar link",3000); });
+    $("ind-baixar").addEventListener("click",()=>{ const sv=Q.querySelector("svg"); if(!sv) return; const c=sv.cloneNode(true); c.setAttribute("width","900"); c.setAttribute("height","900"); c.setAttribute("xmlns","http://www.w3.org/2000/svg");
+      const img=new Image(); img.onload=()=>{ const cv=document.createElement("canvas"); cv.width=1080; cv.height=1240; const x=cv.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,1080,1240); x.drawImage(img,90,70,900,900);
+        x.fillStyle="#1b2236"; x.textAlign="center"; x.font="700 54px Arial, sans-serif"; x.fillText("Peneira",540,1070); x.font="30px Arial, sans-serif"; x.fillStyle="#5f6779"; x.fillText("Aponte a câmera para instalar",540,1125); x.font="26px Arial, sans-serif"; x.fillText(LINK_PUB.replace("https://",""),540,1180);
+        cv.toBlob(b=>{ if(b) salvarArquivo("Peneira_QR_Code.png",b); },"image/png"); };
+      img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(new XMLSerializer().serializeToString(c)); });
+  })();
 
   /* ---------- instalação (iOS e Android) ---------- */
   (function(){
