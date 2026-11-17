@@ -847,6 +847,21 @@ button.ub-row-main{cursor:pointer}
 .ub-modo button{all:unset;box-sizing:border-box;flex:1;text-align:center;padding:8px 0;border-radius:9px;font-size:14px;font-weight:700;color:var(--ink-3);cursor:pointer}
 .ub-modo button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 .ub-tiles>div[role="button"]{cursor:pointer}
+
+/* gráfico por período: 8 dias, 15 dias ou mês */
+.ub-days.d8,.ub-days.d15,.ub-days.mes{grid-template-columns:repeat(var(--nd,8),1fr)}
+.ub-days.d8{gap:6px} .ub-days.d15{gap:4px} .ub-days.mes{gap:2px}
+.ub-days.d8 .ub-day .bar,.ub-days.d15 .ub-day .bar{max-width:none}
+.ub-days.d15 .ub-day .bar{border-radius:7px} .ub-days.d15 .ub-day .bar i{border-radius:7px}
+.ub-day .dt,.ub-day .m{font-size:10.5px;color:var(--ink-3);height:13px;line-height:13px}
+.ub-day .v{font-size:11.5px;font-weight:700;color:var(--ink-2);height:14px;line-height:14px}
+.ub-days.d15 .ub-day b{font-size:12px} .ub-days.d15 .ub-day .dt{font-size:10px}
+.ub-day.hoje .bar{outline:2px solid var(--accent);outline-offset:1px}
+.ub-day.fut{opacity:.35;cursor:default}
+.ub-day.fds .bar{background:color-mix(in srgb,var(--ink) 14%,var(--surface-2))}
+.ub-res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.ub-res>div{background:var(--surface-2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
+.ub-res b{font-size:19px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums} .ub-res span{font-size:11.5px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -1151,8 +1166,8 @@ button.ub-row-main{cursor:pointer}
       <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
       <button class="pn-btn" type="button" id="sem-att" style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px"><span class="pn-ico" data-ico="refresh"></span><span id="sem-att-txt">Atualizar</span></button>
       <div class="ub-hero" id="sem-hero"></div>
-      <div class="pn-h2" id="sem-graf-t">Reuniões por dia da semana</div>
-      <div class="pn-card"><div class="ub-modo" id="sem-modo" role="group" aria-label="Ver por"><button type="button" data-m="sem" aria-pressed="true">Semana</button><button type="button" data-m="mes" aria-pressed="false">Mês</button></div><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
+      <div class="pn-h2" id="sem-graf-t">Reuniões por dia</div>
+      <div class="pn-card"><div class="ub-modo" id="sem-modo" role="group" aria-label="Ver por"><button type="button" data-m="d8" aria-pressed="true">8 dias</button><button type="button" data-m="d15" aria-pressed="false">15 dias</button><button type="button" data-m="mes" aria-pressed="false">Mês atual</button></div><div class="ub-res" id="sem-res"></div><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
       <div class="pn-h2">Mês dia a dia</div>
       <div class="pn-card"><div class="ub-cal" id="sem-cal"></div>
         <div class="ub-cal-leg"><span><i style="background:var(--sky)"></i>tempo em reunião (mais escuro = mais tempo)</span><span><i style="background:color-mix(in srgb,var(--gold) 45%,var(--surface-2))"></i>só conversa, sem reunião</span><span>toque num dia para abrir</span></div></div>
@@ -2774,16 +2789,27 @@ button.ub-row-main{cursor:pointer}
     const falTop=ORD.slice().sort((a,b)=>D[b].msgs-D[a].msgs)[0];
     ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês",()=>abreReuMes(m)],[tot<60?tot+" min":Math.floor(tot/60)+"h"+pad2(tot%60),"tempo total",()=>abreTempoGrupos(m)],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado",()=>abreDia(m,falTop,D)],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês",()=>{ if(D[falTop].rank[0]) abrePessoaSem(m,D[falTop].rank[0].nome,D); }]]);
     renderCalMes(m);
-    const B=$("sem-dias"); B.textContent=""; const curto=n=>n<60?n+"min":Math.floor(n/60)+"h"+pad2(n%60); const modo=S.semModo==="mes"?"mes":"sem";
+    const B=$("sem-dias"); B.textContent=""; const curto=n=>n<60?n+"min":Math.floor(n/60)+"h"+pad2(n%60); const modo=["d8","d15","mes"].includes(S.semModo)?S.semModo:"d8";
     document.querySelectorAll("#sem-modo button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.m===modo?"true":"false"));
-    $("sem-graf-t").firstChild.nodeValue=modo==="mes"?"Reuniões por dia do mês":"Reuniões por dia da semana"; B.classList.toggle("mes",modo==="mes");
-    const coluna=(cls,qtd,min,mx,rot,val,on)=>{ const c=el("button","ub-day"+cls); c.type="button"; c.appendChild(el("small",null,qtd)); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(min?8:0,Math.round(100*min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
-      c.appendChild(el("b",null,rot)); if(val!=null) c.appendChild(el("span",null,val)); c.onclick=on; B.appendChild(c); };
-    if(modo==="sem"){ const mx=Math.max(1,...ORD.map(w=>D[w].min)); B.style.removeProperty("--nd");
-      ORD.forEach(w=>{ const d=D[w]; coluna(w===top&&tot?" top":"",d.qtd?d.qtd+"×":"",d.min,mx,DSEM[w],d.min?curto(d.min):"—",()=>abreDia(m,w,D)); }); }
-    else { const M=diasDoMes(m); const [a2,me2]=m.split("-").map(Number); const nd=new Date(a2,me2,0).getDate(); B.style.setProperty("--nd",nd); const mx=Math.max(1,...Object.values(M).map(d=>d.min)); const topo=Object.entries(M).sort((x,y)=>y[1].min-x[1].min)[0];
-      for(let dd=1;dd<=nd;dd++){ const data=m+"-"+pad2(dd), d=M[data]||{min:0,reu:[]}; const w=new Date(a2,me2-1,dd).getDay();
-        coluna((topo&&topo[1].min&&topo[0]===data?" top":"")+(w===0||w===6?" fds":""),"",d.min,mx,(dd===1||dd%5===0)?String(dd):"",null,()=>abreData(m,data,M)); } }
+    const bm=document.querySelector('#sem-modo button[data-m="mes"]'); if(bm) bm.textContent=m===mesAtual()?"Mês atual":nomeMes(m);
+    B.className="ub-days "+modo;
+    // lista de datas do período: últimos 8 ou 15 dias (até hoje) ou todos os dias do mês escolhido
+    const iso=x=>x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate()); const hojeD=new Date(); hojeD.setHours(12,0,0,0); let datas=[];
+    if(modo==="mes"){ const [a2,me2]=m.split("-").map(Number); const nd=new Date(a2,me2,0).getDate(); for(let dd=1;dd<=nd;dd++) datas.push(m+"-"+pad2(dd)); }
+    else { const n=modo==="d8"?8:15; for(let k=n-1;k>=0;k--){ const x=new Date(hojeD); x.setDate(x.getDate()-k); datas.push(iso(x)); } }
+    const MM={}; [...new Set(datas.map(d=>d.slice(0,7)))].forEach(mm=>{ MM[mm]=diasDoMes(mm); });
+    const dado=d=>MM[d.slice(0,7)][d]||{reu:[],min:0,msgs:0,pes:new Set(),gr:{}};
+    B.style.setProperty("--nd",datas.length); const mx=Math.max(1,...datas.map(d=>dado(d).min)); const topoD=datas.slice().sort((x,y)=>dado(y).min-dado(x).min)[0];
+    const totR=datas.reduce((a,d)=>a+dado(d).reu.length,0), totM=datas.reduce((a,d)=>a+dado(d).min,0), totMsg=datas.reduce((a,d)=>a+dado(d).msgs,0);
+    const RS=$("sem-res"); RS.textContent=""; [[String(totR),"reuniões"],[totM?curto(totM):"—","em reunião"],[String(totMsg),"mensagens"]].forEach(([v,t])=>{ const x=el("div"); x.appendChild(el("b",null,v)); x.appendChild(el("span",null,t)); RS.appendChild(x); });
+    datas.forEach(data=>{ const d=dado(data); const [ay,am,ad]=data.split("-").map(Number); const w=new Date(ay,am-1,ad).getDay(); const fut=data>iso(hojeD);
+      const c=el("button","ub-day"+(d.min&&data===topoD?" top":"")+(w===0||w===6?" fds":"")+(data===iso(hojeD)?" hoje":"")+(fut?" fut":"")); c.type="button";
+      c.appendChild(el("small",null,modo==="mes"?"":(d.reu.length?d.reu.length+"×":""))); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(d.min?8:0,Math.round(100*d.min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
+      if(modo==="d8"){ c.appendChild(el("b",null,DSEM[w])); c.appendChild(el("span","dt",pad2(ad)+"/"+pad2(am))); c.appendChild(el("span","v",d.min?curto(d.min):"—")); c.appendChild(el("span","m",d.msgs?d.msgs+" msg":"")); }
+      else if(modo==="d15"){ c.appendChild(el("b",null,String(ad))); c.appendChild(el("span","dt",DSEM[w][0])); }
+      else c.appendChild(el("b",null,(ad===1||ad%5===0)?String(ad):""));
+      c.setAttribute("aria-label",DSEM_L[w]+" "+ad+"/"+am+": "+d.reu.length+" reuniões, "+d.msgs+" mensagens");
+      if(!fut) c.onclick=()=>abreData(data.slice(0,7),data,MM[data.slice(0,7)]); B.appendChild(c); });
     const C=$("sem-camp"); C.textContent="";
     ORD.forEach(w=>{ const d=D[w], r1=d.rank[0], r2=d.rank[1];
       C.appendChild(ubRow({n:DSEM[w],t:r1?r1.nome:"Sem dados ainda",s:r1?(r2?"2º "+r2.nome+" ("+r2.msgs+")":"")+(d.qtd?(r2?" · ":"")+d.qtd+" reuniões":""):"",v:r1?r1.msgs+" msgs":"",on:()=>abreDia(m,w,D)})); }); }
