@@ -797,6 +797,36 @@ button.ub-row-main{cursor:pointer}
 .ia-form textarea{flex:1;resize:none;border:0;border-radius:22px;padding:12px 16px;font:16px var(--font-ui);background:var(--surface-2);color:var(--ink);max-height:140px}
 .ia-send{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--accent,#30d158);color:#04210f;display:flex;align-items:center;justify-content:center}
 .ia-send svg{width:20px;height:20px;transform:rotate(-90deg)}
+
+/* relatórios do dia: cor por turno e seções */
+.rl{border-left:5px solid var(--rl-c,var(--accent));padding-left:15px}
+.rl[data-turno="gold"]{--rl-c:var(--gold);--rl-s:var(--gold-soft)} .rl[data-turno="sky"]{--rl-c:var(--sky);--rl-s:var(--sky-soft)} .rl[data-turno="ind"]{--rl-c:#7c6fd6;--rl-s:color-mix(in srgb,#7c6fd6 18%,var(--surface))}
+.rl-chip{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--rl-s);color:var(--rl-c);margin-bottom:6px}
+.pn[data-modo="dia"] .rl[data-turno="gold"] .rl-chip{color:var(--gold-text)}
+.rl-sec{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 6px;padding-top:12px;border-top:.5px solid var(--border)}
+.rl-sec::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--sec-c,var(--rl-c))}
+.rl-nums{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.rl-nums button{all:unset;box-sizing:border-box;cursor:pointer;border-radius:13px;padding:12px;display:flex;flex-direction:column;gap:2px;background:var(--surface-2);position:relative}
+.rl-nums button b{font-size:23px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.rl-nums button small{font-size:12px;color:var(--ink-3)} .rl-nums button i{position:absolute;right:10px;top:10px;font-style:normal;color:var(--ink-3)}
+.rl-nums .k-mensagens{background:var(--sky-soft)} .rl-nums .k-mensagens b{color:var(--sky)}
+.rl-nums .k-importantes{background:var(--coral-soft)} .rl-nums .k-importantes b{color:var(--coral)}
+.rl-nums .k-tempo{grid-column:1/-1;background:color-mix(in srgb,#1a9a63 16%,var(--surface))} .rl-nums .k-tempo b{color:#1a9a63}
+.rl-mais{all:unset;box-sizing:border-box;cursor:pointer;display:flex;justify-content:space-between;width:100%;margin-top:12px;padding-top:12px;border-top:.5px solid var(--border);font-size:14px;font-weight:600;color:var(--rl-c)}
+.pn[data-modo="dia"] .rl[data-turno="gold"] .rl-mais{color:var(--gold-text)}
+/* dias da semana com cor + calendário do mês */
+.ub-day .bar i{background:var(--sky)} .ub-day.top .bar i{background:var(--gold)} .ub-day.top b{color:var(--gold)}
+.pn[data-modo="dia"] .ub-day.top b{color:var(--gold-text)}
+.ub-tiles>div[role="button"]{cursor:pointer;position:relative} .ub-tiles>div[role="button"]::after{content:"›";position:absolute;right:12px;top:10px;color:var(--ink-3)}
+.ub-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.ub-cal .h{font-size:11px;font-weight:700;color:var(--ink-3);text-align:center;padding-bottom:2px}
+.ub-cal button{all:unset;box-sizing:border-box;cursor:pointer;border-radius:10px;min-height:50px;padding:5px 2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:var(--surface-2);text-align:center}
+.ub-cal button b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums} .ub-cal button small{font-size:10px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ub-cal button.fut{opacity:.38;cursor:default} .ub-cal button.hoje{outline:2px solid var(--gold);outline-offset:-2px}
+.ub-cal button.q1{background:color-mix(in srgb,var(--sky) 22%,var(--surface-2))} .ub-cal button.q2{background:color-mix(in srgb,var(--sky) 45%,var(--surface-2))} .ub-cal button.q3{background:color-mix(in srgb,var(--sky) 70%,var(--surface-2))} .ub-cal button.q4{background:var(--sky)}
+.ub-cal button.q3 b,.ub-cal button.q3 small,.ub-cal button.q4 b,.ub-cal button.q4 small{color:#fff}
+.ub-cal button.so-msg{background:color-mix(in srgb,var(--gold) 20%,var(--surface-2))}
+.ub-cal-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--ink-3);margin-top:10px} .ub-cal-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 </style>
 </head>
 <body>
@@ -1103,6 +1133,9 @@ button.ub-row-main{cursor:pointer}
       <div class="ub-hero" id="sem-hero"></div>
       <div class="pn-h2">Reuniões por dia da semana</div>
       <div class="pn-card"><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
+      <div class="pn-h2">Mês dia a dia</div>
+      <div class="pn-card"><div class="ub-cal" id="sem-cal"></div>
+        <div class="ub-cal-leg"><span><i style="background:var(--sky)"></i>tempo em reunião (mais escuro = mais tempo)</span><span><i style="background:color-mix(in srgb,var(--gold) 45%,var(--surface-2))"></i>só conversa, sem reunião</span><span>toque num dia para abrir</span></div></div>
       <div class="pn-h2">🏆 Campeões de cada dia</div>
       <p class="pn-meta" style="margin:-4px 4px 10px">Quem mais escreve nos grupos em cada dia da semana, somando o mês.</p>
       <div class="pn-card ub-list" id="sem-camp"></div>
@@ -2481,7 +2514,7 @@ button.ub-row-main{cursor:pointer}
     const a=el("div","ub-txt"); a.appendChild(el("b",null,r.t||"")); if(r.s) a.appendChild(el("small",null,r.s)); d.appendChild(a);
     if(r.v!=null) d.appendChild(el("span","ub-v",String(r.v))); if(r.on) d.appendChild(el("i","ub-chev","›")); return d; }
   function ubHero(box,big,txt,tiles){ box.textContent=""; box.appendChild(el("div","ub-big",big)); box.appendChild(el("div","ub-cap",txt));
-    if(tiles){ const T=el("div","ub-tiles"); tiles.forEach(([v,l])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); T.appendChild(d); }); box.appendChild(T); } }
+    if(tiles){ const T=el("div","ub-tiles"); tiles.forEach(([v,l,on])=>{ const d=el("div"); d.appendChild(el("b",null,v)); d.appendChild(el("span",null,l)); if(on){ d.setAttribute("role","button"); d.tabIndex=0; d.onclick=on; } T.appendChild(d); }); box.appendChild(T); } }
 
 
   /* ---------- v4.19 · atalhos novos (Hoje, Highlights, Compromissos) e Assistente ---------- */
@@ -2660,11 +2693,39 @@ button.ub-row-main{cursor:pointer}
       rowsTit:"Quem mais fala na "+DSEM_L[w].toLowerCase(), rows:d.rank.slice(0,10).map((x,i)=>({n:i<3?["🥇","🥈","🥉"][i]:i+1,t:x.nome,s:x.min?fmtHM(x.min)+" de conversa":"",v:x.msgs+" msgs"})).concat(
         d.lista.sort((a,b)=>(b.min||0)-(a.min||0)).map(x=>({t:x.grupo,s:"Reunião "+String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):""),v:fmtHM(x.min),on:()=>{ abreGrupo(x.grupo); }}))),
       nota:d.qtd?"Na "+DSEM_L[w].toLowerCase()+" os grupos somam "+fmtHM(d.min)+" de reunião pelo WhatsApp. Uma ligação de 15 min com pauta, nesse dia, resolve a maior parte.":"Nenhum debate longo neste dia da semana."}); }
+  const dataLocal=r=>{ if(r.data) return r.data; const x=new Date(r.geradoEm); if(isNaN(x)) return String(r.geradoEm||"").slice(0,10); return x.getFullYear()+"-"+pad2(x.getMonth()+1)+"-"+pad2(x.getDate()); };
+  const linhaReu=x=>({t:x.grupo,s:DSEM[diaSem(x.data)]+" "+String(x.data||"").split("-").reverse().slice(0,2).join("/")+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):"")+(x.msgs?" · "+x.msgs+" msgs":"")+(nPess(x)?" · "+nPess(x)+" pessoas":""),v:fmtHM(x.min),on:()=>abreGrupo(x.grupo)});
+  function abreReuMes(m){ const R=reunioes(m); const l=R.lista.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))||String(b.inicio||"").localeCompare(String(a.inicio||"")));
+    ficha("Reuniões do mês",nomeMes(m),{tiles:[[String(R.total.qtd),"reuniões"],[fmtHM(R.total.min),"tempo total"]],rowsTit:l.length>40?"As 40 mais recentes":"Todas as reuniões",rows:l.map(linhaReu),nota:"Reunião = debate de grupo com mais de 10 minutos seguidos. Toque numa linha para abrir o grupo."}); }
+  function abreTempoGrupos(m){ const R=reunioes(m);
+    ficha("Tempo por grupo",nomeMes(m),{tiles:[[fmtHM(R.total.min),"tempo total"],[String(R.grupos.length),"grupos"]],rowsTit:"Quem mais consome tempo",rows:R.grupos.map((g,i)=>({n:i+1,t:g.grupo,s:g.qtd+" reuni"+(g.qtd>1?"ões":"ão")+" · maior "+fmtHM(g.maior),v:fmtHM(g.min),on:()=>abreGrupo(g.grupo)}))}); }
+  function abrePessoaSem(m,nome,D){ const k=norm(nome); const linhas=ORD.map(w=>({w,f:D[w].fal[k]})).filter(x=>x.f); const tot=linhas.reduce((a,x)=>a+x.f.msgs,0);
+    ficha(nome,nomeMes(m)+" · nos grupos",{tiles:[[String(tot),"mensagens no mês"],[String(linhas.length),"dias da semana ativos"]],rowsTit:"Por dia da semana",rows:linhas.sort((a,b)=>b.f.msgs-a.f.msgs).map(x=>({n:DSEM[x.w],t:DSEM_L[x.w],s:x.f.min?fmtHM(x.f.min)+" de conversa":"",v:x.f.msgs+" msgs",on:()=>abreDia(m,x.w,D)}))}); }
+  function diasDoMes(m){ const R=reunioes(m); const M={}; const pega=d=>M[d]=M[d]||{reu:[],min:0,msgs:0,pes:new Set(),gr:{}};
+    R.lista.forEach(x=>{ if(!x.data) return; const d=pega(x.data); d.reu.push(x); d.min+=x.min||0; });
+    relDoMes(m).forEach(r=>{ const d=pega(dataLocal(r)); const n=r.mensagens||(r.participantes||[]).reduce((a,p)=>a+(p.msgs||0),0); d.msgs+=n; d.gr[r.grupo]=(d.gr[r.grupo]||0)+n; (r.participantes||[]).forEach(p=>d.pes.add(norm(p.nome))); });
+    return M; }
+  function abreData(m,data,M){ const d=M[data]||{reu:[],min:0,msgs:0,pes:new Set(),gr:{}}; const w=diaSem(data); const comReu=new Set(d.reu.map(x=>nG(x.grupo)));
+    const rows=d.reu.slice().sort((a,b)=>String(a.inicio||"").localeCompare(String(b.inicio||""))||(b.min-a.min)).map(x=>({n:"●",t:x.grupo,s:"Reunião"+(x.inicio?" · "+x.inicio+(x.fim?"–"+x.fim:""):"")+(x.msgs?" · "+x.msgs+" msgs":"")+(nPess(x)?" · "+nPess(x)+" pessoas":""),v:fmtHM(x.min),on:()=>abreGrupo(x.grupo)}))
+      .concat(Object.entries(d.gr).filter(([g])=>!comReu.has(nG(g))).sort((a,b)=>b[1]-a[1]).map(([g,n])=>({t:g,s:"Conversa sem reunião",v:n+" msgs",on:()=>abreGrupo(g)})));
+    ficha(DSEM_L[w]+", "+data.split("-").reverse().slice(0,2).join("/"),nomeMes(m),{tiles:[[String(d.reu.length),"reuniões"],[fmtHM(d.min),"tempo em reunião"],[String(d.msgs),"mensagens nos grupos"],[String(d.pes.size),"pessoas"]],rowsTit:rows.length?"Como o dia se movimentou":"",rows,
+      nota:rows.length?"":"Sem leitura de grupos neste dia."}); }
+  function renderCalMes(m){ const C=$("sem-cal"); if(!C) return; C.textContent=""; const M=diasDoMes(m); const [a,me]=m.split("-").map(Number); const nd=new Date(a,me,0).getDate();
+    ORD.forEach(w=>C.appendChild(el("div","h",DSEM[w])));
+    const off=ORD.indexOf(new Date(a,me-1,1).getDay()); for(let i=0;i<off;i++) C.appendChild(el("div"));
+    const mx=Math.max(1,...Object.values(M).map(d=>d.min)); const hoje=new Date(); const hj=hoje.getFullYear()+"-"+pad2(hoje.getMonth()+1)+"-"+pad2(hoje.getDate());
+    for(let dd=1;dd<=nd;dd++){ const data=m+"-"+pad2(dd); const d=M[data]; const b=el("button"); b.type="button"; b.appendChild(el("b",null,String(dd)));
+      if(d&&d.min){ const q=Math.min(4,Math.max(1,Math.ceil(4*d.min/mx))); b.className="q"+q; b.appendChild(el("small",null,d.min<60?d.min+"min":Math.floor(d.min/60)+"h"+pad2(d.min%60))); }
+      else if(d&&d.msgs){ b.className="so-msg"; b.appendChild(el("small",null,d.msgs+" msg")); }
+      else b.appendChild(el("small",null,data>hj?"":"—"));
+      if(data>hj) b.classList.add("fut"); else b.onclick=()=>abreData(m,data,M); if(data===hj) b.classList.add("hoje");
+      b.setAttribute("aria-label",dd+": "+(d?d.reu.length+" reuniões, "+d.msgs+" mensagens":"sem dados")); C.appendChild(b); } }
   function renderSem(){ if(!$("sem-dias")) return; const m=S.semMes||mesAtual(); const ms=mesesDisp();
     $("sem-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("sem-prev").disabled=ms.indexOf(m)<=0; $("sem-next").disabled=ms.indexOf(m)>=ms.length-1;
     const D=semDados(m); const top=ORD.slice().sort((a,b)=>D[b].min-D[a].min||D[b].qtd-D[a].qtd)[0]; const tot=ORD.reduce((a,w)=>a+D[w].min,0), totQ=ORD.reduce((a,w)=>a+D[w].qtd,0);
     const falTop=ORD.slice().sort((a,b)=>D[b].msgs-D[a].msgs)[0];
-    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês"],[fmtHM(tot),"tempo total"],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado"],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês"]]);
+    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês",()=>abreReuMes(m)],[fmtHM(tot),"tempo total",()=>abreTempoGrupos(m)],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado",()=>abreDia(m,falTop,D)],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês",()=>{ if(D[falTop].rank[0]) abrePessoaSem(m,D[falTop].rank[0].nome,D); }]]);
+    renderCalMes(m);
     const B=$("sem-dias"); B.textContent=""; const mx=Math.max(1,...ORD.map(w=>D[w].min));
     ORD.forEach(w=>{ const d=D[w]; const c=el("button","ub-day"+(w===top&&tot?" top":"")); c.type="button";
       c.appendChild(el("small",null,d.qtd?d.qtd+"×":"")); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(d.min?8:2,Math.round(100*d.min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
@@ -3656,22 +3717,35 @@ button.ub-row-main{cursor:pointer}
   }
 
   /* ---------- relatórios ---------- */
+  const mesmoDiaRel=(x,y)=>{ const a=new Date(x), b=new Date(y); return !isNaN(a)&&!isNaN(b)&&a.toDateString()===b.toDateString(); };
+  const ROT_NUM=[["mensagens","mensagens"],["importantes","importantes"],["lidas","conversas lidas"],["marcadasLidas","marcadas como lidas"],["naoLidas","mantidas não lidas"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]];
+  const txtEcon=n=>{ const h=Math.floor(n/60), mi=n%60; return (h?h+"h ":"")+mi+" min"; };
+  function abreImpRel(r){ const q=r.geradoEm||r.data; const its=(S.itens||[]).filter(i=>mesmoDiaRel(i.recebidoEm,q)).sort((x,y)=>String(y.recebidoEm).localeCompare(String(x.recebidoEm)));
+    const pend=its.filter(i=>(i.status||"pendente")==="pendente").length;
+    ficha("Importantes do dia",fmt(q).split(" ")[0],{tiles:[[String(its.length),"separados neste dia"],[String(pend),"ainda pendentes"]],rowsTit:its.length?"Toque para abrir":"",
+      rows:its.map(i=>({n:i.prioridade==="alta"?"!":"•",nCls:i.prioridade==="alta"?"r":"",t:i.contato||i.grupo||"Importante",s:(i.grupo?i.grupo+" · ":"")+(i.resumo||""),v:(i.status||"pendente")==="pendente"?"Pendente":"Feito",on:()=>abreItemBusca(i)})),
+      nota:its.length?"Lista dos importantes que estão neste aparelho com data deste dia. O número do relatório é o que a leitura contou na hora.":"Nenhum importante com data deste dia está guardado neste aparelho."}); }
+  function abreRel(r){ const n=r.numeros||{}; const tiles=ROT_NUM.filter(([k])=>n[k]!=null).map(([k,t])=>[String(n[k]),t]); if(n.minutosEconomizados!=null) tiles.push([txtEcon(n.minutosEconomizados),"tempo economizado"]);
+    const rows=[]; const poe=(tit,arr)=>(arr||[]).forEach(d=>rows.push({n:tit[0],t:d,s:tit}));
+    poe("Destaque",r.destaques); poe("Indicação",r.indicacoes); poe("Assunto importante",r.assuntos);
+    ficha(r.titulo||"Relatório",fmt(r.geradoEm||r.data),{tiles,rowsTit:rows.length?"O que o relatório trouxe":"",rows,nota:(r.resumo||"")+(n.criterioTempo?" Tempo economizado: "+n.criterioTempo+".":""),acao:["Ver importantes deste dia",()=>abreImpRel(r)]}); }
   function cardRel(r){
-    const c=el("article","pn-card pn-rel");
+    const c=el("article","pn-card pn-rel rl"); const q=new Date(r.geradoEm||r.data); const h=isNaN(q)?12:q.getHours(); const turno=h<12?["Manhã","gold"]:h<18?["Tarde","sky"]:["Noite","ind"]; c.dataset.turno=turno[1];
+    c.appendChild(el("span","rl-chip",turno[0]));
     const top=el("div","pn-row");
     top.appendChild(el("h3",null, r.titulo || (r.periodo==="noite"?"Relatório da noite":"Relatório da manhã")));
     top.appendChild(el("span","pn-meta", fmt(r.geradoEm||r.data)));
     c.appendChild(top);
-    if(r.resumo) c.appendChild(el("p","pn-sum",r.resumo));
-    const nmPos=c.childNodes.length;
-    if(Array.isArray(r.destaques)&&r.destaques.length){ const u=el("ul"); r.destaques.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); }
-    const n=r.numeros||{}, nm=el("div","pn-nums");
-    [["mensagens","mensagens"],["lidas","conversas lidas"],["marcadasLidas","marcadas como lidas"],["naoLidas","mantidas não lidas"],["importantes","importantes"],["favoritadas","favoritadas"],["ausencias","respostas de ausência"]].forEach(([k,t])=>{ if(n[k]!=null){ const sp=el("span"); sp.appendChild(el("b",null,String(n[k]))); sp.appendChild(el("small",null,t)); nm.appendChild(sp); } });
-    if(n.minutosEconomizados!=null){ const tz=el("div","pn-drill-box"); tz.style.marginTop="8px"; const h=Math.floor(n.minutosEconomizados/60), mi=n.minutosEconomizados%60;
-      tz.textContent="⏱ Tempo economizado: "+(h?h+"h ":"")+mi+" min"+(n.criterioTempo?" ("+n.criterioTempo+")":""); c.appendChild(tz); }
-    if(Array.isArray(r.indicacoes)&&r.indicacoes.length){ c.appendChild(el("div","pn-ag-g","Indicações")); const u2=el("ul"); r.indicacoes.forEach(d=>u2.appendChild(el("li",null,d))); c.appendChild(u2); }
-    if(Array.isArray(r.assuntos)&&r.assuntos.length){ c.appendChild(el("div","pn-ag-g","Assuntos importantes")); const u3=el("ul"); r.assuntos.forEach(d=>u3.appendChild(el("li",null,d))); c.appendChild(u3); }
-    if(nm.childNodes.length) c.insertBefore(nm,c.childNodes[nmPos]||null);
+    const sec=(t,cor)=>{ const d=el("div","rl-sec",t); if(cor) d.style.setProperty("--sec-c",cor); c.appendChild(d); };
+    if(r.resumo){ sec("Resumo"); c.appendChild(el("p","pn-sum",r.resumo)); }
+    const n=r.numeros||{}, nm=el("div","rl-nums");
+    ROT_NUM.forEach(([k,t])=>{ if(n[k]==null) return; const b=el("button","k-"+k); b.type="button"; b.appendChild(el("b",null,String(n[k]))); b.appendChild(el("small",null,t)); b.appendChild(el("i",null,"›")); b.onclick=()=>k==="importantes"?abreImpRel(r):abreRel(r); nm.appendChild(b); });
+    if(n.minutosEconomizados!=null){ const b=el("button","k-tempo"); b.type="button"; b.appendChild(el("b",null,txtEcon(n.minutosEconomizados))); b.appendChild(el("small",null,"tempo economizado"+(n.criterioTempo?" ("+n.criterioTempo+")":""))); b.appendChild(el("i",null,"›"));
+      b.onclick=()=>abreInfo("Tempo economizado","Estimativa do tempo de leitura evitado neste relatório."+(n.criterioTempo?" Critério: "+n.criterioTempo+".":" Conta o que a peneira leu e descartou por você.")); nm.appendChild(b); }
+    if(nm.childNodes.length){ sec("Números","var(--sky)"); c.appendChild(nm); }
+    const lista=(t,arr,cor)=>{ if(!Array.isArray(arr)||!arr.length) return; sec(t,cor); const u=el("ul"); arr.forEach(d=>u.appendChild(el("li",null,d))); c.appendChild(u); };
+    lista("Destaques",r.destaques,"var(--gold)"); lista("Indicações",r.indicacoes,"#1a9a63"); lista("Assuntos importantes",r.assuntos,"var(--coral)");
+    const mais=el("button","rl-mais"); mais.type="button"; mais.appendChild(el("span",null,"Abrir relatório")); mais.appendChild(el("span",null,"›")); mais.onclick=()=>abreRel(r); c.appendChild(mais);
     return c;
   }
   function renderRel(){
@@ -3933,7 +4007,7 @@ button.ub-row-main{cursor:pointer}
         {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],{duration:1050*k,fill:"forwards",easing:"cubic-bezier(.35,.05,.4,1)"}), T_PASSA+i*150*k);
     });
     setTimeout(pinga, T_PASSA+(nome.length*150+850)*k);
-    setTimeout(()=>$("sp-tag").classList.add("on"), T_PASSA+1900*k);
+    setTimeout(()=>{ const t=$("sp-tag"); if(t) t.classList.add("on"); }, T_PASSA+1900*k);
     setTimeout(fecha, T_PASSA+3200*k);
   })();
 
