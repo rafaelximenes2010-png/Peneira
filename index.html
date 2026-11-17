@@ -2287,6 +2287,10 @@ button.ub-row-main{cursor:pointer}
   /* ---------- cadastro, Face ID e fluxo de abertura ---------- */
   const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
   const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+  /* Pedido do Rafael (17/11/2026): desligar o Face ID uma única vez, só no cadastro dele, enquanto o app está em desenvolvimento.
+     Ele religa quando quiser em Ajustes → Abrir com Face ID; esta rotina não desliga de novo. */
+  try{ if(!localStorage.getItem("peneira-fid-pausa-1")){ const pf=JSON.parse(localStorage.getItem("peneira-perfil")||"null");
+      if(pf&&/ximenes/i.test(String(pf.nome||""))){ localStorage.removeItem("peneira-fid"); localStorage.setItem("peneira-fid-pausa-1",new Date().toISOString()); } } }catch(e){}
   const temFid=()=>{ try{ return !!localStorage.getItem("peneira-fid"); }catch(e){ return false; } };
   async function fidDisponivel(){ try{ return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }catch(e){ return false; } }
   async function fidCriar(nome){
@@ -2403,8 +2407,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.23";
+  const VERSAO="4.24";
   const VERSOES=[
+    {v:"4.24",data:"17/11/2026",itens:["Tela de entrada fica um pouco mais na tela antes de abrir"]},
     {v:"4.23",data:"17/11/2026",itens:["No computador, a roda do mouse volta a rolar a página; com uma janela aberta, rola só a janela","Dicas ao passar o mouse nos botões de ícone e Enter/Espaço nos itens clicáveis","Tela de entrada nova: só o nome Peneira em verde menta, sem a peneira e sem as letras caindo"]},
     {v:"4.22",data:"17/11/2026",itens:["Ajustes → Instalar e indicar: QR Code do Peneira para instalar em outro aparelho ou indicar a alguém, com link, WhatsApp, copiar e baixar o QR em imagem; atalho também no menu do logo"]},
     {v:"4.21",data:"17/11/2026",itens:["Versão para computador revisada: menu do topo sem sobreposição, tela mais larga em monitores grandes, abas e filtros que quebram linha em vez de rolar, detalhes abrindo como janela no centro, Esc para fechar e Gestão em duas colunas"]},
@@ -4257,7 +4262,7 @@ button.ub-row-main{cursor:pointer}
     requestAnimationFrame(()=>{ sp.classList.add("vai"); });
     setTimeout(()=>{ const t=$("sp-tag"); if(t) t.classList.add("on"); }, 650*k);
     setTimeout(pinga, 700*k);
-    setTimeout(fecha, 2100*k);
+    setTimeout(fecha, 3000*k);
   })();
 
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").then(r=>{ try{ r.update(); }catch(e){} }).catch(()=>{}); let recarregou=false; navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(recarregou) return; recarregou=true; location.reload(); }); }catch(e){} }
