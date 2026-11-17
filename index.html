@@ -2467,8 +2467,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.31";
+  const VERSAO="4.32";
   const VERSOES=[
+    {v:"4.32",data:"17/11/2026",itens:["Gestão: o botão Gerar PowerPoint volta a funcionar (o gerador passou a vir junto com o app)"]},
     {v:"4.31",data:"17/11/2026",itens:["Gestão: ao gerar PDF ou PowerPoint aparece Gerando…, depois o nome do arquivo e um link para baixar de novo","Início no computador: atalhos em cartões proporcionais à tela"]},
     {v:"4.30",data:"17/11/2026",itens:["Gestão no computador: cartões encaixados em duas colunas, sem espaços vazios"]},
     {v:"4.29",data:"17/11/2026",itens:["Highlights: depois de abertos e lidos, os destaques saem da lista e o contador zera; só os novos voltam a aparecer. Os já lidos ficam num botão dentro da ficha"]},
@@ -4633,7 +4634,8 @@ button.ub-row-main{cursor:pointer}
       img.onload=()=>{ const c=document.createElement("canvas"); c.width=w*2; c.height=h*2; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); ok(c.toDataURL("image/jpeg",.92)); }; img.onerror=()=>er(new Error("svg")); img.src=u; }); }
     async function exportPPT(salva){ salva=salva||salvarArquivo;
       const m=modelo(); if(!m.dias.length){ aviso("Ainda não há dias medidos no período para gerar a apresentação."); return; }
-      try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"); }catch(e){ aviso("Não consegui carregar o gerador de PowerPoint."); return; }
+      try{ await carrega(location.pathname.replace(/[^/]*$/,"")+"vendor/pptxgen.bundle.js"); }catch(e){ try{ await carrega("https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"); }catch(e2){ throw new Error("o gerador de PowerPoint não carregou; verifique a internet e tente de novo"); } }
+      if(!window.PptxGenJS) throw new Error("o gerador de PowerPoint não carregou");
       const P=new window.PptxGenJS(); P.layout="LAYOUT_WIDE"; P.title="Gestão executiva do tempo · "+m.P.rot; P.author="Peneira";
       let pag=0; const logo=await logoB64();
       const nova=(t,sub)=>{ const s=P.addSlide(); pag++; s.background={color:"FFFFFF"};
