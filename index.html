@@ -832,6 +832,23 @@ button.ub-row-main{cursor:pointer}
 .ub-as-h small .as-pend{color:var(--coral);font-weight:700} .ub-as-h small .as-ok{color:#1a9a63;font-weight:600}
 .ub-assunto .ub-hist>summary{background:color-mix(in srgb,var(--as-c) 14%,var(--surface))}
 .ub-seg .pn-chip i.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:7px;flex:none}
+
+/* gráfico de reuniões: semana ou mês, barras do mesmo tamanho e alinhadas */
+.ub-days{align-items:start}
+.ub-day{justify-content:flex-start}
+.ub-day small{height:14px;min-height:14px;line-height:14px}
+.ub-day .bar{height:120px;flex:none}
+.ub-day span{white-space:nowrap;height:14px;line-height:14px}
+.ub-day .bar i{background:var(--sky)} .ub-day.top .bar i{background:var(--gold)} .ub-day.top b{color:var(--gold)}
+.pn[data-modo="dia"] .ub-day.top b{color:var(--gold-text)}
+.ub-days.mes{grid-template-columns:repeat(var(--nd,31),1fr);gap:2px}
+.ub-days.mes .ub-day{gap:3px} .ub-days.mes .ub-day .bar{max-width:none;border-radius:4px} .ub-days.mes .ub-day .bar i{border-radius:4px}
+.ub-days.mes .ub-day b{font-size:9.5px;font-weight:600;height:12px;line-height:12px;color:var(--ink-3)} .ub-days.mes .ub-day.top b{color:var(--gold)}
+.ub-days.mes .ub-day.fds .bar{background:color-mix(in srgb,var(--ink) 14%,var(--surface-2))}
+.ub-modo{display:flex;gap:6px;background:var(--surface-2);border-radius:12px;padding:4px;margin-bottom:12px}
+.ub-modo button{all:unset;box-sizing:border-box;flex:1;text-align:center;padding:8px 0;border-radius:9px;font-size:14px;font-weight:700;color:var(--ink-3);cursor:pointer}
+.ub-modo button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.ub-tiles>div[role="button"]{cursor:pointer;position:relative} .ub-tiles>div[role="button"]::after{content:"›";position:absolute;right:12px;bottom:10px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -1136,8 +1153,8 @@ button.ub-row-main{cursor:pointer}
       <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
       <button class="pn-btn" type="button" id="sem-att" style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px"><span class="pn-ico" data-ico="refresh"></span><span id="sem-att-txt">Atualizar</span></button>
       <div class="ub-hero" id="sem-hero"></div>
-      <div class="pn-h2">Reuniões por dia da semana</div>
-      <div class="pn-card"><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
+      <div class="pn-h2" id="sem-graf-t">Reuniões por dia da semana</div>
+      <div class="pn-card"><div class="ub-modo" id="sem-modo" role="group" aria-label="Ver por"><button type="button" data-m="sem" aria-pressed="true">Semana</button><button type="button" data-m="mes" aria-pressed="false">Mês</button></div><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
       <div class="pn-h2">Mês dia a dia</div>
       <div class="pn-card"><div class="ub-cal" id="sem-cal"></div>
         <div class="ub-cal-leg"><span><i style="background:var(--sky)"></i>tempo em reunião (mais escuro = mais tempo)</span><span><i style="background:color-mix(in srgb,var(--gold) 45%,var(--surface-2))"></i>só conversa, sem reunião</span><span>toque num dia para abrir</span></div></div>
@@ -2757,15 +2774,22 @@ button.ub-row-main{cursor:pointer}
     $("sem-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("sem-prev").disabled=ms.indexOf(m)<=0; $("sem-next").disabled=ms.indexOf(m)>=ms.length-1;
     const D=semDados(m); const top=ORD.slice().sort((a,b)=>D[b].min-D[a].min||D[b].qtd-D[a].qtd)[0]; const tot=ORD.reduce((a,w)=>a+D[w].min,0), totQ=ORD.reduce((a,w)=>a+D[w].qtd,0);
     const falTop=ORD.slice().sort((a,b)=>D[b].msgs-D[a].msgs)[0];
-    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês",()=>abreReuMes(m)],[fmtHM(tot),"tempo total",()=>abreTempoGrupos(m)],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado",()=>abreDia(m,falTop,D)],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês",()=>{ if(D[falTop].rank[0]) abrePessoaSem(m,D[falTop].rank[0].nome,D); }]]);
+    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês",()=>abreReuMes(m)],[tot<60?tot+" min":Math.floor(tot/60)+"h"+pad2(tot%60),"tempo total",()=>abreTempoGrupos(m)],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado",()=>abreDia(m,falTop,D)],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês",()=>{ if(D[falTop].rank[0]) abrePessoaSem(m,D[falTop].rank[0].nome,D); }]]);
     renderCalMes(m);
-    const B=$("sem-dias"); B.textContent=""; const mx=Math.max(1,...ORD.map(w=>D[w].min));
-    ORD.forEach(w=>{ const d=D[w]; const c=el("button","ub-day"+(w===top&&tot?" top":"")); c.type="button";
-      c.appendChild(el("small",null,d.qtd?d.qtd+"×":"")); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(d.min?8:2,Math.round(100*d.min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
-      c.appendChild(el("b",null,DSEM[w])); c.appendChild(el("span",null,d.min?fmtHM(d.min):"—")); c.onclick=()=>abreDia(m,w,D); B.appendChild(c); });
+    const B=$("sem-dias"); B.textContent=""; const curto=n=>n<60?n+"min":Math.floor(n/60)+"h"+pad2(n%60); const modo=S.semModo==="mes"?"mes":"sem";
+    document.querySelectorAll("#sem-modo button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.m===modo?"true":"false"));
+    $("sem-graf-t").firstChild.nodeValue=modo==="mes"?"Reuniões por dia do mês":"Reuniões por dia da semana"; B.classList.toggle("mes",modo==="mes");
+    const coluna=(cls,qtd,min,mx,rot,val,on)=>{ const c=el("button","ub-day"+cls); c.type="button"; c.appendChild(el("small",null,qtd)); const bar=el("div","bar"); const ii=el("i"); ii.style.height=Math.max(min?8:0,Math.round(100*min/mx))+"%"; bar.appendChild(ii); c.appendChild(bar);
+      c.appendChild(el("b",null,rot)); if(val!=null) c.appendChild(el("span",null,val)); c.onclick=on; B.appendChild(c); };
+    if(modo==="sem"){ const mx=Math.max(1,...ORD.map(w=>D[w].min)); B.style.removeProperty("--nd");
+      ORD.forEach(w=>{ const d=D[w]; coluna(w===top&&tot?" top":"",d.qtd?d.qtd+"×":"",d.min,mx,DSEM[w],d.min?curto(d.min):"—",()=>abreDia(m,w,D)); }); }
+    else { const M=diasDoMes(m); const [a2,me2]=m.split("-").map(Number); const nd=new Date(a2,me2,0).getDate(); B.style.setProperty("--nd",nd); const mx=Math.max(1,...Object.values(M).map(d=>d.min)); const topo=Object.entries(M).sort((x,y)=>y[1].min-x[1].min)[0];
+      for(let dd=1;dd<=nd;dd++){ const data=m+"-"+pad2(dd), d=M[data]||{min:0,reu:[]}; const w=new Date(a2,me2-1,dd).getDay();
+        coluna((topo&&topo[1].min&&topo[0]===data?" top":"")+(w===0||w===6?" fds":""),"",d.min,mx,(dd===1||dd%5===0)?String(dd):"",null,()=>abreData(m,data,M)); } }
     const C=$("sem-camp"); C.textContent="";
     ORD.forEach(w=>{ const d=D[w], r1=d.rank[0], r2=d.rank[1];
       C.appendChild(ubRow({n:DSEM[w],t:r1?r1.nome:"Sem dados ainda",s:r1?(r2?"2º "+r2.nome+" ("+r2.msgs+")":"")+(d.qtd?(r2?" · ":"")+d.qtd+" reuniões":""):"",v:r1?r1.msgs+" msgs":"",on:()=>abreDia(m,w,D)})); }); }
+  $("sem-modo").addEventListener("click",e=>{ const b=e.target.closest("button[data-m]"); if(!b) return; S.semModo=b.dataset.m; renderSem(); });
   $("sem-prev").addEventListener("click",()=>{ navMes("semMes",-1); renderSem(); });
   $("sem-next").addEventListener("click",()=>{ navMes("semMes",1); renderSem(); });
   $("sem-att").addEventListener("click",async()=>{ const b=$("sem-att"), tx=$("sem-att-txt"); b.disabled=true; tx.textContent="Atualizando…";
