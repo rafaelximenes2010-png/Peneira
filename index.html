@@ -1532,6 +1532,8 @@ button.ub-row-main{cursor:pointer}
       <label for="ponte-tok">Senha da ponte</label><input id="ponte-tok" type="password" placeholder="a mesma do PENEIRA_TOKEN" autocomplete="off">
       <button class="pn-btn pri" type="button" id="ponte-ok">Conectar e testar</button>
       <button class="pn-btn" type="button" id="ponte-sair" style="margin-top:8px" hidden>Desconectar</button>
+      <button class="pn-btn" type="button" id="ponte-par" style="margin-top:8px;width:100%" hidden>Conectar outro aparelho (computador ou celular)</button>
+      <div id="ponte-par-st" class="pn-meta" style="margin:8px 0 0" hidden></div>
       <a class="pn-meta" href="https://github.com/rafaelximenes2010-png/Peneira/blob/main/docs/PONTE-API.md" target="_blank" rel="noopener" style="display:block;margin-top:10px">Passo a passo para criar a ponte →</a>
     </div>
 
@@ -2482,8 +2484,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.33";
+  const VERSAO="4.34";
   const VERSOES=[
+    {v:"4.34",data:"17/11/2026",itens:["Ajustes → Ponte oficial → Conectar outro aparelho: gera um link que liga o computador (ou outro celular) à mesma Ponte, sem digitar endereço e senha","Varrer agora informa o horário da próxima leitura dos grupos e avisa quando o aparelho não está conectado à Ponte"]},
     {v:"4.33",data:"17/11/2026",itens:["Início e Gestão mostram quanto o Peneira já economizou desde que começou a funcionar: tempo de leitura poupado e o valor em reais, com a conta dia a dia ao tocar"]},
     {v:"4.32",data:"17/11/2026",itens:["Gestão: o botão Gerar PowerPoint volta a funcionar (o gerador passou a vir junto com o app)"]},
     {v:"4.31",data:"17/11/2026",itens:["Gestão: ao gerar PDF ou PowerPoint aparece Gerando…, depois o nome do arquivo e um link para baixar de novo","Início no computador: atalhos em cartões proporcionais à tela"]},
@@ -3290,7 +3293,8 @@ button.ub-row-main{cursor:pointer}
     let fezPonte=false; if(ponte&&ponte.url){ st.textContent="Atualizando as conversas individuais…"; await ponteSync(); fezPonte=!!S.ponteSt; }
     let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
     let pediu=false; if(ponte&&ponte.url){ try{ const nv={...(S.varredura||{}),pedidoEm:new Date().toISOString()}; await ponteReq("/sync",{method:"POST",body:JSON.stringify({varredura:nv})}); S.varredura=nv; if(S.demo) demoSave(); pediu=true; }catch(e){} }
-    const gruposMsg=pediu?"Pedido de varredura dos grupos registrado. O notebook atende pelo Chrome na próxima passada, que acontece de hora em hora (precisa estar ligado, com o WhatsApp Web aberto).":"Não consegui registrar o pedido de varredura dos grupos agora. Eles entram na passada automática do notebook, de hora em hora.";
+    const prox=(()=>{ const d=new Date(); if(d.getMinutes()>=2) d.setHours(d.getHours()+1); d.setMinutes(2,0,0); return pad2(d.getHours())+":"+pad2(d.getMinutes()); })();
+    const gruposMsg=pediu?"Pedido de varredura dos grupos registrado. O notebook lê os grupos pelo Chrome na próxima passada, por volta das "+prox+" (ele confere os pedidos no minuto 02 de cada hora e precisa estar ligado, com o Chrome aberto).":(ponte&&ponte.url?"Não consegui registrar o pedido de varredura dos grupos agora (a Ponte não respondeu). Tente de novo em instantes.":"Este aparelho ainda não está conectado à Ponte, por isso o pedido de varredura não foi registrado. No celular, abra Ajustes → Ponte oficial → Conectar outro aparelho e abra o link aqui.");
     if(!mcp){ const h=new Date(); marca(fezPonte?"Conversas individuais atualizadas às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+".":"Pedido registrado.",4000);
       st.textContent=(fezPonte?"✓ Conversas individuais atualizadas agora. ":"")+gruposMsg; salvoOk(b,"✓ Feito"); return; }
     st.textContent="Pedindo a varredura dos grupos…";
@@ -3531,6 +3535,19 @@ button.ub-row-main{cursor:pointer}
   });
   $("ponte-sair").addEventListener("click",()=>{ ponte=null; try{ localStorage.removeItem(PONTE_KEY); }catch(e){} $("ponte-url").value=""; $("ponte-tok").value=""; ponteLiga(); });
   ponteLiga();
+  /* ---------- conectar outro aparelho à mesma Ponte por um link de conexão (sem digitar endereço e senha) ---------- */
+  (function(){ const par=$("ponte-par"), pst=$("ponte-par-st"); if(!par) return;
+    const b64u=t=>btoa(unescape(encodeURIComponent(t))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""), ub64u=t=>decodeURIComponent(escape(atob(t.replace(/-/g,"+").replace(/_/g,"/"))));
+    const mostra=()=>{ par.hidden=!(ponte&&ponte.url&&ponte.tok); }; mostra(); setInterval(mostra,3000);
+    par.addEventListener("click",async()=>{ if(!(ponte&&ponte.url&&ponte.tok)) return; const link=LINK_PUB+"#ponte="+b64u(JSON.stringify({u:ponte.url,t:ponte.tok}));
+      pst.hidden=false; let ok=false; try{ await navigator.clipboard.writeText(link); ok=true; }catch(e){}
+      pst.textContent=(ok?"Link de conexão copiado. ":"")+"Abra esse link no outro aparelho (por exemplo, envie para você mesmo e abra no Chrome do computador): ele conecta sozinho à mesma Ponte. Não envie a outras pessoas, porque o link dá acesso aos seus dados.";
+      if(navigator.share&&!window.claude){ try{ await navigator.share({title:"Peneira · link de conexão",text:"Link de conexão do meu Peneira (não repassar):",url:link}); }catch(e){} }
+      if(!ok){ const i=document.createElement("input"); i.readOnly=true; i.value=link; i.style.cssText="width:100%;margin-top:8px"; i.onclick=()=>i.select(); pst.appendChild(i); } });
+    const m=String(location.hash||"").match(/^#ponte=([A-Za-z0-9_-]+)$/);
+    if(m){ try{ history.replaceState(null,"",location.pathname+"#inicio"); }catch(e){}
+      try{ const c=JSON.parse(ub64u(m[1])); if(/^https:\/\//.test(c.u||"")&&c.t){ ponte={url:c.u,tok:c.t,desde:""}; ponteCfgHash=""; localStorage.setItem(PONTE_KEY,JSON.stringify(ponte)); ponteLiga(); setTimeout(()=>{ try{ aviso("Este aparelho foi conectado à sua Ponte. Os dados chegam em instantes."); setTimeout(()=>aviso(""),6000); }catch(e){} },1500); } }catch(e){} }
+  })();
 
 
   /* ---------- importar agenda (telefones dos contatos salvos) ---------- */
