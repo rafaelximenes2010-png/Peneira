@@ -2452,8 +2452,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.28";
+  const VERSAO="4.29";
   const VERSOES=[
+    {v:"4.29",data:"17/11/2026",itens:["Highlights: depois de abertos e lidos, os destaques saem da lista e o contador zera; só os novos voltam a aparecer. Os já lidos ficam num botão dentro da ficha"]},
     {v:"4.28",data:"17/11/2026",itens:["Gestão: contador em reais do dia, que sobe a cada varredura, com o acumulado do mês","Gestão: todo gráfico e todo número abre o detalhe, com o que significa, os fatos principais e a lista por dia, grupo ou pessoa"]},
     {v:"4.27",data:"17/11/2026",itens:["O app abre sempre no alto da tela, com a barra do topo à vista","A barra do topo fica presa no alto enquanto a tela rola"]},
     {v:"4.26",data:"17/11/2026",itens:["A barra do topo aparece completa em todas as seções: logo, nome Peneira, busca, alertas e foto; o Voltar fica logo abaixo"]},
@@ -2797,20 +2798,26 @@ button.ub-row-main{cursor:pointer}
         .concat(ag.slice(0,5).map(a=>({t:"Agenda · "+(a.titulo||""),s:String(a.quando).slice(11,16)+(a.contato?" · "+a.contato:""),on:()=>{ fechaDrill(); go("agenda"); }})))
         .concat(dest.slice(0,6).map(d=>({t:"Destaque",s:d}))),
       nota:pend.length?"Comece pelos "+Math.min(3,pend.length)+" primeiros: são os de maior prioridade.":"Nada pendente hoje. Bom trabalho!"}); }
-  function highlights(){ const H=[]; const add=(tipo,txt,grupo,quando,extra,qtd)=>{ if(txt) H.push({tipo,txt:typeof txt==="string"?txt:(txt.texto||""),grupo,quando,extra,qtd}); };
+  function highlights(todos){ const H=[]; const add=(tipo,txt,grupo,quando,extra,qtd)=>{ if(txt) H.push({tipo,txt:typeof txt==="string"?txt:(txt.texto||""),grupo,quando,extra,qtd}); };
     rel24().forEach(r=>{ (r.contextoWeb||[]).forEach(x=>add("📰 Checado na web",x,r.grupo,r.geradoEm,x.fonte)); (r.preocupacoes||[]).forEach(x=>add("⚠️ Preocupação",x,r.grupo,r.geradoEm)); (r.reclamacoes||[]).forEach(x=>add("😤 Reclamação",x,r.grupo,r.geradoEm));
       (r.metas||[]).forEach(x=>add("🎯 Meta",x,r.grupo,r.geradoEm,x.quem)); (r.assuntos||[]).slice(0,2).forEach(x=>add("💬 Assunto",x,r.grupo,r.geradoEm)); });
     (S.itens||[]).filter(i=>i.verificacao&&Date.now()-Date.parse(i.recebidoEm||0)<72*3600e3).forEach(i=>add(/golpe|falso/i.test(i.verificacao.veredito)?"🛑 "+i.verificacao.veredito:"✅ "+i.verificacao.veredito,i.verificacao.resumo||i.resumo,i.grupo||i.contato,i.recebidoEm,i.verificacao.fonte));
     ((S.gestao||{}).problemas||[]).filter(p=>String(p.tendencia||"").includes("↑")).sort((a,b)=>(b.ocorrencias||0)-(a.ocorrencias||0)).slice(0,3).forEach(p=>add("📈 Problema subindo",p.tema,(p.grupos||[]).join(", "),null,p.acaoPreventiva,p.ocorrencias));
-    return H; }
-  function fichaHigh(){ const H=highlights(); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
-    ficha("Highlights","Aprendido nas últimas leituras (36h)",{tiles:[[String(H.length),"destaques"],[String(rel24().length),"leituras de grupos"]],
+    return todos?H:H.filter(h=>!highVistos().has(highK(h))); }
+  /* destaque aberto e lido some: a chave de cada um fica guardada neste aparelho */
+  const HIGH_K="peneira-high-vistos";
+  const highK=h=>[h.tipo,h.txt,h.grupo||"",h.quando||""].join("|").slice(0,220);
+  function highVistos(){ try{ return new Set(JSON.parse(localStorage.getItem(HIGH_K)||"[]")); }catch(e){ return new Set(); } }
+  function highMarca(H){ try{ const v=[...highVistos()]; H.forEach(h=>{ const k=highK(h); if(!v.includes(k)) v.push(k); }); localStorage.setItem(HIGH_K,JSON.stringify(v.slice(-800))); }catch(e){} }
+  function fichaHigh(lidos){ const H=highlights(!!lidos); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
+    if(!lidos){ highMarca(H); setTimeout(()=>{ try{ render(); }catch(e){} },50); }
+    ficha(lidos?"Highlights já lidos":"Highlights",lidos?"Tudo das últimas leituras (36h), incluindo o que você já leu":"Novos desde a última vez que você abriu",{tiles:[[String(H.length),lidos?"destaques":"destaques novos"],[String(rel24().length),"leituras de grupos"]],
       rowsTit:"Destaques",rows:H.slice(0,40).map(h=>{ const gs=(h.grupo||"").split(",").map(s=>s.trim()).filter(Boolean);
         const abre = gs.length===1 ? ()=>{ abreGrupo(gs[0]); }
           : gs.length>1 ? ()=>abreInfo(h.tipo.replace(/^\S+\s*/,"")||"Destaque","Esse destaque envolve "+gs.length+" grupos. Toque num deles para abrir:",B=>gs.forEach(g=>B.appendChild(ubRow({t:g,on:()=>{ abreGrupo(g); }}))))
           : null;
         return {n:h.qtd?h.qtd+"×":null,nCls:h.qtd?"alerta":null,t:h.tipo+(h.grupo?" · "+h.grupo:""),s:h.txt+(h.extra?" — "+h.extra:"")+(h.quando?" · "+fmt(h.quando):""),on:abre}; }),
-      nota:H.length?"Toque num destaque para abrir o grupo de onde ele veio.":"Os highlights aparecem depois da próxima leitura dos grupos.",acao:["Perguntar à Peneirinha",()=>{ fechaDrill(); go("assistente"); }]}); }
+      nota:lidos?"Lista completa das últimas 36 horas.":H.length?"Toque num destaque para abrir o grupo de onde ele veio. Depois de abertos aqui, estes destaques saem da lista e do contador.":"Nenhum destaque novo. Os próximos aparecem depois da próxima leitura dos grupos.",acao:lidos?["Perguntar à Peneirinha",()=>{ fechaDrill(); go("assistente"); }]:["Ver os já lidos (36h)",()=>fichaHigh(true)]}); }
   // Compromissos são extraídos (não editáveis) dos relatórios de leitura dos grupos — não dá pra
   // "concluir" um, mas dá pra tirá-lo da lista (ficam escondidos neste aparelho via localStorage).
   const COMP_OC_K="peneira-comp-ocultos";
