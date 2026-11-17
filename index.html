@@ -827,6 +827,13 @@ button.ub-row-main{cursor:pointer}
 .ub-cal button.q3 b,.ub-cal button.q3 small,.ub-cal button.q4 b,.ub-cal button.q4 small{color:#fff}
 .ub-cal button.so-msg{background:color-mix(in srgb,var(--gold) 20%,var(--surface-2))}
 .ub-cal-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--ink-3);margin-top:10px} .ub-cal-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* importantes: cor por assunto */
+.ub-assunto{--as-c:var(--ink-3);border-left:4px solid var(--as-c);padding-left:12px;margin-top:20px}
+.ub-as-h b::before{content:"";display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--as-c);margin-right:8px;vertical-align:1px}
+.ub-as-h small .as-pend{color:var(--coral);font-weight:700} .ub-as-h small .as-ok{color:#1a9a63;font-weight:600}
+.ub-assunto .ub-hist>summary{background:color-mix(in srgb,var(--as-c) 14%,var(--surface))}
+.ub-seg .pn-chip i.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:7px;flex:none}
 </style>
 </head>
 <body>
@@ -1826,7 +1833,8 @@ button.ub-row-main{cursor:pointer}
     if(S.filtro==="concluídos") S.filtro="todos"; if(S.filtro!=="todos"&&!gruposOn.includes(S.filtro)) S.filtro="todos";
     const f=$("filtros"); f.textContent=""; f.classList.add("ub-seg");
     const totPend=baseItensImp.filter(i=>(i.status||"pendente")==="pendente").length;
-    const chip=(k,txt,np,nt)=>{ const b=el("button","pn-chip"); b.type="button"; b.appendChild(el("span",null,txt)); const e=el("em",null,np?String(np):String(nt)); if(np) e.classList.add("pend"); b.appendChild(e); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
+    const COR_CAT={"Golpe e segurança":"var(--coral)","Menções":"var(--sky)","Família":"#c264b0","Clientes":"#1a9a63","Prazos e urgências":"var(--gold)","Trabalho":"#7c6fd6","Outros":"var(--ink-3)"};
+    const chip=(k,txt,np,nt)=>{ const b=el("button","pn-chip"); b.type="button"; if(COR_CAT[k]){ const dt=el("i","dot"); dt.style.setProperty("--c",COR_CAT[k]); b.appendChild(dt); } b.appendChild(el("span",null,txt)); const e=el("em",null,np?String(np):String(nt)); if(np) e.classList.add("pend"); b.appendChild(e); b.setAttribute("aria-pressed",S.filtro===k?"true":"false"); b.onclick=()=>{S.filtro=k;render();}; f.appendChild(b); };
     chip("todos","Todos",totPend,baseItensImp.length); gruposOn.forEach(g=>chip(g,g,porG[g].pend.length,porG[g].pend.length+porG[g].hist.length));
     const L=$("lista-itens"); L.textContent="";
     if(!S.itens.length) L.appendChild(el("div","pn-empty","Ainda não há mensagens. Depois da primeira leitura, os importantes aparecem aqui, separados por assunto."));
@@ -1837,8 +1845,8 @@ button.ub-row-main{cursor:pointer}
       const histShow = statusSel==="pendente" ? [] : statusSel==="ativo" ? d.hist : d.hist.filter(i=>(i.status||"")===statusSel);
       const histOpen = aberto || statusSel==="feito" || statusSel==="ignorado";
       if(!aberto && !pendShow.length && !histShow.length) return;
-      const box=el("section","ub-assunto");
-      const h=el("div","ub-as-h"); const ht=el("div"); ht.appendChild(el("b",null,g)); ht.appendChild(el("small",null,(pendShow.length?pendShow.length+" pendente"+(pendShow.length>1?"s":""):"nenhum pendente")+" · "+histShow.length+" no histórico")); h.appendChild(ht);
+      const box=el("section","ub-assunto"); if(COR_CAT[g]) box.style.setProperty("--as-c",COR_CAT[g]);
+      const h=el("div","ub-as-h"); const ht=el("div"); ht.appendChild(el("b",null,g)); const sm0=el("small"); sm0.appendChild(el("span",pendShow.length?"as-pend":"as-ok",pendShow.length?pendShow.length+" pendente"+(pendShow.length>1?"s":""):"nenhum pendente")); sm0.appendChild(document.createTextNode(" · "+histShow.length+" no histórico")); ht.appendChild(sm0); h.appendChild(ht);
       const acts=el("div","ub-as-acts");
       if(pendShow.length){ const rt=el("button","ub-as-ver","Resolver tudo"); rt.type="button"; rt.disabled=!S.canWrite; rt.onclick=()=>resolverTudo(pendShow,g); acts.appendChild(rt); }
       if(S.filtro==="todos"){ const ver=el("button","ub-as-ver","Ver tudo ›"); ver.type="button"; ver.onclick=()=>{ S.filtro=g; render(); window.scrollTo({top:0,behavior:"smooth"}); }; acts.appendChild(ver); }
@@ -2589,7 +2597,32 @@ button.ub-row-main{cursor:pointer}
   // ----- Assistente (chat) -----
   const IA={hist:[],treino:[],ia:false,carregado:0,enviando:false};
   const IA_CHIPS=["Resumo de hoje","O que está pendente?","Qual grupo mais me cobra?","Isso não é importante: …","Responda mais curto","Me avise só de clientes à noite"];
+  function oQueAprendi(){ const R=S.relGrupos||[];
+    if(!R.length) return "Ainda não li nenhum grupo, então não tenho o que contar. Assim que a primeira leitura de grupos entrar, eu resumo aqui o que aprendi.";
+    const fd=d=>String(d).split("-").reverse().slice(0,2).join("/"); const datas=R.map(dataLocal).filter(Boolean).sort();
+    const G={}, P={}; let msgs=0; const pico={};
+    R.forEach(r=>{ const n=r.mensagens||(r.participantes||[]).reduce((a,p)=>a+(p.msgs||0),0); msgs+=n; const g=G[nG(r.grupo)]=G[nG(r.grupo)]||{nome:r.grupo,msgs:0}; g.msgs+=n; if(r.pico) pico[r.pico]=(pico[r.pico]||0)+n;
+      (r.participantes||[]).forEach(p=>{ const k=norm(p.nome); if(k==="voce") return; const x=P[k]=P[k]||{nome:p.nome,msgs:0}; x.msgs+=p.msgs||0; }); });
+    const top=(o,n)=>Object.values(o).sort((a,b)=>b.msgs-a.msgs).slice(0,n);
+    const L=["Até agora li "+R.length+" conversas de "+Object.keys(G).length+" grupos, de "+fd(datas[0])+" a "+fd(datas[datas.length-1])+": "+msgs+" mensagens de "+Object.keys(P).length+" pessoas. Os pontos principais:"];
+    L.push("• Grupos mais movimentados: "+top(G,3).map(g=>g.nome+" ("+g.msgs+" msgs)").join("; ")+".");
+    if(Object.keys(P).length) L.push("• Quem mais escreve: "+top(P,3).map(p=>p.nome+" ("+p.msgs+")").join("; ")+".");
+    let q=0, tm=0; const W={}, GT={}; mesesDisp().forEach(m=>{ const X=reunioes(m); q+=X.total.qtd; tm+=X.total.min; X.lista.forEach(x=>{ const w=diaSem(x.data); if(w!=null) W[w]=(W[w]||0)+(x.min||0); GT[x.grupo]=(GT[x.grupo]||0)+(x.min||0); }); });
+    if(q){ const w=Object.entries(W).sort((a,b)=>b[1]-a[1])[0], g=Object.entries(GT).sort((a,b)=>b[1]-a[1])[0];
+      L.push("• Reuniões pelo WhatsApp (debates com mais de 10 minutos seguidos): "+q+", somando "+fmtHM(tm)+"."+(w?" O dia mais pesado é "+DSEM_L[w[0]].toLowerCase()+" ("+fmtHM(w[1])+")":"")+(g?"; o grupo que mais consome tempo é "+g[0]+" ("+fmtHM(g[1])+").":".")); }
+    const pk=Object.entries(pico).sort((a,b)=>b[1]-a[1])[0]; if(pk) L.push("• Horário em que os grupos mais falam: "+pk[0]+".");
+    const rec=R.slice().sort((a,b)=>String(b.geradoEm).localeCompare(String(a.geradoEm))); const junta=k=>{ const o=[]; rec.forEach(r=>(r[k]||[]).forEach(t=>{ if(o.length<3&&!o.includes(t)) o.push(t); })); return o; }; const conta=k=>R.reduce((a,r)=>a+((r[k]||[]).length),0);
+    const as=junta("assuntos"); if(as.length) L.push("• Assuntos mais recentes que registrei: "+as.join("; ")+".");
+    const pr=junta("preocupacoes"); if(pr.length) L.push("• Preocupações registradas ("+conta("preocupacoes")+"): "+pr.join("; ")+".");
+    const rc=junta("reclamacoes"); if(rc.length) L.push("• Cobranças e reclamações ("+conta("reclamacoes")+"): "+rc.join("; ")+".");
+    const its=S.itens||[]; if(its.length){ const C={}; its.forEach(i=>{ const c=catGrupo(i); C[c]=(C[c]||0)+1; }); const pend=its.filter(i=>(i.status||"pendente")==="pendente").length;
+      L.push("• Importantes separados: "+its.length+" ("+pend+" pendente"+(pend===1?"":"s")+"). Onde mais aparecem: "+Object.entries(C).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([c,n])=>c+" ("+n+")").join("; ")+"."); }
+    if(IA.treino&&IA.treino.length) L.push("• Regras que você me ensinou: "+IA.treino.length+".");
+    const semAss=R.filter(r=>!(r.assuntos||[]).length).length; if(semAss) L.push("Em "+semAss+" dessas conversas eu só tenho horários, quantidades e participantes, sem o assunto.");
+    L.push("Tudo isso vem só do que foi lido de verdade; o que não li, não conto.");
+    return L.join("\n"); }
   function respostaLocal(t){ const tl=(t||"").toLowerCase();
+    if(/aprend/.test(tl)) return oQueAprendi();
     if(/resumo|hoje/.test(tl)){ const ps=S.ponteSt||{}; const pend=(S.itens||[]).filter(i=>(i.status||"pendente")==="pendente").length;
       if(ps.mensagens==null) return null;
       return "Hoje: "+ps.mensagens+" mensagens, "+(ps.importantes||0)+" importantes, "+(ps.descartadas||0)+" descartadas."+(pend?" "+pend+" ainda pendente"+(pend>1?"s":"")+".":" Tudo em dia."); }
@@ -2638,11 +2671,13 @@ button.ub-row-main{cursor:pointer}
   $("ia-txt").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!/iPhone|iPad|Android/.test(navigator.userAgent)){ e.preventDefault(); $("ia-form").requestSubmit(); } });
   $("ia-form").addEventListener("submit",async e=>{ e.preventDefault(); const x=$("ia-txt"); const t=x.value.trim(); if(!t||IA.enviando) return;
     if(!ponte||!ponte.url){ aviso("Conecte a Ponte em Ajustes para conversar com a Peneirinha."); return; }
-    x.value=""; x.style.height="auto"; IA.hist.push({de:"rafael",t,em:new Date().toISOString()}); IA.enviando=true; iaRender();
+    x.value=""; x.style.height="auto"; IA.hist.push({de:"rafael",t,em:new Date().toISOString()});
+    if(/aprend/i.test(t)){ IA.hist.push({de:"ia",t:oQueAprendi(),em:new Date().toISOString()}); iaRender(); return; }
+    IA.enviando=true; iaRender();
     try{ const r=await ponteReq("/chat",{method:"POST",body:JSON.stringify({texto:t})}); IA.enviando=false; IA.ia=!!r.ia;
       if(r.resposta) IA.hist.push({de:"ia",t:r.resposta,em:new Date().toISOString()}); if(r.aprendizado){ IA.treino.push(r.aprendizado); aviso("Aprendi: "+r.aprendizado.texto); } }
     catch(err){ IA.enviando=false; const local=respostaLocal(t);
-      IA.hist.push({de:"ia",t:local||"Ainda não consegui falar com o servidor para isso. Pergunte \"resumo de hoje\", \"o que está pendente?\" ou \"qual grupo mais me cobra?\" que respondo na hora com o que já sei.",em:new Date().toISOString()}); }
+      IA.hist.push({de:"ia",t:local||"Ainda não consegui falar com o servidor para isso. Pergunte \"resumo de hoje\", \"o que está pendente?\", \"qual grupo mais me cobra?\" ou \"o que você aprendeu?\" que respondo na hora com o que já sei.",em:new Date().toISOString()}); }
     iaRender(); });
   async function iaChecaNovas(){ if(!ponte||!ponte.url) return; try{ const d=await ponteReq("/chat"); const visto=Number(localStorage.getItem("peneira-ia-visto")||0); const novas=(d.hist||[]).slice(visto).filter(m=>m.de==="ia").length;
     if(document.querySelector("#assistente.on")){ IA.hist=d.hist||[]; IA.treino=d.treino||[]; IA.ia=!!d.ia; localStorage.setItem("peneira-ia-visto",String(IA.hist.length)); S.iaNovas=0; iaRender(); } else S.iaNovas=novas; atualizaAtalhos(); }catch(e){} }
