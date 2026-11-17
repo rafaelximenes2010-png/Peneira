@@ -862,6 +862,22 @@ button.ub-row-main{cursor:pointer}
 .ub-res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .ub-res>div{background:var(--surface-2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:1px}
 .ub-res b{font-size:19px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums} .ub-res span{font-size:11.5px;color:var(--ink-3)}
+
+/* resumo amigável dos relatórios */
+.hx{padding-bottom:16px}
+.hx-eye{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.hx-big{font-size:27px;font-weight:800;letter-spacing:-.03em;line-height:1.12}
+.hx-chip{display:inline-block;margin-top:10px;padding:5px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12.5px;font-weight:700}
+.hx-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:16px}
+.hx-card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface-2);border-radius:16px;padding:13px 13px 12px;display:flex;flex-direction:column;gap:2px;min-height:118px}
+.hx-card:active{transform:scale(.98)}
+.hx-ic{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:8px}
+.hx-card b{font-size:23px;font-weight:800;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums;word-break:break-word}
+.hx-rot{font-size:12.5px;font-weight:700;color:var(--ink-2)} .hx-card small{font-size:11.5px;color:var(--ink-3);line-height:1.3;margin-top:2px}
+.hx-g{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;padding:11px 0;border-bottom:.5px solid var(--border)} .hx-g:last-of-type{border-bottom:0}
+.hx-g-l{display:flex;justify-content:space-between;gap:10px;align-items:baseline} .hx-g-l b{font-size:15px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .hx-g-l span{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;flex:none}
+.hx-g-t{height:8px;border-radius:99px;background:var(--surface-2);margin:7px 0 5px;overflow:hidden} .hx-g-t i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.hx-g small{font-size:12px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -1165,7 +1181,9 @@ button.ub-row-main{cursor:pointer}
     <div id="rel-sem" hidden>
       <div class="pn-cal-top" style="margin:4px 0 10px"><button class="pn-btn" type="button" id="sem-prev" aria-label="Mês anterior">‹</button><b id="sem-mes" style="text-align:center"></b><button class="pn-btn" type="button" id="sem-next" aria-label="Próximo mês">›</button></div>
       <button class="pn-btn" type="button" id="sem-att" style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px"><span class="pn-ico" data-ico="refresh"></span><span id="sem-att-txt">Atualizar</span></button>
-      <div class="ub-hero" id="sem-hero"></div>
+      <div class="ub-hero hx" id="sem-hero"></div>
+      <div class="pn-h2">Para onde foi o tempo</div>
+      <div class="pn-card" id="sem-onde"></div>
       <div class="pn-h2" id="sem-graf-t">Reuniões por dia</div>
       <div class="pn-card"><div class="ub-modo" id="sem-modo" role="group" aria-label="Ver por"><button type="button" data-m="d8" aria-pressed="true">8 dias</button><button type="button" data-m="d15" aria-pressed="false">15 dias</button><button type="button" data-m="mes" aria-pressed="false">Mês atual</button></div><div class="ub-res" id="sem-res"></div><div class="ub-days" id="sem-dias"></div><div class="ub-leg"><span><i class="a"></i>tempo em reunião</span><span>toque num dia para abrir</span></div></div>
       <div class="pn-h2">Mês dia a dia</div>
@@ -2783,11 +2801,30 @@ button.ub-row-main{cursor:pointer}
       else b.appendChild(el("small",null,data>hj?"":"—"));
       if(data>hj) b.classList.add("fut"); else b.onclick=()=>abreData(m,data,M); if(data===hj) b.classList.add("hoje");
       b.setAttribute("aria-label",dd+": "+(d?d.reu.length+" reuniões, "+d.msgs+" mensagens":"sem dados")); C.appendChild(b); } }
+  function resumoAmigo(m,D,top,tot,totQ,falTop){ const H=$("sem-hero"), O=$("sem-onde"); H.textContent=""; O.textContent=""; const R=reunioes(m); const hm=n=>n<60?n+" min":Math.floor(n/60)+"h"+pad2(n%60);
+    H.appendChild(el("div","hx-eye","Resumo de "+nomeMes(m)));
+    if(!tot){ H.appendChild(el("div","hx-big","Ainda sem reuniões por aqui")); H.appendChild(el("div","ub-cap","Assim que os grupos forem lidos, eu mostro onde o seu tempo está indo.")); O.appendChild(el("div","pn-empty","Sem reuniões neste mês.")); return; }
+    H.appendChild(el("div","hx-big",DSEM_L[top]+" foi o dia mais puxado"));
+    H.appendChild(el("div","ub-cap",D[top].qtd+" reuni"+(D[top].qtd>1?"ões":"ão")+" e "+hm(D[top].min)+" de debate pelo WhatsApp."));
+    const seg=ORD.filter(w=>w!==top&&D[w].min).sort((a,b)=>D[b].min-D[a].min)[0];
+    if(seg!=null){ const x=D[top].min/D[seg].min; H.appendChild(el("span","hx-chip","↑ "+String(x.toFixed(1)).replace(".",",")+"× o tempo de "+DSEM_L[seg].toLowerCase())); }
+    const dias=new Set(R.lista.map(x=>x.data).filter(Boolean)).size; const F={}; ORD.forEach(w=>Object.values(D[w].fal).forEach(f=>{ const k=norm(f.nome); const y=F[k]=F[k]||{nome:f.nome,msgs:0}; y.msgs+=f.msgs; })); const camp=Object.values(F).sort((a,b)=>b.msgs-a.msgs)[0];
+    const G=el("div","hx-grid"); const card=(ic,cor,v,rot,dica,on)=>{ const c=el("button","hx-card"); c.type="button"; const i=el("span","hx-ic",ic); i.style.background=cor; c.appendChild(i); c.appendChild(el("b",null,v)); c.appendChild(el("span","hx-rot",rot)); c.appendChild(el("small",null,dica)); c.onclick=on; G.appendChild(c); };
+    card("🗓️","var(--sky-soft)",String(totQ),"reuniões no mês",dias?"em "+dias+" dia"+(dias>1?"s":"")+" com reunião":"",()=>abreReuMes(m));
+    card("⏱️","var(--gold-soft)",hm(tot),"em reunião","≈ "+String((tot/480).toFixed(1)).replace(".",",")+" dia"+(tot/480>=1.95?"s":"")+" de trabalho de 8h",()=>abreTempoGrupos(m));
+    card("💬","var(--accent-soft)",D[falTop].msgs?DSEM_L[falTop]:"—","dia mais falado",D[falTop].msgs?D[falTop].msgs+" mensagens nos grupos":"",()=>abreDia(m,falTop,D));
+    card("🏆","var(--coral-soft)",camp?camp.nome.split(" ")[0]:"—","quem mais escreveu",camp?camp.msgs+" mensagens no mês":"",()=>{ if(camp) abrePessoaSem(m,camp.nome,D); });
+    H.appendChild(G);
+    const gs=R.grupos.slice(0,5); const mxg=Math.max(1,...gs.map(g=>g.min));
+    gs.forEach((g,i)=>{ const r=el("button","hx-g"); r.type="button"; const l=el("div","hx-g-l"); l.appendChild(el("b",null,(i<3?["🥇","🥈","🥉"][i]+" ":"")+g.grupo)); l.appendChild(el("span",null,hm(g.min))); r.appendChild(l);
+      const tr=el("div","hx-g-t"); const f=el("i"); f.style.width=Math.max(4,Math.round(100*g.min/mxg))+"%"; tr.appendChild(f); r.appendChild(tr);
+      r.appendChild(el("small",null,g.qtd+" reuni"+(g.qtd>1?"ões":"ão")+" · a maior durou "+hm(g.maior)+" · "+Math.round(100*g.min/Math.max(1,R.total.min))+"% do tempo do mês")); r.onclick=()=>abreGrupo(g.grupo); O.appendChild(r); });
+    if(R.grupos.length>5){ const v=el("button","ub-as-ver","Ver os "+R.grupos.length+" grupos ›"); v.type="button"; v.onclick=()=>abreTempoGrupos(m); O.appendChild(v); } }
   function renderSem(){ if(!$("sem-dias")) return; const m=S.semMes||mesAtual(); const ms=mesesDisp();
     $("sem-mes").textContent=nomeMes(m)+(m===mesAtual()?" · parcial":""); $("sem-prev").disabled=ms.indexOf(m)<=0; $("sem-next").disabled=ms.indexOf(m)>=ms.length-1;
     const D=semDados(m); const top=ORD.slice().sort((a,b)=>D[b].min-D[a].min||D[b].qtd-D[a].qtd)[0]; const tot=ORD.reduce((a,w)=>a+D[w].min,0), totQ=ORD.reduce((a,w)=>a+D[w].qtd,0);
     const falTop=ORD.slice().sort((a,b)=>D[b].msgs-D[a].msgs)[0];
-    ubHero($("sem-hero"),tot?DSEM_L[top]:"—",tot?"é o dia com mais reunião pelo WhatsApp ("+fmtHM(D[top].min)+" em "+D[top].qtd+" reuniões)":"Ainda sem reuniões neste mês.",[[String(totQ),"reuniões no mês",()=>abreReuMes(m)],[tot<60?tot+" min":Math.floor(tot/60)+"h"+pad2(tot%60),"tempo total",()=>abreTempoGrupos(m)],[D[falTop].msgs?DSEM[falTop]:"—","dia mais falado",()=>abreDia(m,falTop,D)],[D[falTop].rank[0]?D[falTop].rank[0].nome.split(" ")[0]:"—","campeão do mês",()=>{ if(D[falTop].rank[0]) abrePessoaSem(m,D[falTop].rank[0].nome,D); }]]);
+    resumoAmigo(m,D,top,tot,totQ,falTop);
     renderCalMes(m);
     const B=$("sem-dias"); B.textContent=""; const curto=n=>n<60?n+"min":Math.floor(n/60)+"h"+pad2(n%60); const modo=["d8","d15","mes"].includes(S.semModo)?S.semModo:"d8";
     document.querySelectorAll("#sem-modo button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.m===modo?"true":"false"));
