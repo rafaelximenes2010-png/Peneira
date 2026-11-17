@@ -1006,8 +1006,12 @@ button.ub-row-main{cursor:pointer}
   .pn-wrap{max-width:1120px}
   #gestao .gx-kpis{grid-template-columns:repeat(6,1fr)}
   #gestao .gx-kpis .pn-kpi b{font-size:21px}
-  #gestao #gx-corpo{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;align-items:start}
-  #gestao #gx-corpo>.pn-farol,#gestao #gx-corpo>.gx-kpis,#gestao #gx-corpo>.gx-exp,#gestao #gx-corpo>#gx-nota{grid-column:1/-1}
+  /* painel denso em duas colunas que se encaixam (sem buracos entre cartões de alturas diferentes) */
+  #gestao #gx-corpo{display:block;columns:2;column-gap:14px}
+  #gestao #gx-corpo>*{break-inside:avoid;-webkit-column-break-inside:avoid}
+  #gestao #gx-corpo>.pn-farol,#gestao #gx-corpo>.gx-cont,#gestao #gx-corpo>.gx-kpis,#gestao #gx-corpo>.gx-exp,#gestao #gx-corpo>#gx-nota{column-span:all}
+  #gestao #gx-corpo>.gx-card{display:inline-block;width:100%;margin:0 0 14px;vertical-align:top}
+  #gestao .gx-top .pn-rank{padding:5px 0}
 }
 </style>
 </head>
@@ -2452,8 +2456,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.29";
+  const VERSAO="4.30";
   const VERSOES=[
+    {v:"4.30",data:"17/11/2026",itens:["Gestão no computador: cartões encaixados em duas colunas, sem espaços vazios"]},
     {v:"4.29",data:"17/11/2026",itens:["Highlights: depois de abertos e lidos, os destaques saem da lista e o contador zera; só os novos voltam a aparecer. Os já lidos ficam num botão dentro da ficha"]},
     {v:"4.28",data:"17/11/2026",itens:["Gestão: contador em reais do dia, que sobe a cada varredura, com o acumulado do mês","Gestão: todo gráfico e todo número abre o detalhe, com o que significa, os fatos principais e a lista por dia, grupo ou pessoa"]},
     {v:"4.27",data:"17/11/2026",itens:["O app abre sempre no alto da tela, com a barra do topo à vista","A barra do topo fica presa no alto enquanto a tela rola"]},
