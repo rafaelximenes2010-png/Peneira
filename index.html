@@ -2810,7 +2810,7 @@ button.ub-row-main{cursor:pointer}
   function highVistos(){ try{ return new Set(JSON.parse(localStorage.getItem(HIGH_K)||"[]")); }catch(e){ return new Set(); } }
   function highMarca(H){ try{ const v=[...highVistos()]; H.forEach(h=>{ const k=highK(h); if(!v.includes(k)) v.push(k); }); localStorage.setItem(HIGH_K,JSON.stringify(v.slice(-800))); }catch(e){} }
   function fichaHigh(lidos){ const H=highlights(!!lidos); const tipos={}; H.forEach(h=>{ const k=h.tipo.split(" ")[0]; tipos[k]=(tipos[k]||0)+1; });
-    if(!lidos){ highMarca(H); setTimeout(()=>{ try{ render(); }catch(e){} },50); }
+    if(!lidos){ highMarca(H); setTimeout(()=>{ try{ atualizaAtalhos(); }catch(e){} },50); }
     ficha(lidos?"Highlights já lidos":"Highlights",lidos?"Tudo das últimas leituras (36h), incluindo o que você já leu":"Novos desde a última vez que você abriu",{tiles:[[String(H.length),lidos?"destaques":"destaques novos"],[String(rel24().length),"leituras de grupos"]],
       rowsTit:"Destaques",rows:H.slice(0,40).map(h=>{ const gs=(h.grupo||"").split(",").map(s=>s.trim()).filter(Boolean);
         const abre = gs.length===1 ? ()=>{ abreGrupo(gs[0]); }
