@@ -2484,8 +2484,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.34";
+  const VERSAO="4.35";
   const VERSOES=[
+    {v:"4.35",data:"17/11/2026",itens:["Relatórios → Prevenção mostra quando os dados foram medidos e avisa quando estão parados"]},
     {v:"4.34",data:"17/11/2026",itens:["Ajustes → Ponte oficial → Conectar outro aparelho: gera um link que liga o computador (ou outro celular) à mesma Ponte, sem digitar endereço e senha","Varrer agora informa o horário da próxima leitura dos grupos e avisa quando o aparelho não está conectado à Ponte"]},
     {v:"4.33",data:"17/11/2026",itens:["Início e Gestão mostram quanto o Peneira já economizou desde que começou a funcionar: tempo de leitura poupado e o valor em reais, com a conta dia a dia ao tocar"]},
     {v:"4.32",data:"17/11/2026",itens:["Gestão: o botão Gerar PowerPoint volta a funcionar (o gerador passou a vir junto com o app)"]},
@@ -3926,6 +3927,12 @@ button.ub-row-main{cursor:pointer}
   function renderPrev(){
     const g=S.gestao||{}, mt=metas(); if(!$("pv-prob")) return;
     if(!pvPre){ $("pv-meta-ext").value=mt.ext; $("pv-meta-int").value=mt.int; pvPre=true; }
+    /* data da medição: Prevenção vem de uma análise gravada (S.gestao), não é recalculada a cada varredura */
+    { const box=$("rel-prev"); let d=$("pv-quando"); if(!d){ d=el("div","pn-meta"); d.id="pv-quando"; d.style.cssText="margin:0 2px 12px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-weight:600"; box.insertBefore(d,box.firstChild); }
+      const q=g.atualizadoEm?new Date(g.atualizadoEm):null;
+      if(q&&!isNaN(q)){ const h=(Date.now()-q.getTime())/36e5; const velho=h>24; d.style.color=velho?"#c97a00":"";
+        d.textContent=(velho?"⚠ Dados parados. ":"")+"Tempo de resposta, problemas e clientes desta aba foram medidos em "+q.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})+" às "+q.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+(velho?" (há "+(h>=48?Math.floor(h/24)+" dias":Math.round(h)+" horas")+") e não mudam com as varreduras novas.":"."); d.hidden=false; }
+      else if(g.tempos||g.problemas){ d.style.color="#c97a00"; d.textContent="⚠ Estes dados não têm data de medição registrada."; d.hidden=false; } else d.hidden=true; }
     const t=g.tempos||{};
     [["ext","externos"],["int","internos"]].forEach(([k])=>{ const v=t[k]; const e=$("pv-"+k); e.textContent=fmtMin(v); e.className="pn-tp "+corTempo(v,mt[k]); e.style.fontSize="30px";
       $("pv-"+k+"-s").textContent="meta "+fmtMin(mt[k])+(t[k+"Qtd"]!=null?" · "+t[k+"Qtd"]+" conversas":""); });
