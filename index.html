@@ -2106,7 +2106,13 @@ button.ub-row-main{cursor:pointer}
 
   /* ---------- agenda ---------- */
   const AG_ICO={responder:"chat",processo:"clipboard",prazo:"clock",lembrete:"pin",reuniao:"meeting"};
+  const AG_RM_K="peneira-ag-removidos";
+  function agRemovidos(){ try{ return new Set(JSON.parse(localStorage.getItem(AG_RM_K))||[]); }catch(e){ return new Set(); } }
+  function agSobe(a){ try{ if(typeof ponte!=="undefined"&&ponte&&ponte.url&&a&&a.id) ponteReq("/sync",{method:"POST",body:JSON.stringify({agenda:[a]})}).catch(()=>{}); }catch(e){} }
   async function salvaAg(op,v){
+    // o que foi removido ou concluído aqui não pode voltar quando a Ponte mandar a cópia dela de novo
+    if(op==="del"){ const rm=agRemovidos(); rm.add(v.id); try{ localStorage.setItem(AG_RM_K,JSON.stringify([...rm].slice(-500))); }catch(e){} const a0=(S.agenda||[]).find(x=>x.id===v.id); if(a0) agSobe({...a0,feito:true,removido:true,feitoEm:new Date().toISOString()}); }
+    if(op==="upd"){ const a0=(S.agenda||[]).find(x=>x.id===v.id); if(a0) agSobe({...a0,...v.patch}); }
     if(S.demo){ if(op==="add") S.agenda.push({id:"g"+Date.now(),...v}); else if(op==="del") S.agenda=S.agenda.filter(x=>x.id!==v.id); else { const i=S.agenda.findIndex(x=>x.id===v.id); if(i>=0) S.agenda[i]={...S.agenda[i],...v.patch}; } demoSave(); render(); return; }
     if(!S.db) return;
     try{ if(op==="add") await S.db.collection("agenda").add(v); else if(op==="del") await S.db.doc("agenda/"+v.id).delete(); else await S.db.doc("agenda/"+v.id).update(v.patch); }catch(e){ aviso("Não consegui salvar na agenda agora."); }
@@ -3251,7 +3257,7 @@ button.ub-row-main{cursor:pointer}
     if(dd.ausencia && !S.ausencia) S.ausencia=dd.ausencia;
     if(dd.perfil){ const loc=S.perfil||{}; S.perfil={...dd.perfil,...Object.fromEntries(Object.entries(loc).filter(([k,v])=>v))}; try{ localStorage.setItem("peneira-perfil",JSON.stringify(S.perfil)); }catch(e){} }
     junta("relGrupos",dd.relGrupos,[]); junta("relatorios",dd.relatorios,[]); junta("contatos",dd.contatos,[]);
-    junta("grupos",dd.grupos,["silenciar"]); junta("itens",dd.itens,["status","favoritado"]); junta("agenda",dd.agenda,["feito"]);
+    junta("grupos",dd.grupos,["silenciar"]); junta("itens",dd.itens,["status","favoritado"]); { const rm=agRemovidos(); junta("agenda",(dd.agenda||[]).filter(x=>x&&!x.removido&&!rm.has(x.id)),["feito","feitoEm"]); S.agenda=(S.agenda||[]).filter(x=>!rm.has(x.id)&&!x.removido); }
     if(dd.estilo) S.estilo=dd.estilo;
     if(dd.gestao){ const metasLocais=S.gestao&&S.gestao.metas; S.gestao={...dd.gestao}; if(metasLocais) S.gestao.metas=metasLocais; }
     if(dd.status && (!S.meta || String(dd.status.ultimaVarredura||"")>String(S.meta.ultimaVarredura||""))) S.meta={...(S.meta||{}),...dd.status};
