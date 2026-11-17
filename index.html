@@ -921,6 +921,14 @@ button.ub-row-main{cursor:pointer}
 #gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #gestao table.gx-t{min-width:480px}
 #gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
+/* ===== Tela de entrada limpa: só o nome, nas cores do app (menta) ===== */
+.pn-splash{background:#f0f8f5;color:#12302a}
+.pn-sp-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:auto}
+.pn-sp-nome{font:800 clamp(44px,9vw,76px)/1 var(--font-ui,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);letter-spacing:-.035em;color:#34c38f;opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+.pn-splash.vai .pn-sp-nome{opacity:1;transform:none}
+.pn-sp-tag{position:static;font-family:var(--font-ui,system-ui,sans-serif);font-style:normal;font-size:clamp(13px,2.2vw,16px);color:#5b766d}
+.pn-sp-tag.on{opacity:1}
+.pn-sp-pular{background:rgba(15,118,110,.08);border-color:rgba(15,118,110,.25);color:#0f766e}
 /* ===== Instalar e indicar (QR Code) ===== */
 .ind-g{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
 .ind-qr{flex:none;margin:0 auto}
@@ -928,6 +936,8 @@ button.ub-row-main{cursor:pointer}
 .ind-t{flex:1;min-width:220px}
 .ind-link{display:block;font-size:13px;word-break:break-all;color:var(--accent);margin:0 0 10px}
 .ind-b{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+/* Mouse: a roda rola a página (o body deixava de repassar a rolagem para a janela) */
+@media (hover:hover) and (pointer:fine){ body{overflow:visible;overscroll-behavior:auto} }
 /* ===== Desktop (mouse e tela larga): só vale acima de 640px; o celular não muda ===== */
 @media (min-width:641px){
   .pn-voltar{white-space:nowrap;flex:none}
@@ -966,26 +976,7 @@ button.ub-row-main{cursor:pointer}
 <div class="pn" id="app">
 <div class="pn-splash" id="splash" aria-hidden="true">
   <div class="pn-sp-stage" id="sp-stage">
-    <div class="pn-sp-sieve">
-      <svg viewBox="0 0 240 150" aria-hidden="true">
-        <defs>
-          <linearGradient id="spOuro" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a8741f"/><stop offset=".5" stop-color="#f6cf6a"/><stop offset="1" stop-color="#a8741f"/></linearGradient>
-          <linearGradient id="spLado" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0a93b"/><stop offset="1" stop-color="#8a5c17"/></linearGradient>
-          <clipPath id="spMalha"><ellipse cx="120" cy="104" rx="86" ry="20"/></clipPath>
-        </defs>
-        <ellipse cx="120" cy="140" rx="80" ry="7" fill="#000" opacity=".25"/>
-        <path d="M18 48 L34 104 A86 20 0 0 0 206 104 L222 48 A102 24 0 0 1 18 48Z" fill="url(#spLado)" opacity=".35"/>
-        <ellipse cx="120" cy="104" rx="86" ry="20" fill="#0f1830"/>
-        <g clip-path="url(#spMalha)" stroke="#dfe6f5" stroke-opacity=".55" stroke-width="1.3">
-          <path d="M30 88h180M30 94h180M30 100h180M30 106h180M30 112h180M30 118h180"/>
-          <path d="M42 80v50M54 80v50M66 80v50M78 80v50M90 80v50M102 80v50M114 80v50M126 80v50M138 80v50M150 80v50M162 80v50M174 80v50M186 80v50M198 80v50"/>
-        </g>
-        <ellipse cx="120" cy="104" rx="86" ry="20" fill="none" stroke="url(#spOuro)" stroke-width="4"/>
-        <path d="M18 48 L34 104 M222 48 L206 104" stroke="url(#spOuro)" stroke-width="5" stroke-linecap="round"/>
-        <ellipse cx="120" cy="48" rx="102" ry="24" fill="none" stroke="url(#spOuro)" stroke-width="7"/>
-        <ellipse cx="120" cy="46" rx="96" ry="20" fill="none" stroke="#fff3c4" stroke-opacity=".35" stroke-width="1.5"/>
-      </svg>
-    </div>
+    <div class="pn-sp-nome" id="sp-nome">Peneira</div>
     <div class="pn-sp-tag" id="sp-tag">Passa tudo pela peneira. Fica só o que importa.</div>
   </div>
   <button class="pn-sp-pular" type="button" id="sp-pular">Pular</button>
@@ -2412,8 +2403,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.22";
+  const VERSAO="4.23";
   const VERSOES=[
+    {v:"4.23",data:"17/11/2026",itens:["No computador, a roda do mouse volta a rolar a página; com uma janela aberta, rola só a janela","Dicas ao passar o mouse nos botões de ícone e Enter/Espaço nos itens clicáveis","Tela de entrada nova: só o nome Peneira em verde menta, sem a peneira e sem as letras caindo"]},
     {v:"4.22",data:"17/11/2026",itens:["Ajustes → Instalar e indicar: QR Code do Peneira para instalar em outro aparelho ou indicar a alguém, com link, WhatsApp, copiar e baixar o QR em imagem; atalho também no menu do logo"]},
     {v:"4.21",data:"17/11/2026",itens:["Versão para computador revisada: menu do topo sem sobreposição, tela mais larga em monitores grandes, abas e filtros que quebram linha em vez de rolar, detalhes abrindo como janela no centro, Esc para fechar e Gestão em duas colunas"]},
     {v:"4.20",data:"17/11/2026",itens:["Nova aba Gestão, na barra principal: tempo em reunião do WhatsApp para a diretoria, com farol de tempo, gráficos dia a dia, mês a mês e proporções, top 10, tempo perdido × ganho e valor em reais pela hora-homem (1 salário mínimo como base, com escolha de 1 a 5 ou outro valor)","Gera PowerPoint (gráficos editáveis) e PDF para apresentação"]},
@@ -4252,7 +4244,7 @@ button.ub-row-main{cursor:pointer}
     if((ios||and) && Date.now()-adiado > 3*86400000) window.addEventListener("pn-pronto",()=>setTimeout(()=>{ if($("onb").hidden && $("lock").hidden) abre(); },900),{once:true});
   })();
 
-  /* ---------- tela de entrada: letras caem na peneira, ela sacode e o nome passa ---------- */
+  /* ---------- tela de entrada: só o nome Peneira, em verde menta ---------- */
   (function(){
     const sp=$("splash"), st=$("sp-stage");
     let visto=false; try{ visto = sessionStorage.getItem("peneira-splash")==="1"; }catch(e){}
@@ -4261,52 +4253,11 @@ button.ub-row-main{cursor:pointer}
     const pinga=()=>{ window.pnPingoAbertura&&window.pnPingoAbertura(); };
     $("sp-pular").addEventListener("click",()=>{ pinga(); fecha(); }); sp.addEventListener("click",()=>{ pinga(); fecha(); });
     if(visto || !st.animate){ sp.remove(); setTimeout(()=>window.dispatchEvent(new Event("pn-splash-fim")),0); return; }
-    const W=st.clientWidth, H=st.clientHeight, k=calmo?.35:1;
-    const rs=st.getBoundingClientRect(), rv=st.querySelector(".pn-sp-sieve").getBoundingClientRect();
-    const sx=rv.left-rs.left+rv.width/2, sy=rv.top-rs.top+rv.height*0.62;   // fundo da peneira (malha)
-    const nome="PENEIRA", fs=Math.min(W/6.4,62), y0=H*.6;
-    const FONTE=`700 ${fs}px "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif`;
-    const cv=document.createElement("canvas").getContext("2d"); cv.font=FONTE;
-    const larg=nome.split("").map(c=>cv.measureText(c).width), esp=fs*.04;
-    const total=larg.reduce((a,b)=>a+b,0)+esp*(nome.length-1);
-    const posX=[]; larg.reduce((x,w,i)=>{ posX[i]=x; return x+w+esp; }, W/2-total/2);
-    const gap=fs*.78;
-    const LIX="ABCDEFGHJKLMOQSTUVWXZ";
-    const T_SACODE=1150*k, T_PASSA=2050*k;
-    const peneira=st.querySelector(".pn-sp-sieve");
-    setTimeout(()=>peneira.animate([{transform:"translateX(-50%) rotate(0)"},{transform:"translateX(-52%) rotate(-5deg)"},{transform:"translateX(-48%) rotate(5deg)"},{transform:"translateX(-52%) rotate(-4deg)"},{transform:"translateX(-48%) rotate(4deg)"},{transform:"translateX(-50%) rotate(0)"}],{duration:900*k,iterations:1,easing:"ease-in-out"}), T_SACODE);
-    function cai(l,x,y,atraso,rot){ // cai de cima para dentro da peneira
-      return l.animate([{transform:`translate(${x}px,${-fs*1.5}px) rotate(${rot}deg)`,opacity:0},{transform:`translate(${x}px,${y-fs*.15}px) rotate(${rot/2}deg)`,opacity:1,offset:.8},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`,opacity:1}],
-        {duration:750*k,delay:atraso*k,fill:"both",easing:"cubic-bezier(.5,0,.8,.6)"});
-    }
-    function chacoalha(l,x,y,rot){ // treme junto com a peneira
-      setTimeout(()=>l.animate([{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`},{transform:`translate(${x-6}px,${y-5}px) rotate(${rot/3-15}deg)`},{transform:`translate(${x+6}px,${y-3}px) rotate(${rot/3+15}deg)`},{transform:`translate(${x}px,${y}px) rotate(${rot/3}deg)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
-    }
-    // o que não importa: cai na peneira, sacode e fica (some)
-    for(let i=0;i<34;i++){
-      const l=el("span","pn-sp-l junk",LIX[Math.floor(Math.random()*LIX.length)]);
-      l.style.fontSize=(fs*.42)+"px"; l.style.opacity="0"; st.appendChild(l);
-      const x=sx+(Math.random()-.5)*rv.width*.62 - fs*.12, y=sy-fs*.42+(Math.random()-.5)*fs*.3, rot=(Math.random()-.5)*80;
-      cai(l,x,y,Math.random()*700,rot); chacoalha(l,x,y,rot);
-      setTimeout(()=>l.animate([{opacity:1},{opacity:0,transform:`translate(${x}px,${y-fs*.2}px) scale(.6)`}],{duration:700*k,fill:"forwards"}), T_PASSA+300*k);
-    }
-    // o que importa: cai na peneira, sacode e passa pela malha formando o nome
-    nome.split("").forEach((c,i)=>{
-      const l=el("span","pn-sp-l",c); l.style.font=FONTE; l.style.width=larg[i]+"px"; l.style.textAlign="center"; l.style.opacity="0"; st.appendChild(l);
-      const ix=sx+(Math.random()-.5)*rv.width*.5 - larg[i]/2, iy=sy-fs*.62, rot=(Math.random()-.5)*70, tx=posX[i], ty=y0;
-      const a=l.animate([{transform:`translate(${ix}px,${-fs*1.5}px) rotate(${rot}deg) scale(.55)`,opacity:0},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1}],
-        {duration:750*k,delay:(150+Math.random()*550)*k,fill:"both",easing:"cubic-bezier(.5,0,.8,.6)"});
-      setTimeout(()=>l.animate([{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`},{transform:`translate(${ix-5}px,${iy-6}px) rotate(${rot/3-12}deg) scale(.55)`},{transform:`translate(${ix+5}px,${iy-3}px) rotate(${rot/3+12}deg) scale(.55)`},{transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`}],{duration:300*k,iterations:3,fill:"forwards"}),T_SACODE);
-      setTimeout(()=>l.animate([
-        {transform:`translate(${ix}px,${iy}px) rotate(${rot/3}deg) scale(.55)`,opacity:1},
-        {transform:`translate(${ix}px,${sy+fs*.1}px) rotate(${rot/4}deg) scale(.5)`,opacity:1,offset:.25},
-        {transform:`translate(${tx}px,${ty+fs*.12}px) rotate(0deg) scale(1.05)`,opacity:1,offset:.8},
-        {transform:`translate(${tx}px,${ty-fs*.06}px) scale(.98)`,opacity:1,offset:.9},
-        {transform:`translate(${tx}px,${ty}px) scale(1)`,opacity:1}],{duration:1050*k,fill:"forwards",easing:"cubic-bezier(.35,.05,.4,1)"}), T_PASSA+i*150*k);
-    });
-    setTimeout(pinga, T_PASSA+(nome.length*150+850)*k);
-    setTimeout(()=>{ const t=$("sp-tag"); if(t) t.classList.add("on"); }, T_PASSA+1900*k);
-    setTimeout(fecha, T_PASSA+3200*k);
+    const k=calmo?.4:1, nm=$("sp-nome");
+    requestAnimationFrame(()=>{ sp.classList.add("vai"); });
+    setTimeout(()=>{ const t=$("sp-tag"); if(t) t.classList.add("on"); }, 650*k);
+    setTimeout(pinga, 700*k);
+    setTimeout(fecha, 2100*k);
   })();
 
   if("serviceWorker" in navigator && !window.claude && !/claude/i.test(location.hostname)){ try{ navigator.serviceWorker.register("sw.js").then(r=>{ try{ r.update(); }catch(e){} }).catch(()=>{}); let recarregou=false; navigator.serviceWorker.addEventListener("controllerchange",()=>{ if(recarregou) return; recarregou=true; location.reload(); }); }catch(e){} }
@@ -4667,10 +4618,19 @@ button.ub-row-main{cursor:pointer}
 <script>
 /* Desktop: Esc fecha a janela aberta; roda do mouse rola fileiras horizontais */
 (function(){
+  function dicas(){ [].forEach.call(document.querySelectorAll("button[aria-label]:not([title]),[role=button][aria-label]:not([title])"),function(b){ b.title=b.getAttribute("aria-label"); }); }
+  if(window.matchMedia&&matchMedia("(hover:hover)").matches){ dicas(); setInterval(dicas,5000); }
+  /* Enter ou Espaço acionam itens clicáveis que não são botões */
+  document.addEventListener("keydown",function(e){ if(e.key!=="Enter"&&e.key!==" ") return; var t=e.target; if(t&&t.getAttribute&&t.getAttribute("role")==="button"&&t.tagName!=="BUTTON"){ e.preventDefault(); t.click(); } });
   document.addEventListener("keydown",function(e){ if(e.key!=="Escape") return; var b=document.getElementById("busca"); if(b&&!b.hidden) return;
     var ab=[].slice.call(document.querySelectorAll(".pn-sheet")).filter(function(x){return !x.hidden&&x.getClientRects().length>0;}); if(!ab.length) return;
     var t=ab[ab.length-1]; t.click(); if(!t.hidden){ var x=t.querySelector('[aria-label="Fechar"],[id$="-x"],.pn-x'); if(x) x.click(); } });
-  document.addEventListener("wheel",function(e){ if(e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; var el=e.target&&e.target.closest&&e.target.closest(".ia-chips,.ub-seg,#rel-abas,#gx-meses-t,.pn-kpis.ub-carr");
+  document.addEventListener("wheel",function(e){ if(e.ctrlKey) return;
+    /* com uma janela aberta, a roda rola só a janela, nunca a página atrás */
+    var sh=e.target&&e.target.closest&&e.target.closest(".pn-sheet"); if(sh){ var c=e.target.closest(".pn-sheet-card"), ok=false, n=e.target;
+      while(n&&n!==sh){ if(n.scrollHeight>n.clientHeight+1){ var oy=getComputedStyle(n).overflowY; if((oy==="auto"||oy==="scroll")&&((e.deltaY>0&&n.scrollTop+n.clientHeight<n.scrollHeight-1)||(e.deltaY<0&&n.scrollTop>0))){ ok=true; break; } } n=n.parentElement; }
+      if(!ok||!c) e.preventDefault(); return; }
+    if(Math.abs(e.deltaX)>Math.abs(e.deltaY)) return; var el=e.target&&e.target.closest&&e.target.closest(".ia-chips,.ub-seg,#rel-abas,#gx-meses-t,.pn-kpis.ub-carr");
     if(el&&el.scrollWidth>el.clientWidth+2){ el.scrollLeft+=e.deltaY; e.preventDefault(); } },{passive:false});
 })();
 </script>
