@@ -3047,7 +3047,7 @@ button.ub-row-main{cursor:pointer}
     b.disabled=true; setTimeout(()=>{ b.disabled=false; },30000);
     let fezPonte=false; if(ponte&&ponte.url){ st.textContent="Atualizando as conversas individuais…"; await ponteSync(); fezPonte=!!S.ponteSt; }
     let mcp=null; try{ mcp=(window.claude&&window.claude.use)?await window.claude.use("mcp"):null; }catch(e){}
-    const gruposMsg="Grupos: entram quando o WhatsApp Web estiver aberto no Chrome do notebook (com a extensão do Claude).";
+    const gruposMsg="Os grupos não são varridos pelo celular: eles entram pela varredura do notebook, que hoje depende do Claude no computador.";
     if(!mcp){ const h=new Date(); marca(fezPonte?"Conversas individuais atualizadas às "+pad2(h.getHours())+":"+pad2(h.getMinutes())+".":"Pedido registrado.",4000);
       st.textContent=(fezPonte?"✓ Conversas individuais atualizadas agora. ":"")+gruposMsg; salvoOk(b,"✓ Feito"); return; }
     st.textContent="Pedindo a varredura dos grupos…";
