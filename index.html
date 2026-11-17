@@ -878,6 +878,48 @@ button.ub-row-main{cursor:pointer}
 .hx-g-l{display:flex;justify-content:space-between;gap:10px;align-items:baseline} .hx-g-l b{font-size:15px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .hx-g-l span{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;flex:none}
 .hx-g-t{height:8px;border-radius:99px;background:var(--surface-2);margin:7px 0 5px;overflow:hidden} .hx-g-t i{display:block;height:100%;border-radius:99px;background:var(--accent)}
 .hx-g small{font-size:12px;color:var(--ink-3)}
+/* ===== Gestão executiva do tempo (aba nova) ===== */
+#gestao .gx-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 12px}
+#gestao .gx-mes{display:flex;align-items:center;gap:6px;margin-left:auto}
+#gestao .gx-mes b{min-width:84px;text-align:center;font-size:13.5px}
+#gestao .gx-mes .pn-btn{padding:6px 10px}
+#gestao .gx-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media (max-width:620px){#gestao .gx-kpis{grid-template-columns:repeat(2,1fr)}}
+#gestao .gx-kpis .pn-kpi b{font-size:24px}
+#gestao .gx-kpis .pn-kpi.perd::before{background:#e5484d} #gestao .gx-kpis .pn-kpi.perd b{color:#e5484d}
+#gestao .gx-kpis .pn-kpi.gan::before{background:#2fb36b} #gestao .gx-kpis .pn-kpi.gan b{color:#2fb36b}
+#gestao .gx-kpis .pn-kpi.cus::before{background:#1F4E78}
+#gestao .gx-card{margin-bottom:14px}
+#gestao .gx-card>b{display:block;font-size:15px}
+#gestao .gx-card>.pn-meta{margin:2px 0 8px}
+#gestao .gx-svg{width:100%;height:auto;display:block;overflow:visible}
+#gestao .gx-svg [data-gx-dia]{cursor:pointer}
+#gestao .gx-leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--ink-3);margin-top:6px}
+#gestao .gx-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+#gestao .gx-leg i.c{border-radius:50%}
+#gestao .gx-donut{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+#gestao .gx-donut svg{width:170px;height:170px;flex:none}
+#gestao .gx-donut ul{list-style:none;margin:0;padding:0;flex:1;min-width:150px;font-size:13px}
+#gestao .gx-donut li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-top:1px solid var(--border)}
+#gestao .gx-donut li:first-child{border-top:0}
+#gestao .gx-donut li i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+#gestao .gx-top .pn-rank{cursor:pointer}
+#gestao .gx-top .pn-rank .bar{flex:1;min-width:60px}
+#gestao .gx-fx{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0}
+#gestao .gx-fx label{display:block;font-size:12px;color:var(--ink-3);margin-bottom:3px}
+#gestao .gx-fx input{width:100%;box-sizing:border-box}
+#gestao .gx-hora{font-size:13.5px;background:var(--surface-2);border-radius:10px;padding:10px 12px;margin:8px 0}
+#gestao .gx-hora b{font-variant-numeric:tabular-nums}
+#gestao .gx-exp{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 14px}
+#gestao .gx-exp .pn-btn{flex:1;min-width:150px}
+#gestao table.gx-t{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+#gestao table.gx-t th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-3);text-align:right;padding:4px 6px}
+#gestao table.gx-t td{padding:6px;border-top:1px solid var(--border);text-align:right}
+#gestao table.gx-t th:first-child,#gestao table.gx-t td:first-child{text-align:left}
+#gestao .gx-vazio{padding:18px 4px;text-align:center}
+#gestao #gx-meses-t{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#gestao table.gx-t{min-width:480px}
+#gestao .gx-top .pn-rank>b:last-child{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1255,6 +1297,49 @@ button.ub-row-main{cursor:pointer}
       <div class="pn-card" id="rg-todos"></div>
       <div class="pn-h2" style="margin-top:14px">Relatórios por grupo</div>
       <div id="rg-lista"></div>
+    </div>
+  </section>
+
+  <!-- ========== GESTÃO (tempo e números para a diretoria) ========== -->
+  <section class="pn-view" id="gestao">
+    <div class="gx-bar">
+      <div class="ub-modo" id="gx-modo" role="group" aria-label="Período"><button type="button" data-p="mes" aria-pressed="true">Mês</button><button type="button" data-p="d30" aria-pressed="false">30 dias</button><button type="button" data-p="d7" aria-pressed="false">7 dias</button></div>
+      <div class="gx-mes" id="gx-mes-box"><button class="pn-btn" type="button" id="gx-prev" aria-label="Mês anterior">‹</button><b id="gx-mes"></b><button class="pn-btn" type="button" id="gx-next" aria-label="Próximo mês">›</button></div>
+    </div>
+    <div id="gx-vazio" class="pn-card gx-vazio" hidden><b>Ainda não há dias medidos neste período.</b><p class="pn-meta" style="margin:6px 0 0">Os gráficos aparecem assim que as varreduras dos grupos registrarem conversas no período escolhido.</p></div>
+    <div id="gx-corpo">
+      <div class="pn-farol" id="gx-farol">
+        <div class="pn-farol-t"><b>Farol do tempo</b><span id="gx-farol-s"></span></div>
+        <button class="pn-luz r" type="button" data-gxf="r"><i></i><div><b id="gx-fr">0</b><span>Muito acima</span></div></button>
+        <button class="pn-luz a" type="button" data-gxf="a"><i></i><div><b id="gx-fa">0</b><span>Acima</span></div></button>
+        <button class="pn-luz v" type="button" data-gxf="v"><i></i><div><b id="gx-fv">0</b><span>Na referência</span></div></button>
+      </div>
+      <div class="gx-kpis" id="gx-kpis"></div>
+      <div class="pn-card gx-card"><b>Dia a dia · tempo em reunião no WhatsApp</b><p class="pn-meta" id="gx-linha-s"></p><div id="gx-linha"></div>
+        <div class="gx-leg"><span><i class="c" style="background:#2fb36b"></i>na referência</span><span><i class="c" style="background:#f5b42a"></i>acima</span><span><i class="c" style="background:#e5484d"></i>muito acima (2×)</span><span><i style="background:#f5b42a;opacity:.7"></i>linha tracejada = referência</span></div></div>
+      <div class="pn-card gx-card"><b>Tempo perdido × tempo ganho por dia</b><div class="ub-modo" id="gx-un" role="group" aria-label="Unidade" style="margin:6px 0"><button type="button" data-u="min" aria-pressed="true">Minutos</button><button type="button" data-u="brl" aria-pressed="false">Reais (R$)</button></div><p class="pn-meta" id="gx-div-s"></p><div id="gx-div"></div>
+        <div class="gx-leg"><span><i style="background:#e5484d"></i>perdido</span><span><i style="background:#2fb36b"></i>ganho</span></div></div>
+      <div class="pn-card gx-card"><b>Mês a mês</b><p class="pn-meta" id="gx-meses-s"></p><div id="gx-meses"></div><div id="gx-meses-t" style="margin-top:8px"></div></div>
+      <div class="pn-card gx-card"><b>Proporção do período · por grupo</b><p class="pn-meta">Quanto de cada 100 minutos de reunião foi consumido por cada grupo.</p><div class="gx-donut" id="gx-donut"></div></div>
+      <div class="pn-card gx-card"><b>Proporção do período · por dia da semana</b><p class="pn-meta">Minutos de reunião somados em cada dia da semana.</p><div id="gx-sem"></div></div>
+      <div class="pn-card gx-card gx-top"><b>Top 10 grupos que mais consumiram tempo</b><p class="pn-meta">Tempo de reunião no período. Toque para abrir o grupo.</p><div id="gx-top-gr"></div></div>
+      <div class="pn-card gx-card gx-top"><b>Top 10 dias mais pesados</b><p class="pn-meta">Toque para ver como o dia se movimentou.</p><div id="gx-top-dia"></div></div>
+      <div class="pn-card gx-card gx-top"><b>Top 10 quem mais escreveu nos grupos</b><p class="pn-meta">Mensagens no período.</p><div id="gx-top-pes"></div></div>
+      <div class="pn-card gx-card"><b>Quanto custou o tempo (em reais)</b>
+        <p class="pn-meta">Base: <b>1 salário mínimo</b> ÷ 220 horas por mês = hora-homem. Escolha abaixo quantos salários mínimos a pessoa ganha: o valor em reais e o gráfico sobem na mesma proporção. Tempo perdido = tempo de reunião acima da referência × pessoas na reunião.</p>
+        <div class="pn-chips" id="gx-nchips" style="margin:6px 0"></div>
+        <div class="gx-hora" id="gx-hora"></div>
+        <div class="gx-fx">
+          <div><label for="gx-sm">Salário mínimo (R$)</label><input id="gx-sm" type="number" min="1" step="0.01" inputmode="decimal"></div>
+          <div><label for="gx-n">Salários mínimos (outro valor)</label><input id="gx-n" type="number" min="0.5" step="0.5" inputmode="decimal"></div>
+          <div><label for="gx-h">Horas por mês</label><input id="gx-h" type="number" min="1" inputmode="numeric"></div>
+          <div><label for="gx-ref">Referência diária (min)</label><input id="gx-ref" type="number" min="1" inputmode="numeric" placeholder="média do período"></div>
+        </div>
+        <button class="pn-btn" type="button" id="gx-cfg-ok">Salvar parâmetros</button>
+        <p class="pn-meta" style="margin:8px 0 0">Salário mínimo nacional vigente em 2026: R$ 1.621,00 (Decreto 12.797/2025). Se mudar, edite o valor acima. Referência diária vazia = média dos dias medidos do período.</p>
+      </div>
+      <div class="gx-exp"><button class="pn-btn pri" type="button" id="gx-ppt">Gerar PowerPoint</button><button class="pn-btn" type="button" id="gx-pdf">Gerar PDF</button></div>
+      <p class="pn-meta" id="gx-nota" style="margin:0 4px 14px"></p>
     </div>
   </section>
 
@@ -1711,6 +1796,7 @@ button.ub-row-main{cursor:pointer}
     { id:"importantes", nome:"Importantes", ico:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>', badge:"b-imp" },
     { id:"agenda", nome:"Agenda", ico:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', badge:"b-ag" },
     { id:"relatorios", nome:"Relatórios", ico:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>' },
+    { id:"gestao", nome:"Gestão", ico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>' },
     { id:"ajustes", nome:"Ajustes", ico:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', badge:"b-crit" }
   ];
 
@@ -1752,7 +1838,7 @@ button.ub-row-main{cursor:pointer}
     const bv=$("btn-voltar"); if(bv) bv.hidden = (id==="inicio");
     const br=$("pn-brand"); if(br) br.style.display = (id==="inicio") ? "" : "none";
     const bm=$("brand-menu"); if(bm){ bm.hidden=true; if(br) br.setAttribute("aria-expanded","false"); }
-    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",termos:"Termos de Uso",perfil:"Meu cadastro",assistente:"Peneirinha"};
+    const TIT={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",gestao:"Gestão",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",termos:"Termos de Uso",perfil:"Meu cadastro",assistente:"Peneirinha"};
     const tt=$("pn-titulo"); if(tt){ tt.textContent=TIT[id]||"Peneira"; tt.hidden=(id==="inicio"); }
     if(id==="assistente") try{ abreAssistente(); }catch(e){}
   }
@@ -2266,8 +2352,9 @@ button.ub-row-main{cursor:pointer}
   });
 
   /* ---------- central (novidades, atualizações e mais) ---------- */
-  const VERSAO="4.19";
+  const VERSAO="4.20";
   const VERSOES=[
+    {v:"4.20",data:"17/11/2026",itens:["Nova aba Gestão, na barra principal: tempo em reunião do WhatsApp para a diretoria, com farol de tempo, gráficos dia a dia, mês a mês e proporções, top 10, tempo perdido × ganho e valor em reais pela hora-homem (1 salário mínimo como base, com escolha de 1 a 5 ou outro valor)","Gera PowerPoint (gráficos editáveis) e PDF para apresentação"]},
     {v:"4.19",data:"16/11/2026",itens:["Atalhos novos no Início: Hoje (o que importa no dia), Highlights (aprendido nas últimas leituras), Compromissos (promessas feitas nos grupos) e Assistente","Assistente: chat com a IA dentro do app. Pergunte sobre grupos e pendências e ensine regras (o que é importante, VIPs, horários, jeito das respostas), que a varredura passa a aplicar"]},
     {v:"4.18",data:"15/11/2026",itens:["Radar grande no centro do cartão","Botão Varrer agora menor e discreto, embaixo dos números"]},
     {v:"4.17",data:"15/11/2026",itens:["Varrer agora em destaque no topo do cartão de varredura, acima do radar: botão maior, com ícone, frase de apoio e brilho"]},
@@ -3898,7 +3985,7 @@ button.ub-row-main{cursor:pointer}
   zeraBadge(); document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") zeraBadge(); });
 
   /* ---------- pesquisa: palavras e seções do app ---------- */
-  const TIT_VIEW={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
+  const TIT_VIEW={inicio:"Início",importantes:"Importantes",agenda:"Agenda",relatorios:"Relatórios",gestao:"Gestão",ajustes:"Ajustes",criterios:"Critérios",sobre:"Como funciona",acoes:"Ações",politica:"Privacidade",perfil:"Meu cadastro"};
   const ABA_REL={dia:"Do dia",grupos:"Por grupo",fal:"Quem mais fala",prev:"Prevenção",bd:"Banco de dados"};
   function abaRel(k){ go("relatorios"); const b=document.querySelector('#rel-abas [data-aba="'+k+'"]'); if(b) b.click(); }
   function realca(alvo){ if(!alvo) return; setTimeout(()=>{ const d=alvo.closest("details"); if(d) d.open=true;
@@ -4182,6 +4269,314 @@ button.ub-row-main{cursor:pointer}
     db.collection("acoes").onSnapshot(s=>{ S.acoes=s.docs.map(d=>({id:d.id,...d.data()})); ok(s); render(); }, fail);
     db.doc("config/ausencia").onSnapshot(s=>{ S.ausencia=s.exists?s.data():null; S.dbPronto=true; render(); }, ()=>{});
     db.doc("meta/status").onSnapshot(s=>{ S.meta=s.exists?s.data():null; render(); }, ()=>{});
+  })();
+  /* ---------- Gestão executiva do tempo (aba nova; só LÊ os dados que o app já tem) ---------- */
+  (function gestaoExec(){
+    if(!$("gestao")) return;
+    const CFG_K="peneira-gestao-cfg";
+    const COR={r:"#e5484d",a:"#f5b42a",v:"#2fb36b"};
+    const PAL=["#1F4E78","#2E5F8A","#4D7EAD","#7FA6CF","#A9C4E2","#C8D9EE","#9aa5b8"];
+    const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+    const brl=v=>(+v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    const num1=v=>(+v||0).toLocaleString("pt-BR",{maximumFractionDigits:1});
+    const lab=v=>v>=60?num1(v/60)+"h":Math.round(v)+"m";
+    const dm=d=>d.slice(8,10)+"/"+d.slice(5,7);
+    const ymd=d=>d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+    function cfgLer(){ let c={}; try{ c=JSON.parse(localStorage.getItem(CFG_K)||"{}")||{}; }catch(e){}
+      return {sm:+c.sm>0?+c.sm:1621, n:+c.n>0?+c.n:1, h:+c.h>0?+c.h:220, ref:+c.ref>0?+c.ref:null}; }
+    function cfgGrava(c){ try{ localStorage.setItem(CFG_K,JSON.stringify(c)); }catch(e){} }
+    let modoP="mes", mesSel=null, unid="min";
+    function mesesEntre(a,b){ const out=[]; let [y,m]=a.slice(0,7).split("-").map(Number); const [y2,m2]=b.slice(0,7).split("-").map(Number);
+      while(y<y2||(y===y2&&m<=m2)){ out.push(y+"-"+pad2(m)); m++; if(m>12){ m=1; y++; } } return out; }
+    function periodo(){
+      const hj=ymd(new Date());
+      if(modoP==="d7"||modoP==="d30"){ const n=modoP==="d7"?7:30; const d=new Date(); d.setDate(d.getDate()-(n-1)); const ini=ymd(d);
+        return {ini,fim:hj,rot:"Últimos "+n+" dias",arq:"ultimos-"+n+"-dias",meses:mesesEntre(ini,hj)}; }
+      const m=mesSel||mesAtual(); const [a,b]=m.split("-").map(Number);
+      return {ini:m+"-01",fim:m===mesAtual()?hj:m+"-"+pad2(new Date(a,b,0).getDate()),rot:nomeMes(m)+(m===mesAtual()?" (parcial)":""),arq:m,meses:[m]};
+    }
+    function nomeCfg(c){ return num1(c.n)+(c.n===1?" salário mínimo":" salários mínimos"); }
+    /* ---- cálculo (tudo vem de leituras reais; nada é estimado) ---- */
+    function modelo(){
+      const P=periodo(), cfg=cfgLer(), hora=cfg.sm*cfg.n/cfg.h;
+      const dias=[], gr={}, pe={}, vistos=new Set();
+      P.meses.forEach(m=>{ const M=diasDoMes(m);
+        Object.keys(M).forEach(data=>{ if(data<P.ini||data>P.fim||vistos.has(data)) return; vistos.add(data); const d=M[data]; let pm=0, sp=0, mc=0;
+          d.reu.forEach(x=>{ const n=nPess(x); if(n){ pm+=x.min*n; mc+=x.min; } else sp++;
+            const k=nG(x.grupo); const g=gr[k]=gr[k]||{grupo:x.grupo,min:0,qtd:0}; g.min+=x.min; g.qtd++; });
+          dias.push({data,w:diaSem(data),min:d.min||0,qtd:d.reu.length,msgs:d.msgs||0,pm,sp,mc}); }); });
+      (S.relGrupos||[]).forEach(r=>{ const dt=dataLocal(r); if(dt<P.ini||dt>P.fim) return;
+        (r.participantes||[]).forEach(p=>{ const k=norm(p.nome); if(!k) return; const q=pe[k]=pe[k]||{nome:p.nome,msgs:0}; q.msgs+=(p.msgs||0); }); });
+      dias.sort((a,b)=>a.data<b.data?-1:1);
+      const sum=(f)=>dias.reduce((a,d)=>a+f(d),0);
+      const totMin=sum(d=>d.min), qtd=sum(d=>d.qtd), msgs=sum(d=>d.msgs), pm=sum(d=>d.pm), sp=sum(d=>d.sp), mc=sum(d=>d.mc);
+      const med=dias.length?totMin/dias.length:0, ref=cfg.ref!=null?cfg.ref:med;
+      const pmedio=mc>0?pm/mc:0;
+      dias.forEach(d=>{ d.exc=Math.max(0,d.min-ref); d.gan=Math.max(0,ref-d.min); d.fa=d.min<=ref?"v":d.min<=2*ref?"a":"r";
+        d.pPM=d.min>0&&d.pm>0?d.pm*d.exc/d.min:0; d.gPM=pmedio*d.gan; });
+      const perdMin=sum(d=>d.exc), ganMin=sum(d=>d.gan), perdPM=sum(d=>d.pPM), ganPM=sum(d=>d.gPM);
+      const F={r:dias.filter(d=>d.fa==="r"),a:dias.filter(d=>d.fa==="a"),v:dias.filter(d=>d.fa==="v")};
+      const sem=[0,0,0,0,0,0,0]; dias.forEach(d=>{ if(d.w!=null) sem[d.w]+=d.min; });
+      const grupos=Object.values(gr).sort((a,b)=>b.min-a.min);
+      const pessoas=Object.values(pe).sort((a,b)=>b.msgs-a.msgs);
+      // mês a mês (todos os meses com dado)
+      const meses=mesesDisp().map(m=>{ const R=reunioes(m), M=diasDoMes(m); const hj=ymd(new Date());
+        const ds=Object.keys(M).filter(x=>x.slice(0,7)===m&&x<=hj); const min=R.total.min||0, pmm=R.total.pessoaMin||0;
+        return {m,nome:nomeMes(m),parcial:m===mesAtual(),min,qtd:R.total.qtd||0,dias:ds.length,media:ds.length?min/ds.length:0,pm:pmm,custo:pmm/60*hora}; }).filter(x=>x.dias>0||x.min>0);
+      return {P,cfg,hora,dias,totMin,qtd,msgs,pm,sp,med,ref,pmedio,perdMin,ganMin,perdPM,ganPM,perdBRL:perdPM/60*hora,ganBRL:ganPM/60*hora,custoBRL:pm/60*hora,F,sem,grupos,pessoas,meses,gerado:new Date()};
+    }
+    /* ---- gráficos em SVG (usados na tela, no PDF e testáveis) ---- */
+    const TELA={txt:"var(--ink-2)",mut:"var(--ink-3)",grid:"var(--border)",bg:"transparent"};
+    const CLARO={txt:"#1b2236",mut:"#5f6779",grid:"#dde3ee",bg:"#ffffff"};
+    const FONTE="font-family:Arial,Helvetica,sans-serif";
+    const T=(x,y,t,T_,o)=>'<text x="'+x+'" y="'+y+'" style="'+FONTE+';font-size:'+((o&&o.s)||11)+'px;fill:'+((o&&o.c)||T_.mut)+';'+((o&&o.b)?'font-weight:700;':'')+'" text-anchor="'+((o&&o.a)||"middle")+'">'+esc(t)+'</text>';
+    function nice(v){ if(v<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const f=v/p; return (f<=1?1:f<=2?2:f<=5?5:10)*p; }
+    function niceMin(v){ const L=[5,10,15,20,30,45,60,90,120,180,240,360,480,720,1440]; const st=L.find(x=>x*4>=v)||Math.ceil(v/4/60)*60; return st*4; }
+    function svgWrap(W,H,inner,T_){ return '<svg class="gx-svg" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img">'+(T_.bg!=="transparent"?'<rect width="'+W+'" height="'+H+'" fill="'+T_.bg+'"/>':"")+inner+'</svg>'; }
+    function svgLinha(m,T_,W,H){ const D=m.dias; if(!D.length) return ""; const pd={l:40,r:14,t:14,b:26}, iw=W-pd.l-pd.r, ih=H-pd.t-pd.b;
+      const top=niceMin(Math.max(m.ref*1.15,...D.map(d=>d.min),1)); const x=i=>pd.l+(D.length===1?iw/2:iw*i/(D.length-1)), y=v=>pd.t+ih*(1-v/top);
+      let s=""; for(let k=0;k<=4;k++){ const v=top*k/4, yy=y(v); s+='<line x1="'+pd.l+'" x2="'+(W-pd.r)+'" y1="'+yy+'" y2="'+yy+'" style="stroke:'+T_.grid+'" stroke-width="1"/>'+T(pd.l-6,yy+4,lab(v),T_,{a:"end"}); }
+      const kx=Math.max(1,Math.ceil(D.length/8)); D.forEach((d,i)=>{ if(i%kx===0||i===D.length-1) s+=T(x(i),H-8,dm(d.data),T_); });
+      const pts=D.map((d,i)=>x(i)+","+y(d.min)).join(" ");
+      s+='<polygon points="'+x(0)+","+y(0)+" "+pts+" "+x(D.length-1)+","+y(0)+'" fill="#1F4E78" opacity=".10"/>';
+      s+='<polyline points="'+pts+'" fill="none" stroke="#1F4E78" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+      s+='<line x1="'+pd.l+'" x2="'+(W-pd.r)+'" y1="'+y(m.ref)+'" y2="'+y(m.ref)+'" stroke="#f5b42a" stroke-width="1.6" stroke-dasharray="6 5"/>'+T(W-pd.r,y(m.ref)-5,"ref. "+lab(m.ref),T_,{a:"end",c:"#b9801a",b:1});
+      D.forEach((d,i)=>{ s+='<circle cx="'+x(i)+'" cy="'+y(d.min)+'" r="'+(D.length>20?3.2:4.6)+'" fill="'+COR[d.fa]+'" stroke="#fff" stroke-width="1.4" data-gx-dia="'+d.data+'"><title>'+dm(d.data)+" · "+esc(fmtHM(d.min))+'</title></circle>'; });
+      const mx=D.reduce((a,d)=>d.min>a.min?d:a,D[0]); if(mx.min>0) s+=T(x(D.indexOf(mx)),y(mx.min)-9,fmtHM(mx.min),T_,{b:1,c:T_.txt});
+      return svgWrap(W,H,s,T_); }
+    function svgDiv(m,T_,W,H,un){ const D=m.dias; if(!D.length) return ""; const brlU=un==="brl"; const hr=m.hora; const val=(min,pm)=>brlU?pm/60*hr:min;
+      const up=D.map(d=>val(d.exc,d.pPM)), dn=D.map(d=>val(d.gan,d.gPM)); const pd={l:46,r:12,t:12,b:26}, iw=W-pd.l-pd.r, ih=H-pd.t-pd.b;
+      const mxU=Math.max(...up,1e-9), mxD=Math.max(...dn,1e-9); const top=brlU?nice(Math.max(mxU,mxD,1)):niceMin(Math.max(mxU,mxD,1)); const mid=pd.t+ih/2, esc_=(ih/2-4)/top; const bw=Math.max(3,Math.min(26,iw/D.length*.66)); const x=i=>pd.l+iw*(i+.5)/D.length;
+      const fm=v=>brlU?"R$ "+Math.round(v).toLocaleString("pt-BR"):lab(v);
+      let s=""; [1,.5,0,-.5,-1].forEach(k=>{ const yy=mid-k*top*esc_; s+='<line x1="'+pd.l+'" x2="'+(W-pd.r)+'" y1="'+yy+'" y2="'+yy+'" style="stroke:'+T_.grid+'" stroke-width="'+(k===0?1.6:1)+'"/>'+T(pd.l-6,yy+4,(k<0?"-":"")+fm(Math.abs(k)*top),T_,{a:"end",s:10}); });
+      const kx=Math.max(1,Math.ceil(D.length/8));
+      D.forEach((d,i)=>{ if(i%kx===0||i===D.length-1) s+=T(x(i),H-8,dm(d.data),T_);
+        if(up[i]>0) s+='<rect x="'+(x(i)-bw/2)+'" y="'+(mid-up[i]*esc_)+'" width="'+bw+'" height="'+(up[i]*esc_)+'" rx="2" fill="'+COR[d.fa==="v"?"a":d.fa]+'" data-gx-dia="'+d.data+'"><title>'+dm(d.data)+" · perdido "+(brlU?brl(up[i]):fmtHM(d.exc))+'</title></rect>';
+        if(dn[i]>0) s+='<rect x="'+(x(i)-bw/2)+'" y="'+mid+'" width="'+bw+'" height="'+(dn[i]*esc_)+'" rx="2" fill="'+COR.v+'" data-gx-dia="'+d.data+'"><title>'+dm(d.data)+" · ganho "+(brlU?brl(dn[i]):fmtHM(d.gan))+'</title></rect>'; });
+      return svgWrap(W,H,s,T_); }
+    function svgMeses(m,T_,W,H){ const D=m.meses; if(!D.length) return ""; const pd={l:40,r:12,t:22,b:30}, iw=W-pd.l-pd.r, ih=H-pd.t-pd.b; const top=nice(Math.max(...D.map(d=>d.min/60),1)); const bw=Math.min(54,iw/D.length*.6); const x=i=>pd.l+iw*(i+.5)/D.length;
+      let s=""; for(let k=0;k<=4;k++){ const v=top*k/4, yy=pd.t+ih*(1-v/top); s+='<line x1="'+pd.l+'" x2="'+(W-pd.r)+'" y1="'+yy+'" y2="'+yy+'" style="stroke:'+T_.grid+'"/>'+T(pd.l-6,yy+4,num1(v)+"h",T_,{a:"end"}); }
+      D.forEach((d,i)=>{ const h=ih*(d.min/60)/top; s+='<rect x="'+(x(i)-bw/2)+'" y="'+(pd.t+ih-h)+'" width="'+bw+'" height="'+h+'" rx="3" fill="#1F4E78" opacity="'+(d.parcial?".55":"1")+'"/>'+T(x(i),pd.t+ih-h-6,num1(d.min/60)+"h",T_,{b:1,c:T_.txt})+T(x(i),H-10,d.nome+(d.parcial?"*":""),T_); });
+      return svgWrap(W,H,s,T_); }
+    function svgSem(m,T_,W,H){ const ord=[1,2,3,4,5,6,0]; const v=ord.map(w=>m.sem[w]); const pd={l:40,r:12,t:20,b:26}, iw=W-pd.l-pd.r, ih=H-pd.t-pd.b; const top=niceMin(Math.max(...v,1)); const bw=Math.min(46,iw/7*.6); const x=i=>pd.l+iw*(i+.5)/7; const tot=v.reduce((a,b)=>a+b,0)||1;
+      let s=""; for(let k=0;k<=4;k++){ const q=top*k/4, yy=pd.t+ih*(1-q/top); s+='<line x1="'+pd.l+'" x2="'+(W-pd.r)+'" y1="'+yy+'" y2="'+yy+'" style="stroke:'+T_.grid+'"/>'+T(pd.l-6,yy+4,lab(q),T_,{a:"end"}); }
+      const mxI=v.indexOf(Math.max(...v)); v.forEach((q,i)=>{ const h=ih*q/top; s+='<rect x="'+(x(i)-bw/2)+'" y="'+(pd.t+ih-h)+'" width="'+bw+'" height="'+h+'" rx="3" fill="'+(i===mxI&&q>0?"#1F4E78":"#7FA6CF")+'"/>'+(q>0?T(x(i),pd.t+ih-h-6,Math.round(100*q/tot)+"%",T_,{b:1,c:T_.txt}):"")+T(x(i),H-8,DSEM[ord[i]],T_); });
+      return svgWrap(W,H,s,T_); }
+    function partesGrupo(m){ const G=m.grupos; if(!G.length) return []; const top=G.slice(0,6), resto=G.slice(6).reduce((a,g)=>a+g.min,0); const tot=G.reduce((a,g)=>a+g.min,0)||1;
+      const p=top.map((g,i)=>({n:g.grupo,v:g.min,pct:100*g.min/tot,cor:PAL[i]})); if(resto>0) p.push({n:"Outros grupos",v:resto,pct:100*resto/tot,cor:PAL[6]}); return p; }
+    function svgDonut(parts,T_,S_,centro){ const r=62, c=2*Math.PI*r, tot=parts.reduce((a,p)=>a+p.v,0)||1; let acc=0, s="";
+      parts.forEach(p=>{ const len=c*p.v/tot; s+='<circle cx="85" cy="85" r="'+r+'" fill="none" stroke="'+p.cor+'" stroke-width="26" stroke-dasharray="'+len+" "+(c-len)+'" stroke-dashoffset="'+(-acc)+'" transform="rotate(-90 85 85)"/>'; acc+=len; });
+      s+=T(85,82,centro[0],T_,{s:17,b:1,c:T_.txt})+T(85,98,centro[1],T_,{s:10});
+      return '<svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" role="img">'+(T_.bg!=="transparent"?'<rect width="170" height="170" fill="'+T_.bg+'"/>':"")+s+'</svg>'; }
+    function svgHbar(rows,T_,W,cor,suf){ const rh=24, H=rows.length*rh+8, lw=Math.round(W*.42), mx=Math.max(...rows.map(r=>r.v),1); let s="";
+      rows.forEach((r,i)=>{ const y=4+i*rh, w=(W-lw-70)*r.v/mx; s+=T(lw-8,y+15,(r.t.length>34?r.t.slice(0,33)+"…":r.t),T_,{a:"end",s:11,c:T_.txt})+'<rect x="'+lw+'" y="'+(y+3)+'" width="'+Math.max(2,w)+'" height="14" rx="3" fill="'+(cor||"#1F4E78")+'"/>'+T(lw+Math.max(2,w)+6,y+15,r.l,T_,{a:"start",s:11,b:1,c:T_.txt}); });
+      return svgWrap(W,H,s,T_); }
+    /* ---- tela ---- */
+    function kpi(cls,rot,val,sub,k){ const b=el("button","pn-kpi "+cls); b.type="button"; b.dataset.gxk=k; b.innerHTML='<div class="k-l">'+esc(rot)+'</div><b>'+esc(val)+'</b><div class="k-s">'+esc(sub)+'</div>'; return b; }
+    function rankRows(box,rows,on){ box.textContent=""; const mx=Math.max(1,...rows.map(r=>r.v));
+      rows.forEach((r,i)=>{ const d=el("div","pn-rank"); d.innerHTML='<span class="ub-n" style="min-width:22px">'+(i+1)+'</span><div style="min-width:38%"><b>'+esc(r.t)+'</b>'+(r.s?'<div class="pn-meta">'+esc(r.s)+'</div>':"")+'</div><div class="bar"><i style="width:'+Math.round(100*r.v/mx)+'%"></i></div><b>'+esc(r.l)+'</b>';
+        if(on) d.onclick=()=>on(r); box.appendChild(d); });
+      if(!rows.length) box.appendChild(el("div","pn-meta","Sem dados no período.")); }
+    let MODELO=null;
+    function render(){
+      const m=MODELO=modelo(); const P=m.P, cfg=m.cfg; const vz=!m.dias.length;
+      $("gx-vazio").hidden=!vz; $("gx-corpo").hidden=vz;
+      document.querySelectorAll("#gx-modo button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===modoP)));
+      $("gx-mes-box").style.display=modoP==="mes"?"":"none"; const ms=mesesDisp(); $("gx-mes").textContent=nomeMes(mesSel||mesAtual());
+      $("gx-prev").disabled=ms.indexOf(mesSel||mesAtual())<=0; $("gx-next").disabled=ms.indexOf(mesSel||mesAtual())>=ms.length-1;
+      document.querySelectorAll("#gx-un button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.u===unid)));
+      // parâmetros
+      const nc=$("gx-nchips"); nc.textContent=""; [1,2,3,4,5].forEach(n=>{ const b=el("button","pn-chip",n+(n===1?" salário":" salários")); b.type="button"; b.dataset.n=n; b.setAttribute("aria-pressed",String(cfg.n===n)); nc.appendChild(b); });
+      if(![1,2,3,4,5].includes(cfg.n)){ const b=el("button","pn-chip",num1(cfg.n)+" salários"); b.type="button"; b.setAttribute("aria-pressed","true"); nc.appendChild(b); }
+      if(document.activeElement.id!=="gx-sm") $("gx-sm").value=cfg.sm; if(document.activeElement.id!=="gx-n") $("gx-n").value=cfg.n; if(document.activeElement.id!=="gx-h") $("gx-h").value=cfg.h; if(document.activeElement.id!=="gx-ref") $("gx-ref").value=cfg.ref!=null?cfg.ref:"";
+      $("gx-hora").innerHTML="<b>"+esc(nomeCfg(cfg))+"</b> = "+brl(cfg.sm*cfg.n)+" por mês ÷ "+cfg.h+" h = <b>"+brl(m.hora)+" por hora-homem</b> ("+brl(m.hora/60)+" por minuto)";
+      if(vz) return;
+      $("gx-farol-s").textContent=P.rot+" · "+m.dias.length+" dias medidos";
+      ["r","a","v"].forEach(k=>{ $("gx-f"+k).textContent=m.F[k].length; document.querySelector('#gx-farol .pn-luz.'+k).classList.toggle("off",!m.F[k].length); });
+      const K=$("gx-kpis"); K.textContent="";
+      K.append(kpi("", "Tempo em reunião",fmtHM(m.totMin),m.qtd+" reuniões · média "+fmtHM(m.med)+"/dia","tot"),
+        kpi("cus","Custo do tempo",m.sp&&!m.pm?"—":brl(m.custoBRL),m.pm?num1(m.pm/60)+" pessoas-hora":"participantes não registrados","cus"),
+        kpi("perd","Tempo perdido",fmtHM(m.perdMin),m.perdPM?brl(m.perdBRL)+" · acima da ref.":"acima da referência","perd"),
+        kpi("gan","Tempo ganho",fmtHM(m.ganMin),m.ganPM?brl(m.ganBRL)+" · abaixo da ref.":"abaixo da referência","gan"),
+        kpi("ag","Mensagens nos grupos",String(m.msgs),"lidas no período","msg"),
+        kpi("prazo","Referência diária",fmtHM(m.ref),cfg.ref!=null?"definida por você":"média dos dias medidos","ref"));
+      $("gx-linha-s").textContent="Minutos de reunião por dia. Toque num ponto para ver o dia. Cor = farol em relação à referência de "+fmtHM(m.ref)+".";
+      $("gx-linha").innerHTML=svgLinha(m,TELA,640,250);
+      $("gx-div-s").textContent=unid==="brl"?"Valor em reais de cada dia ("+nomeCfg(cfg)+", "+brl(m.hora)+"/h). Para cima: tempo perdido. Para baixo: tempo ganho.":"Para cima: minutos acima da referência (perdido). Para baixo: minutos abaixo dela (ganho).";
+      $("gx-div").innerHTML=svgDiv(m,TELA,640,260,unid);
+      $("gx-meses").innerHTML=svgMeses(m,TELA,640,230);
+      $("gx-meses-s").textContent="Horas de reunião em cada mês."+(m.meses.some(x=>x.parcial)?" * mês em andamento.":"");
+      let t='<table class="gx-t"><tr><th>Mês</th><th>Horas</th><th>Reuniões</th><th>Dias</th><th>Média/dia</th><th>Variação</th><th>Custo</th></tr>';
+      m.meses.forEach((x,i)=>{ const p=m.meses[i-1]; const v=p&&p.media>0?Math.round(100*(x.media-p.media)/p.media):null;
+        t+='<tr><td>'+esc(x.nome)+(x.parcial?"*":"")+'</td><td>'+num1(x.min/60)+'</td><td>'+x.qtd+'</td><td>'+x.dias+'</td><td>'+esc(fmtHM(x.media))+'</td><td style="color:'+(v==null?"inherit":v>0?COR.r:v<0?COR.v:"inherit")+'">'+(v==null?"—":(v>0?"▲ +":v<0?"▼ ":"")+v+"%")+'</td><td>'+(x.pm?brl(x.custo):"—")+'</td></tr>'; });
+      $("gx-meses-t").innerHTML=t+'</table><p class="pn-meta" style="margin:6px 0 0">Variação compara a média por dia medido com o mês anterior, para não distorcer meses com menos dias lidos.</p>';
+      const pt=partesGrupo(m); $("gx-donut").innerHTML=svgDonut(pt,TELA,0,[fmtHM(m.totMin),"em reunião"])+"<ul>"+pt.map(p=>'<li><span><i style="background:'+p.cor+'"></i>'+esc(p.n)+'</span><b>'+Math.round(p.pct)+"% · "+esc(fmtHM(p.v))+"</b></li>").join("")+"</ul>";
+      $("gx-sem").innerHTML=svgSem(m,TELA,640,200);
+      rankRows($("gx-top-gr"),m.grupos.slice(0,10).map(g=>({t:g.grupo,s:g.qtd+" reuni"+(g.qtd>1?"ões":"ão"),v:g.min,l:fmtHM(g.min)})),r=>abreGrupo(r.t));
+      rankRows($("gx-top-dia"),m.dias.slice().sort((a,b)=>b.min-a.min).filter(d=>d.min>0).slice(0,10).map(d=>({t:DSEM_L[d.w]+", "+dm(d.data),s:d.qtd+" reuni"+(d.qtd>1?"ões":"ão")+" · "+d.msgs+" mensagens",v:d.min,l:fmtHM(d.min),d:d.data})),r=>abreData(r.d.slice(0,7),r.d,diasDoMes(r.d.slice(0,7))));
+      rankRows($("gx-top-pes"),m.pessoas.slice(0,10).map(p=>({t:p.nome,v:p.msgs,l:p.msgs+" msgs"})),null);
+      const falt=m.sp?m.sp+" reuni"+(m.sp>1?"ões":"ão")+" sem número de participantes ficaram fora do cálculo em reais. ":"";
+      $("gx-nota").textContent="Fonte: leituras dos grupos pelo Peneira ("+m.dias.length+" dias com leitura de "+dm(P.ini)+" a "+dm(P.fim)+"). Reunião = debate com mais de 10 minutos seguidos. "+falt+"Dias sem leitura não entram nas médias."+(MODELO.F&&MODELO.cfg.ref==null?" Com a referência na média, o tempo perdido e o ganho se igualam; defina uma referência diária para ver o saldo.":"");
+    }
+    /* ---- eventos ---- */
+    $("gx-modo").addEventListener("click",e=>{ const b=e.target.closest("button[data-p]"); if(!b) return; modoP=b.dataset.p; render(); });
+    $("gx-un").addEventListener("click",e=>{ const b=e.target.closest("button[data-u]"); if(!b) return; unid=b.dataset.u; render(); });
+    $("gx-prev").addEventListener("click",()=>{ const ms=mesesDisp(), i=ms.indexOf(mesSel||mesAtual()); if(i>0){ mesSel=ms[i-1]; render(); } });
+    $("gx-next").addEventListener("click",()=>{ const ms=mesesDisp(), i=ms.indexOf(mesSel||mesAtual()); if(i<ms.length-1){ mesSel=ms[i+1]; render(); } });
+    $("gx-nchips").addEventListener("click",e=>{ const b=e.target.closest("button[data-n]"); if(!b) return; const c=cfgLer(); c.n=+b.dataset.n; cfgGrava(c); render(); });
+    $("gx-cfg-ok").addEventListener("click",()=>{ const c={sm:+$("gx-sm").value,n:+$("gx-n").value,h:+$("gx-h").value,ref:+$("gx-ref").value}; cfgGrava(c); render(); salvoOk($("gx-cfg-ok")); });
+    $("gestao").addEventListener("click",e=>{
+      const dp=e.target.closest("[data-gx-dia]"); if(dp){ const d=dp.dataset.gxDia; abreData(d.slice(0,7),d,diasDoMes(d.slice(0,7))); return; }
+      const f=e.target.closest("[data-gxf]"); if(f&&MODELO){ const k=f.dataset.gxf, L=MODELO.F[k]; const nm={r:"Muito acima da referência (mais que 2×)",a:"Acima da referência",v:"Na referência ou abaixo"}[k];
+        abreInfo("Farol do tempo · "+nm,"Verde: dia com tempo de reunião até a referência ("+fmtHM(MODELO.ref)+"). Amarelo: até 2× a referência. Vermelho: acima disso. Mesma regra do farol de tempo de resposta da Prevenção.",B=>{ L.slice().sort((a,b)=>b.min-a.min).forEach(d=>B.appendChild(linhaReuDia(d))); if(!L.length) B.appendChild(el("div","pn-meta","Nenhum dia nesta faixa.")); }); return; }
+      const kp=e.target.closest("[data-gxk]"); if(kp&&MODELO){ const M=MODELO, k=kp.dataset.gxk;
+        const tx={tot:"Soma do tempo em reuniões de grupo no WhatsApp (debates com mais de 10 minutos seguidos) nos dias medidos.",
+          cus:"Pessoas-hora × hora-homem ("+brl(M.hora)+"). Pessoas-hora = minutos de cada reunião × número de participantes, somados.",
+          perd:"Dias acima da referência de "+fmtHM(M.ref)+": o excedente de minutos × pessoas da reunião × "+brl(M.hora)+" por hora-homem.",
+          gan:"Dias abaixo da referência: minutos que ficaram abaixo dela. Em reais: × a média de pessoas por reunião do período ("+num1(M.pmedio)+") × "+brl(M.hora)+" por hora-homem.",
+          msg:"Mensagens de texto lidas nos grupos pelas varreduras, nos dias medidos.",
+          ref:"Referência de cada dia. Sem valor definido por você, usa a média de minutos por dia medido do período. Pode ser alterada em \"Quanto custou o tempo\"."};
+        abreInfo("Como é calculado",tx[k]||""); return; }
+    });
+    function linhaReuDia(d){ const b=el("button","ub-row"); b.type="button"; b.innerHTML='<span class="ub-n" style="background:'+COR[d.fa]+';color:#fff">●</span><div class="ub-txt"><b>'+esc(DSEM_L[d.w]+", "+dm(d.data))+'</b><small>'+d.qtd+' reuniões · '+d.msgs+' mensagens</small></div><span class="ub-v">'+esc(fmtHM(d.min))+'</span><i class="ub-chev">›</i>'; b.onclick=()=>abreData(d.data.slice(0,7),d.data,diasDoMes(d.data.slice(0,7))); return b; }
+    /* atualiza quando a aba abre e quando os dados mudam */
+    let sig="";
+    const assin=()=>(S.relGrupos||[]).length+"|"+((S.gestao&&S.gestao.atualizadoEm)||"")+"|"+JSON.stringify(cfgLer());
+    new MutationObserver(()=>{ if($("gestao").classList.contains("on")){ sig=assin(); render(); } }).observe($("gestao"),{attributes:true,attributeFilter:["class"]});
+    setInterval(()=>{ if($("gestao").classList.contains("on")&&!document.hidden){ const s=assin(); if(s!==sig&&!(document.activeElement&&/INPUT/.test(document.activeElement.tagName))){ sig=s; render(); } } },4000);
+    /* ---- exportação para a diretoria: PowerPoint (gráficos editáveis) e PDF ---- */
+    const AZ="1F4E78", AZ2="2E5F8A", CZ="5F6779";
+    const nomeArq=(m,ext)=>"Gestao_do_Tempo_"+m.P.arq+"."+ext;
+    const dataHora=d=>d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    function textoMetodo(m){ const c=m.cfg; return [
+      "Tempo em reunião: debate de grupo de WhatsApp com mais de 10 minutos seguidos (mensagens com menos de 15 minutos entre si), medido pelas leituras do Peneira.",
+      "Hora-homem: "+nomeCfg(c)+" ("+brl(c.sm*c.n)+" por mês) ÷ "+c.h+" horas = "+brl(m.hora)+" por hora. Salário mínimo nacional vigente em 2026: R$ 1.621,00 (Decreto 12.797/2025).",
+      "Referência diária: "+fmtHM(m.ref)+(c.ref!=null?" (definida pela gestão).":" (média de minutos por dia medido no período).")+" Tempo perdido = minutos acima dela; tempo ganho = minutos abaixo dela.",
+      "Valor do tempo perdido = minutos excedentes × pessoas na reunião × hora-homem. Valor do tempo ganho usa a média de pessoas por reunião do período ("+num1(m.pmedio)+").",
+      "Farol: verde até a referência, amarelo até 2× a referência, vermelho acima disso (mesma regra do farol de tempo de resposta).",
+      "Dias sem leitura de grupo não entram nas médias. O custo é uma estimativa de oportunidade com base em salário mínimo; não representa folha de pagamento."+(m.sp?" "+m.sp+" reunião(ões) sem número de participantes ficaram fora do cálculo em reais.":"")]; }
+    async function logoB64(){ try{ const r=await fetch(location.pathname.replace(/[^/]*$/,"")+"icons/icon-192.png"); const b=await r.blob(); return await new Promise(ok=>{ const f=new FileReader(); f.onload=()=>ok(f.result); f.readAsDataURL(b); }); }catch(e){ return null; } }
+    function svgPng(svg,w,h){ return new Promise((ok,er)=>{ const img=new Image(); const u="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg.replace(/^<svg /,'<svg width="'+w+'" height="'+h+'" '));
+      img.onload=()=>{ const c=document.createElement("canvas"); c.width=w*2; c.height=h*2; const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); ok(c.toDataURL("image/jpeg",.92)); }; img.onerror=()=>er(new Error("svg")); img.src=u; }); }
+    async function exportPPT(){
+      const m=modelo(); if(!m.dias.length){ aviso("Ainda não há dias medidos no período para gerar a apresentação."); return; }
+      try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"); }catch(e){ aviso("Não consegui carregar o gerador de PowerPoint."); return; }
+      const P=new window.PptxGenJS(); P.layout="LAYOUT_WIDE"; P.title="Gestão executiva do tempo · "+m.P.rot; P.author="Peneira";
+      let pag=0; const logo=await logoB64();
+      const nova=(t,sub)=>{ const s=P.addSlide(); pag++; s.background={color:"FFFFFF"};
+        s.addShape(P.ShapeType.rect,{x:0,y:0,w:13.33,h:0.95,fill:{color:AZ},line:{color:AZ}});
+        s.addText(t,{x:0.5,y:0.15,w:9,h:0.65,fontSize:24,bold:true,color:"FFFFFF",fontFace:"Calibri"});
+        if(sub) s.addText(sub,{x:8.3,y:0.22,w:4.6,h:0.5,fontSize:12,color:"D4E4F7",align:"right",fontFace:"Calibri"});
+        s.addText("Peneira · Gestão executiva do tempo · "+m.P.rot+" · gerado em "+dataHora(m.gerado),{x:0.5,y:7.1,w:11,h:0.3,fontSize:9,color:CZ,fontFace:"Calibri"});
+        s.addText(String(pag),{x:12.2,y:7.1,w:0.7,h:0.3,fontSize:9,color:CZ,align:"right"}); return s; };
+      const D=m.dias, lab_=D.map(d=>dm(d.data));
+      // 1 capa
+      { const s=P.addSlide(); pag++; s.background={color:AZ}; if(logo) s.addImage({data:logo,x:0.7,y:0.7,w:1.1,h:1.1});
+        s.addText("Gestão executiva do tempo",{x:0.7,y:2.4,w:12,h:1,fontSize:40,bold:true,color:"FFFFFF",fontFace:"Calibri"});
+        s.addText("Tempo em reuniões de WhatsApp: perdido, ganho e quanto custa",{x:0.7,y:3.4,w:12,h:0.6,fontSize:20,color:"D4E4F7",fontFace:"Calibri"});
+        s.addText(m.P.rot+"  ·  "+dm(m.P.ini)+" a "+dm(m.P.fim)+"  ·  "+m.dias.length+" dias medidos",{x:0.7,y:4.4,w:12,h:0.5,fontSize:16,color:"FFFFFF",fontFace:"Calibri"});
+        s.addText("Base de custo: "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem  ·  Gerado em "+dataHora(m.gerado),{x:0.7,y:6.6,w:12,h:0.4,fontSize:12,color:"A9C4E2",fontFace:"Calibri"}); }
+      // 2 resumo
+      { const s=nova("Resumo executivo",m.P.rot); const tiles=[["Tempo em reunião",fmtHM(m.totMin),m.qtd+" reuniões · média "+fmtHM(m.med)+"/dia",AZ],["Custo do tempo",m.pm?brl(m.custoBRL):"—",m.pm?num1(m.pm/60)+" pessoas-hora":"sem nº de participantes",AZ2],
+          ["Tempo perdido",fmtHM(m.perdMin),(m.perdPM?brl(m.perdBRL)+" · ":"")+"acima da referência","E5484D"],["Tempo ganho",fmtHM(m.ganMin),(m.ganPM?brl(m.ganBRL)+" · ":"")+"abaixo da referência","2FB36B"]];
+        tiles.forEach((t,i)=>{ const x=0.5+(i%2)*4.35, y=1.3+Math.floor(i/2)*1.95; s.addShape(P.ShapeType.roundRect,{x,y,w:4.1,h:1.75,fill:{color:"F5F7FB"},line:{color:"DDE3EE"},rectRadius:0.1}); s.addShape(P.ShapeType.rect,{x,y,w:0.09,h:1.75,fill:{color:t[3]},line:{color:t[3]}});
+          s.addText(t[0].toUpperCase(),{x:x+0.3,y:y+0.12,w:3.6,h:0.3,fontSize:11,bold:true,color:CZ}); s.addText(t[1],{x:x+0.3,y:y+0.5,w:3.6,h:0.7,fontSize:30,bold:true,color:t[3]}); s.addText(t[2],{x:x+0.3,y:y+1.25,w:3.6,h:0.35,fontSize:11,color:CZ}); });
+        s.addText("Farol do tempo",{x:9.4,y:1.3,w:3.4,h:0.35,fontSize:14,bold:true,color:AZ});
+        [["r","Muito acima (mais de 2× a referência)"],["a","Acima da referência"],["v","Na referência ou abaixo"]].forEach((f,i)=>{ const y=1.8+i*0.95; s.addShape(P.ShapeType.ellipse,{x:9.4,y:y,w:0.6,h:0.6,fill:{color:COR[f[0]].slice(1)},line:{color:COR[f[0]].slice(1)}});
+          s.addText(String(m.F[f[0]].length),{x:10.15,y:y-0.05,w:1.0,h:0.7,fontSize:28,bold:true,color:"1B2236"}); s.addText("dias · "+f[1],{x:11.0,y:y,w:2.2,h:0.6,fontSize:10,color:CZ}); });
+        s.addText("Referência diária: "+fmtHM(m.ref)+(m.cfg.ref!=null?" (definida pela gestão)":" (média dos dias medidos)"),{x:0.5,y:5.4,w:12,h:0.4,fontSize:13,color:"1B2236"}); }
+      // 3 linha
+      { const s=nova("Dia a dia · tempo em reunião","minutos por dia"); s.addChart(P.charts.LINE,[{name:"Tempo em reunião (min)",labels:lab_,values:D.map(d=>Math.round(d.min))},{name:"Referência (min)",labels:lab_,values:D.map(()=>Math.round(m.ref))}],
+          {x:0.5,y:1.15,w:12.3,h:5.6,chartColors:[AZ,"F5B42A"],lineSize:2.5,lineDataSymbolSize:7,showLegend:true,legendPos:"b",legendFontSize:12,catAxisLabelFontSize:10,valAxisLabelFontSize:10,showValAxisTitle:true,valAxisTitle:"minutos",valAxisTitleFontSize:11,valGridLine:{color:"DDE3EE",size:0.75}}); }
+      // 4 perdido x ganho (min)
+      { const s=nova("Tempo perdido × tempo ganho por dia","em minutos, contra a referência de "+fmtHM(m.ref)); s.addChart(P.charts.BAR,[{name:"Perdido (min acima da referência)",labels:lab_,values:D.map(d=>Math.round(d.exc))},{name:"Ganho (min abaixo da referência)",labels:lab_,values:D.map(d=>-Math.round(d.gan))}],
+          {x:0.5,y:1.15,w:12.3,h:5.6,barDir:"col",barGrouping:"stacked",chartColors:["E5484D","2FB36B"],showLegend:true,legendPos:"b",legendFontSize:12,catAxisLabelFontSize:10,catAxisLabelPos:"low",valAxisLabelFontSize:10,valGridLine:{color:"DDE3EE",size:0.75}}); }
+      // 5 perdido x ganho (R$)
+      if(m.perdPM||m.ganPM){ const s=nova("Valor do tempo perdido × ganho por dia","em reais · "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem"); s.addChart(P.charts.BAR,[{name:"Perdido (R$)",labels:lab_,values:D.map(d=>Math.round(d.pPM/60*m.hora*100)/100)},{name:"Ganho (R$)",labels:lab_,values:D.map(d=>-Math.round(d.gPM/60*m.hora*100)/100)}],
+          {x:0.5,y:1.15,w:12.3,h:4.7,barDir:"col",barGrouping:"stacked",chartColors:["E5484D","2FB36B"],showLegend:true,legendPos:"b",legendFontSize:12,catAxisLabelFontSize:10,catAxisLabelPos:"low",valAxisLabelFontSize:10,valAxisLabelFormatCode:"R$ #,##0",valGridLine:{color:"DDE3EE",size:0.75}});
+        s.addText("Total do período: perdido "+brl(m.perdBRL)+"  ·  ganho "+brl(m.ganBRL)+"  ·  custo total do tempo em reunião "+brl(m.custoBRL),{x:0.5,y:6.1,w:12.3,h:0.5,fontSize:14,bold:true,color:AZ}); }
+      // 6 mês a mês
+      { const s=nova("Mês a mês","horas de reunião e média por dia medido"); s.addChart(P.charts.BAR,[{name:"Horas de reunião",labels:m.meses.map(x=>x.nome+(x.parcial?"*":"")),values:m.meses.map(x=>Math.round(x.min/60*10)/10)}],
+          {x:0.5,y:1.15,w:6.4,h:5.5,barDir:"col",chartColors:[AZ],showValue:true,dataLabelFormatCode:"0.0",dataLabelFontSize:11,showLegend:false,catAxisLabelFontSize:11,valAxisLabelFontSize:10,showValAxisTitle:true,valAxisTitle:"horas",valGridLine:{color:"DDE3EE",size:0.75}});
+        const hd=["Mês","Horas","Reun.","Dias","Média/dia","Var.","Custo"].map(t=>({text:t,options:{bold:true,color:"FFFFFF",fill:{color:AZ},fontSize:10,align:"center"}}));
+        const rows=[hd]; m.meses.forEach((x,i)=>{ const p=m.meses[i-1]; const v=p&&p.media>0?Math.round(100*(x.media-p.media)/p.media):null;
+          rows.push([x.nome+(x.parcial?"*":""),num1(x.min/60),String(x.qtd),String(x.dias),fmtHM(x.media),v==null?"—":(v>0?"+":"")+v+"%",x.pm?brl(x.custo):"—"].map((t,j)=>({text:t,options:{fontSize:10,align:j?"center":"left",color:j===5&&v!=null?(v>0?"C00000":v<0?"1E8A52":"1B2236"):"1B2236"}}))); });
+        s.addTable(rows,{x:7.1,y:1.3,w:5.8,colW:[0.95,0.7,0.6,0.55,1.0,0.7,1.3],border:{type:"solid",color:"DDE3EE",pt:0.75},fontFace:"Calibri"});
+        s.addText("* mês em andamento. Variação compara a média por dia medido com a do mês anterior.",{x:7.1,y:5.9,w:5.8,h:0.5,fontSize:10,color:CZ}); }
+      // 7 proporções
+      { const s=nova("Proporção do período","por grupo e por dia da semana"); const pt=partesGrupo(m);
+        s.addChart(P.charts.DOUGHNUT,[{name:"Minutos por grupo",labels:pt.map(p=>p.n),values:pt.map(p=>Math.round(p.v))}],{x:0.4,y:1.2,w:6.4,h:5.6,chartColors:pt.map(p=>p.cor.slice(1)),holeSize:55,showPercent:true,showLegend:true,legendPos:"b",legendFontSize:10,dataLabelFontSize:10,dataLabelColor:"FFFFFF",showTitle:true,title:"Quem consumiu o tempo (por grupo)",titleFontSize:13});
+        const ord=[1,2,3,4,5,6,0]; s.addChart(P.charts.BAR,[{name:"Minutos de reunião",labels:ord.map(w=>DSEM[w]),values:ord.map(w=>Math.round(m.sem[w]))}],{x:7.0,y:1.2,w:5.9,h:5.6,barDir:"col",chartColors:["4D7EAD"],showValue:true,dataLabelFontSize:10,showLegend:false,catAxisLabelFontSize:11,valAxisLabelFontSize:10,showTitle:true,title:"Minutos por dia da semana",titleFontSize:13,valGridLine:{color:"DDE3EE",size:0.75}}); }
+      // 8 top 10 grupos e pessoas
+      { const s=nova("Top 10","grupos que mais consumiram tempo · quem mais escreveu"); const g=m.grupos.slice(0,10), p=m.pessoas.slice(0,10);
+        s.addChart(P.charts.BAR,[{name:"Minutos de reunião",labels:g.map(x=>x.grupo.length>32?x.grupo.slice(0,31)+"…":x.grupo),values:g.map(x=>Math.round(x.min))}],{x:0.4,y:1.15,w:6.4,h:5.7,barDir:"bar",catAxisOrientation:"maxMin",chartColors:[AZ],showValue:true,dataLabelFontSize:10,showLegend:false,catAxisLabelFontSize:10,valAxisLabelFontSize:9,showTitle:true,title:"Grupos · minutos de reunião",titleFontSize:13,valGridLine:{color:"DDE3EE",size:0.75}});
+        if(p.length) s.addChart(P.charts.BAR,[{name:"Mensagens",labels:p.map(x=>x.nome.length>26?x.nome.slice(0,25)+"…":x.nome),values:p.map(x=>x.msgs)}],{x:6.9,y:1.15,w:6.0,h:5.7,barDir:"bar",catAxisOrientation:"maxMin",chartColors:["4D7EAD"],showValue:true,dataLabelFontSize:10,showLegend:false,catAxisLabelFontSize:10,valAxisLabelFontSize:9,showTitle:true,title:"Pessoas · mensagens nos grupos",titleFontSize:13,valGridLine:{color:"DDE3EE",size:0.75}}); }
+      // 9 dias mais pesados
+      { const s=nova("Top 10 dias mais pesados","tempo em reunião"); const top=D.slice().sort((a,b)=>b.min-a.min).filter(d=>d.min>0).slice(0,10);
+        const hd=["#","Dia","Reuniões","Mensagens","Tempo em reunião","Farol"].map(t=>({text:t,options:{bold:true,color:"FFFFFF",fill:{color:AZ},fontSize:12,align:"center"}}));
+        const rows=[hd].concat(top.map((d,i)=>[String(i+1),DSEM_L[d.w]+", "+dm(d.data),String(d.qtd),String(d.msgs),fmtHM(d.min),{text:{r:"Muito acima",a:"Acima",v:"Na referência"}[d.fa],options:{bold:true,color:"FFFFFF",fill:{color:COR[d.fa].slice(1)},align:"center",fontSize:11}}].map((t,j)=>typeof t==="string"?{text:t,options:{fontSize:12,align:j===1?"left":"center"}}:t)));
+        s.addTable(rows,{x:0.7,y:1.4,w:11.9,colW:[0.6,3.6,1.7,1.9,2.4,1.7],border:{type:"solid",color:"DDE3EE",pt:0.75},fontFace:"Calibri",rowH:0.42}); }
+      // 10 custo
+      { const s=nova("Quanto custou o tempo","base: "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem");
+        const hd=["Indicador","Tempo","Pessoas-hora","Valor"].map(t=>({text:t,options:{bold:true,color:"FFFFFF",fill:{color:AZ},fontSize:13,align:"center"}}));
+        const L=[["Tempo total em reunião",fmtHM(m.totMin),m.pm?num1(m.pm/60):"—",m.pm?brl(m.custoBRL):"—"],["Tempo perdido (acima da referência)",fmtHM(m.perdMin),m.perdPM?num1(m.perdPM/60):"—",m.perdPM?brl(m.perdBRL):"—"],["Tempo ganho (abaixo da referência)",fmtHM(m.ganMin),m.ganPM?num1(m.ganPM/60):"—",m.ganPM?brl(m.ganBRL):"—"]];
+        s.addTable([hd].concat(L.map(r=>r.map((t,j)=>({text:t,options:{fontSize:14,align:j?"center":"left",bold:j===3}})))),{x:0.7,y:1.4,w:11.9,colW:[5.2,2.1,2.1,2.5],border:{type:"solid",color:"DDE3EE",pt:0.75},fontFace:"Calibri",rowH:0.55});
+        s.addText("Hora-homem = "+nomeCfg(m.cfg)+" ("+brl(m.cfg.sm*m.cfg.n)+" por mês) ÷ "+m.cfg.h+" h = "+brl(m.hora)+". Cada salário mínimo a mais sobe o valor em reais na mesma proporção.",{x:0.7,y:3.9,w:11.9,h:0.8,fontSize:14,color:"1B2236"});
+        s.addText("Estimativa de custo de oportunidade com base em salário mínimo; não representa folha de pagamento.",{x:0.7,y:4.8,w:11.9,h:0.5,fontSize:12,italic:true,color:CZ}); }
+      // 11 metodologia
+      { const s=nova("Metodologia e fontes"); s.addText(textoMetodo(m).map(t=>({text:t,options:{bullet:true,breakLine:true}})),{x:0.7,y:1.3,w:11.9,h:5.4,fontSize:14,color:"1B2236",fontFace:"Calibri",valign:"top",paraSpaceAfter:8});
+        s.addText("Fonte: leituras de grupos pelo Peneira, "+m.dias.length+" dias medidos de "+dm(m.P.ini)+" a "+dm(m.P.fim)+".",{x:0.7,y:6.6,w:11.9,h:0.4,fontSize:11,color:CZ}); }
+      const blob=await P.write({outputType:"blob"}); await salvarArquivo(nomeArq(m,"pptx"),blob);
+    }
+    async function exportPDF2(){
+      const m=modelo(); if(!m.dias.length){ aviso("Ainda não há dias medidos no período para gerar o PDF."); return; }
+      try{ await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await carrega("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }catch(e){ aviso("Não consegui carregar o gerador de PDF."); return; }
+      const doc=new window.jspdf.jsPDF({unit:"pt",format:"a4",orientation:"landscape"}); const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(); const az=[31,78,120], logo=await logoB64(); const C=CLARO; let pag=0;
+      const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+      const nova=(t,sub,primeira)=>{ if(pag>0) doc.addPage(); pag++; if(primeira) return; doc.setFillColor(...az); doc.rect(0,0,W,52,"F"); doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(19); doc.text(t,34,33);
+        if(sub){ doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(212,228,247); doc.text(sub,W-34,32,{align:"right"}); }
+        doc.setTextColor(95,103,121); doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.text("Peneira · Gestão executiva do tempo · "+m.P.rot+" · gerado em "+dataHora(m.gerado),34,H-18); doc.text(String(pag),W-34,H-18,{align:"right"}); doc.setTextColor(27,34,54); };
+      const img=async(svg,w,h,x,y,iw)=>{ const png=await svgPng(svg,w,h); doc.addImage(png,"JPEG",x,y,iw,iw*h/w); return iw*h/w; };
+      // capa
+      nova("","",true); doc.setFillColor(...az); doc.rect(0,0,W,H,"F"); if(logo) doc.addImage(logo,"PNG",50,50,64,64);
+      doc.setTextColor(255); doc.setFont("helvetica","bold"); doc.setFontSize(34); doc.text("Gestão executiva do tempo",50,230); doc.setFont("helvetica","normal"); doc.setFontSize(16); doc.setTextColor(212,228,247); doc.text("Tempo em reuniões de WhatsApp: perdido, ganho e quanto custa",50,262);
+      doc.setTextColor(255); doc.setFontSize(14); doc.text(m.P.rot+"  ·  "+dm(m.P.ini)+" a "+dm(m.P.fim)+"  ·  "+m.dias.length+" dias medidos",50,300); doc.setFontSize(10); doc.setTextColor(169,196,226); doc.text("Base de custo: "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem  ·  Gerado em "+dataHora(m.gerado),50,H-40);
+      // resumo
+      nova("Resumo executivo",m.P.rot); { const tiles=[["TEMPO EM REUNIÃO",fmtHM(m.totMin),m.qtd+" reuniões · média "+fmtHM(m.med)+"/dia","#1F4E78"],["CUSTO DO TEMPO",m.pm?brl(m.custoBRL):"—",m.pm?num1(m.pm/60)+" pessoas-hora":"sem nº de participantes","#2E5F8A"],["TEMPO PERDIDO",fmtHM(m.perdMin),(m.perdPM?brl(m.perdBRL)+" · ":"")+"acima da referência","#e5484d"],["TEMPO GANHO",fmtHM(m.ganMin),(m.ganPM?brl(m.ganBRL)+" · ":"")+"abaixo da referência","#2fb36b"]];
+        tiles.forEach((t,i)=>{ const x=34+(i%2)*270, y=76+Math.floor(i/2)*150; doc.setFillColor(245,247,251); doc.setDrawColor(221,227,238); doc.roundedRect(x,y,254,134,8,8,"FD"); doc.setFillColor(...hex(t[3])); doc.rect(x,y+6,5,122,"F");
+          doc.setFontSize(9); doc.setFont("helvetica","bold"); doc.setTextColor(95,103,121); doc.text(t[0],x+18,y+26); doc.setFontSize(26); doc.setTextColor(...hex(t[3])); doc.text(t[1],x+18,y+68); doc.setFontSize(9.5); doc.setFont("helvetica","normal"); doc.setTextColor(95,103,121); doc.text(t[2],x+18,y+100); });
+        doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor(...az); doc.text("Farol do tempo",600,92);
+        [["r","Muito acima (mais de 2× a referência)"],["a","Acima da referência"],["v","Na referência ou abaixo"]].forEach((f,i)=>{ const y=130+i*70; doc.setFillColor(...hex(COR[f[0]])); doc.circle(618,y,16,"F"); doc.setTextColor(27,34,54); doc.setFontSize(24); doc.setFont("helvetica","bold"); doc.text(String(m.F[f[0]].length),646,y+8); doc.setFontSize(9); doc.setFont("helvetica","normal"); doc.setTextColor(95,103,121); doc.text("dias · "+f[1],690,y+4,{maxWidth:120}); });
+        doc.setFontSize(11); doc.setTextColor(27,34,54); doc.text("Referência diária: "+fmtHM(m.ref)+(m.cfg.ref!=null?" (definida pela gestão)":" (média dos dias medidos)")+"  ·  Hora-homem: "+brl(m.hora)+" ("+nomeCfg(m.cfg)+")",34,H-60); }
+      // linha
+      nova("Dia a dia · tempo em reunião","minutos por dia · pontos coloridos pelo farol"); await img(svgLinha(m,C,760,380),760,380,34,68,774);
+      // perdido x ganho
+      nova("Tempo perdido × tempo ganho por dia","contra a referência de "+fmtHM(m.ref)); { const h1=await img(svgDiv(m,C,760,250,"min"),760,250,34,64,774); doc.setFontSize(10); doc.setTextColor(95,103,121); doc.text("Minutos · vermelho/amarelo = perdido (acima da referência) · verde = ganho (abaixo)",34,64+h1+12);
+        if(m.perdPM||m.ganPM){ const h2=await img(svgDiv(m,C,760,250,"brl"),760,250,34,64+h1+22,774); doc.text("Reais · "+nomeCfg(m.cfg)+" · "+brl(m.hora)+" por hora-homem · perdido "+brl(m.perdBRL)+" · ganho "+brl(m.ganBRL),34,64+h1+22+h2+12); } }
+      // meses
+      nova("Mês a mês","horas de reunião e média por dia medido"); { const h1=await img(svgMeses(m,C,760,230),760,230,34,62,500);
+        doc.autoTable({startY:62,margin:{left:550,right:34},tableWidth:258,head:[["Mês","Horas","Média/dia","Var."]],body:m.meses.map((x,i)=>{ const p=m.meses[i-1]; const v=p&&p.media>0?Math.round(100*(x.media-p.media)/p.media):null; return [x.nome+(x.parcial?"*":""),num1(x.min/60),fmtHM(x.media),v==null?"—":(v>0?"+":"")+v+"%"]; }),styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:az},theme:"grid"});
+        doc.autoTable({startY:62+h1+16,margin:{left:34,right:34},head:[["Mês","Horas","Reuniões","Dias medidos","Média/dia","Custo do tempo"]],body:m.meses.map(x=>[x.nome+(x.parcial?"*":""),num1(x.min/60),x.qtd,x.dias,fmtHM(x.media),x.pm?brl(x.custo):"—"]),styles:{fontSize:9,cellPadding:4},headStyles:{fillColor:az},theme:"grid"});
+        doc.setFontSize(8); doc.setTextColor(95,103,121); doc.text("* mês em andamento. A variação compara a média por dia medido com a do mês anterior.",34,H-34); }
+      // proporções
+      nova("Proporção do período","por grupo e por dia da semana"); { const pt=partesGrupo(m); await img(svgDonut(pt,C,0,[fmtHM(m.totMin),"em reunião"]),170,170,34,66,200);
+        doc.autoTable({startY:70,margin:{left:260,right:34},head:[["Grupo","% do tempo","Tempo"]],body:pt.map(p=>[p.n,Math.round(p.pct)+"%",fmtHM(p.v)]),styles:{fontSize:9,cellPadding:3.5},headStyles:{fillColor:az},theme:"grid"});
+        await img(svgSem(m,C,420,240),420,240,34,290,430); doc.setFontSize(10); doc.setTextColor(95,103,121); doc.text("Minutos de reunião por dia da semana (% do total do período)",480,420,{maxWidth:300}); }
+      // top 10
+      nova("Top 10","grupos que mais consumiram tempo · quem mais escreveu"); { const g=m.grupos.slice(0,10).map(x=>({t:x.grupo,v:x.min,l:fmtHM(x.min)})), p=m.pessoas.slice(0,10).map(x=>({t:x.nome,v:x.msgs,l:x.msgs+" msgs"}));
+        doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.setTextColor(...az); doc.text("Grupos · tempo em reunião",34,80); doc.text("Pessoas · mensagens nos grupos",430,80);
+        if(g.length) await img(svgHbar(g,C,380,"#1F4E78"),380,g.length*24+8,34,90,380); if(p.length) await img(svgHbar(p,C,380,"#4D7EAD"),380,p.length*24+8,430,90,380); }
+      // dias e custo
+      nova("Dias mais pesados e custo do tempo",m.P.rot); { const top=m.dias.slice().sort((a,b)=>b.min-a.min).filter(d=>d.min>0).slice(0,10);
+        doc.autoTable({startY:70,margin:{left:34,right:34},head:[["#","Dia","Reuniões","Mensagens","Tempo em reunião","Farol"]],body:top.map((d,i)=>[i+1,DSEM_L[d.w]+", "+dm(d.data),d.qtd,d.msgs,fmtHM(d.min),{r:"Muito acima",a:"Acima",v:"Na referência"}[d.fa]]),styles:{fontSize:9,cellPadding:3.5},headStyles:{fillColor:az},theme:"grid",didParseCell:d=>{ if(d.section==="body"&&d.column.index===5){ const f=["Muito acima","Acima","Na referência"].indexOf(d.cell.raw); d.cell.styles.fillColor=hex([COR.r,COR.a,COR.v][f]); d.cell.styles.textColor=[255,255,255]; d.cell.styles.fontStyle="bold"; } }});
+        const y=doc.lastAutoTable.finalY+18; doc.autoTable({startY:y,margin:{left:34,right:34},head:[["Indicador ("+nomeCfg(m.cfg)+" · "+brl(m.hora)+"/h)","Tempo","Pessoas-hora","Valor"]],body:[["Tempo total em reunião",fmtHM(m.totMin),m.pm?num1(m.pm/60):"—",m.pm?brl(m.custoBRL):"—"],["Tempo perdido (acima da referência)",fmtHM(m.perdMin),m.perdPM?num1(m.perdPM/60):"—",m.perdPM?brl(m.perdBRL):"—"],["Tempo ganho (abaixo da referência)",fmtHM(m.ganMin),m.ganPM?num1(m.ganPM/60):"—",m.ganPM?brl(m.ganBRL):"—"]],styles:{fontSize:10,cellPadding:5},headStyles:{fillColor:az},theme:"grid"}); }
+      // metodologia
+      nova("Metodologia e fontes"); { let y=84; doc.setFontSize(11); doc.setTextColor(27,34,54); doc.setFont("helvetica","normal"); textoMetodo(m).forEach(t=>{ const L=doc.splitTextToSize("•  "+t,W-80); doc.text(L,40,y); y+=L.length*14+8; }); doc.setFontSize(9); doc.setTextColor(95,103,121); doc.text("Fonte: leituras de grupos pelo Peneira, "+m.dias.length+" dias medidos de "+dm(m.P.ini)+" a "+dm(m.P.fim)+".",40,y+8); }
+      await salvarArquivo(nomeArq(m,"pdf"),doc.output("blob"));
+    }
+    $("gx-ppt").addEventListener("click",async()=>{ const b=$("gx-ppt"); b.disabled=true; try{ await exportPPT(); }catch(e){ aviso("Não consegui gerar o PowerPoint agora."); } b.disabled=false; });
+    $("gx-pdf").addEventListener("click",async()=>{ const b=$("gx-pdf"); b.disabled=true; try{ await exportPDF2(); }catch(e){ aviso("Não consegui gerar o PDF agora."); } b.disabled=false; });
+    window.__gxModelo=()=>MODELO||modelo(); window.__gx={svgLinha,svgDiv,svgMeses,svgSem,svgDonut,svgHbar,partesGrupo,CLARO,brl,num1,lab,dm,esc,nomeCfg,modelo};
   })();
 })();
 </script>
